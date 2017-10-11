@@ -1,0 +1,7 @@
+#!/bin/bash
+cd ~/lazarus/mqtt/doc 
+fpdoc --input-dir=../src --descr-dir=fpdoc --format=html --output=htmldoc --package=mqttcomponents 
+fpdoc --input-dir=../src --descr-dir=fpdoc --format=txt --output=mqttcomponents.txt --package=mqttcomponents 
+fpdoc --input-dir=../src --descr-dir=fpdoc --format=chm --output=mqttcomponents.chm --package=mqttcomponents 
+fpdoc --input-dir=../src --descr-dir=fpdoc --format=rtf --output=mqttcomponents.rtf --package=mqttcomponents 
+

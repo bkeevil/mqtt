@@ -1,0 +1,98 @@
+object PublishForm: TPublishForm
+  Left = 590
+  Height = 250
+  Top = 221
+  Width = 254
+  BorderStyle = bsDialog
+  Caption = 'PublishForm'
+  ClientHeight = 250
+  ClientWidth = 254
+  LCLVersion = '1.6.4.0'
+  object lbTopic: TLabel
+    Left = 16
+    Height = 17
+    Top = 8
+    Width = 30
+    Caption = '&Topic'
+    FocusControl = edTopic
+    ParentColor = False
+  end
+  object edTopic: TEdit
+    Left = 16
+    Height = 27
+    Top = 27
+    Width = 222
+    TabOrder = 0
+    Text = 'Topic1/TopicA'
+  end
+  object lbMessage: TLabel
+    Left = 16
+    Height = 17
+    Top = 57
+    Width = 51
+    Caption = '&Message'
+    FocusControl = edMessage
+    ParentColor = False
+  end
+  object edMessage: TEdit
+    Left = 16
+    Height = 27
+    Top = 76
+    Width = 222
+    TabOrder = 1
+    Text = 'Message1'
+  end
+  object cbRetain: TCheckBox
+    Left = 16
+    Height = 22
+    Top = 115
+    Width = 59
+    Caption = '&Retain'
+    TabOrder = 2
+  end
+  object lbQOS: TLabel
+    Left = 16
+    Height = 17
+    Top = 146
+    Width = 97
+    Caption = '&Quality of Service'
+    FocusControl = cbQOS
+    ParentColor = False
+  end
+  object cbQOS: TComboBox
+    Left = 16
+    Height = 27
+    Top = 166
+    Width = 152
+    ItemHeight = 0
+    ItemIndex = 2
+    Items.Strings = (
+      'At most once'
+      'At least once'
+      'Exactly once'
+    )
+    Style = csDropDownList
+    TabOrder = 3
+    Text = 'Exactly once'
+  end
+  object OKBtn: TButton
+    Left = 163
+    Height = 25
+    Top = 210
+    Width = 75
+    Caption = '&OK'
+    Default = True
+    ModalResult = 1
+    TabOrder = 4
+  end
+  object CancelBtn: TButton
+    Left = 74
+    Height = 25
+    Top = 210
+    Width = 75
+    Cancel = True
+    Caption = '&Cancel'
+    ModalResult = 2
+    TabOrder = 5
+  end
+end

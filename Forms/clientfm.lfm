@@ -1,0 +1,302 @@
+object ClientForm: TClientForm
+  Left = 535
+  Height = 381
+  Top = 106
+  Width = 695
+  Caption = 'MQTT Client'
+  ClientHeight = 381
+  ClientWidth = 695
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poScreenCenter
+  LCLVersion = '1.6.4.0'
+  object SubscribeBtn: TButton
+    Left = 207
+    Height = 27
+    Top = 8
+    Width = 89
+    Caption = 'Subscribe'
+    OnClick = SubscribeBtnClick
+    TabOrder = 0
+  end
+  object UnsubscribeBtn: TButton
+    Left = 297
+    Height = 27
+    Top = 8
+    Width = 89
+    Caption = 'Unsubscribe'
+    OnClick = UnsubscribeBtnClick
+    TabOrder = 1
+  end
+  object PublishBtn: TButton
+    Left = 396
+    Height = 27
+    Top = 8
+    Width = 89
+    Caption = 'Publish'
+    OnClick = PublishBtnClick
+    TabOrder = 2
+  end
+  object DisconnectBtn: TButton
+    Left = 107
+    Height = 27
+    Top = 8
+    Width = 89
+    Anchors = [akLeft, akBottom]
+    Caption = '&Disconnect'
+    OnClick = DisconnectBtnClick
+    TabOrder = 3
+  end
+  object PageControl: TPageControl
+    Left = 16
+    Height = 296
+    Top = 48
+    Width = 664
+    ActivePage = LogTab
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabIndex = 2
+    TabOrder = 4
+    object SubscriptionsTab: TTabSheet
+      Caption = 'Subscriptions'
+      ClientHeight = 261
+      ClientWidth = 658
+      object SubscriptionsGrid: TStringGrid
+        Left = 0
+        Height = 261
+        Top = 0
+        Width = 658
+        Align = alClient
+        Anchors = [akTop, akLeft, akBottom]
+        AutoEdit = False
+        AutoFillColumns = True
+        ColCount = 4
+        Columns = <        
+          item
+            Title.Caption = 'Topic Filter'
+            Width = 450
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'QOS'
+            Width = 140
+          end        
+          item
+            Alignment = taRightJustify
+            SizePriority = 0
+            Title.Alignment = taRightJustify
+            Title.Caption = 'Age'
+          end        
+          item
+            ButtonStyle = cbsCheckboxColumn
+            SizePriority = 0
+            Title.Alignment = taCenter
+            Title.Caption = 'Persistent'
+            Width = 0
+            Visible = False
+          end>
+        DefaultRowHeight = 20
+        ExtendedSelect = False
+        FixedCols = 0
+        PopupMenu = SubscriptionsPopup
+        TabOrder = 0
+        ColWidths = (
+          450
+          140
+          64
+          0
+        )
+      end
+    end
+    object MessagesTab: TTabSheet
+      Caption = 'Messages'
+      ClientHeight = 261
+      ClientWidth = 658
+      object MessagesGrid: TStringGrid
+        Left = 0
+        Height = 165
+        Top = 0
+        Width = 482
+        Align = alClient
+        Anchors = [akTop, akLeft, akBottom]
+        AutoEdit = False
+        AutoFillColumns = True
+        ColCount = 4
+        Columns = <        
+          item
+            Title.Caption = 'Topic'
+            Width = 159
+          end        
+          item
+            Title.Caption = 'Data'
+            Width = 159
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'QOS'
+            Width = 100
+          end        
+          item
+            ButtonStyle = cbsCheckboxColumn
+            ReadOnly = True
+            SizePriority = 0
+            Title.Alignment = taCenter
+            Title.Caption = 'Retain'
+            Width = 60
+          end>
+        DefaultRowHeight = 20
+        ExtendedSelect = False
+        FixedCols = 0
+        RowCount = 1
+        TabOrder = 0
+        ColWidths = (
+          159
+          159
+          100
+          60
+        )
+      end
+    end
+    object LogTab: TTabSheet
+      Caption = 'Log'
+      ClientHeight = 261
+      ClientWidth = 658
+      object LogToolbarPanel: TPanel
+        Left = 0
+        Height = 50
+        Top = 0
+        Width = 658
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 50
+        ClientWidth = 658
+        TabOrder = 0
+        object FilterText: TEdit
+          Left = 8
+          Height = 27
+          Top = 9
+          Width = 144
+          OnExit = FilterTextExit
+          TabOrder = 0
+        end
+        object CBFiltered: TCheckBox
+          Left = 160
+          Height = 22
+          Top = 12
+          Width = 66
+          Caption = 'Filtered'
+          OnChange = CBFilteredChange
+          TabOrder = 1
+        end
+        object CBEnabled: TCheckBox
+          Left = 231
+          Height = 22
+          Top = 12
+          Width = 69
+          Caption = 'Enabled'
+          Checked = True
+          OnChange = CBEnabledChange
+          State = cbChecked
+          TabOrder = 2
+        end
+        object ClearBtn: TButton
+          Left = 312
+          Height = 25
+          Top = 9
+          Width = 75
+          Anchors = [akTop, akRight]
+          Caption = '&Clear'
+          OnClick = ClearBtnClick
+          TabOrder = 3
+        end
+      end
+      object LogGrid: TStringGrid
+        Left = 0
+        Height = 211
+        Top = 50
+        Width = 658
+        Align = alClient
+        AutoAdvance = aaNone
+        AutoEdit = False
+        AutoFillColumns = True
+        ColCount = 3
+        Columns = <        
+          item
+            ReadOnly = True
+            SizePriority = 0
+            Title.Caption = 'Type'
+            Width = 80
+          end        
+          item
+            ReadOnly = True
+            SizePriority = 0
+            Title.Caption = 'Module'
+            Width = 120
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Message'
+            Width = 456
+          end>
+        DefaultRowHeight = 18
+        ExtendedSelect = False
+        FixedCols = 0
+        Options = [goThumbTracking, goSmoothScroll]
+        RowCount = 1
+        TabOrder = 1
+        ColWidths = (
+          80
+          120
+          456
+        )
+      end
+    end
+  end
+  object ConnectBtn: TButton
+    Left = 16
+    Height = 27
+    Top = 8
+    Width = 89
+    Anchors = [akLeft, akBottom]
+    Caption = '&Connect'
+    OnClick = ConnectBtnClick
+    TabOrder = 5
+  end
+  object StatusBar: TStatusBar
+    Left = 0
+    Height = 25
+    Top = 356
+    Width = 695
+    Panels = <>
+  end
+  object Client: TMQTTClient
+    OnConnected = RefreshSubscriptionsItmClick
+    OnDisconnected = ClientDisconnected
+    OnSendData = ClientSendData
+    OnReceiveMessage = ClientReceiveMessage
+    OnSubscriptionsChanged = RefreshSubscriptionsItmClick
+    left = 56
+    top = 248
+  end
+  object SubscriptionsPopup: TPopupMenu
+    left = 196
+    top = 250
+    object RefreshSubscriptionsItm: TMenuItem
+      Caption = '&Refresh'
+      OnClick = RefreshSubscriptionsItmClick
+    end
+  end
+  object TCP: TLTCPComponent
+    Port = 0
+    OnReceive = TCPReceive
+    OnError = TCPError
+    OnDisconnect = TCPDisconnect
+    OnConnect = TCPConnect
+    OnCanSend = TCPCanSend
+    Timeout = 0
+    ReuseAddress = False
+    left = 336
+    top = 248
+  end
+end

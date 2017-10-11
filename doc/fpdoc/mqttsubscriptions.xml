@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fpdoc-descriptions>
+  <package name="mqttcomponents">
+    <module name="mqttsubscriptions">
+      <element name="TMQTTSubscriptionList.Create">
+        <short>Creates a new subscription list</short>
+      </element>
+      <element name="TMQTTSubscriptionList.Destroy">
+        <short>Destroys the subscription list and all subscriptions it contains</short>
+      </element>
+      <element name="TMQTTSubscriptionList.LoadFromStream">
+        <short>Loads subscriptions from Stream and adds them to the list.</short>
+        <descr>Any existing subscriptions are retained.  Any subscriptions with a matching filter are replaced.  Subscriptions read from the stream will have their Persistent property set to True.</descr>
+      </element>
+      <element name="TMQTTSubscriptionList.SaveToStream">
+        <short>Saves subscriptions marked persistent to the stream</short>
+      </element>
+      <element name="TMQTTSubscriptionList.Clear">
+        <short>Clears the subscription list, destroying all objects it contains</short>
+      </element>
+      <element name="TMQTTSubscriptionList.RemoveInvalidSubscriptions">
+        <short>Deletes and frees any subscriptions with invalid tokens.  Returns the number of subscriptions removed.</short>
+      </element>
+      <element name="TMQTTSubscriptionList.DeleteList">
+        <short>Deletes a list of subscriptions from this list</short>
+      </element>
+      <element name="TMQTTSubscriptionList.MergeList">
+        <short>Merges a list of subscriptions into this subscription list.  Any duplicates subscriptions are updated with the new subscriptions.</short>
+      </element>
+      <element name="TMQTTSubscriptionList.Delete">
+        <short>Deletes the index'th subscription and frees the subscription</short>
+      </element>
+      <element name="TMQTTSubscriptionList.Remove">
+        <short>Removes a subscription from the list and destroys it</short>
+      </element>
+      <element name="TMQTTSubscriptionList.Find">
+        <short>Finds a subscription by Filter.  Returns nil if no match was found.</short>
+      </element>
+      <element name="TMQTTSubscriptionList.Update">
+        <short>Adds or updates a subscription.  If a subscription with a matching filter already exists, it is updated.</short>
+      </element>
+      <element name="TMQTTSubscriptionList.New">
+        <short>Creates a new subscription and returns the result.  If a subscription with the same filter already exists it is updated and returned instead.</short>
+      </element>
+      <element name="TMQTTSubscriptionList.Assign">
+        <short>Clears the subscription list and replaces it with the contents of ASource</short>
+      </element>
+      <element name="TMQTTSubscription.SaveToStream">
+        <short>Saves the subscription to a stream (even if not marked persistent)</short>
+      </element>
+      <element name="TMQTTSubscription.LoadFromStream">
+        <short>Loads a subscription from a stream, resets Age, and sets Persistent to True.</short>
+      </element>
+      <element name="TMQTTSubscription.IsMatch">
+        <short>Returns true if ATokens matches this subscription's filter</short>
+        <descr>ATokens is a tokenized topic from a PUBLISH message.  IsMatch processes single level and multi level wildcards as defined in the MQTT specs.</descr>
+      </element>
+      <element name="TMQTTSubscription.Assign">
+        <short>Copies the contents of ASource into this object.  Resets Age to zero.</short>
+      </element>
+      <element name="TMQTTSubscription.Destroy">
+        <short>Destroys the subscription but does not remove it from any list</short>
+      </element>
+      <element name="TMQTTSubscription.Create">
+        <short>Creates a subscription, optionally assigning a Filter and QoS but does not add it to any list</short>
+      </element>
+      <element name="TMQTTSubscription.QOS">
+        <short>The QoS of the subscription</short>
+        <descr>TMQTTQOSType =
+  (
+    qtAT_MOST_ONCE,   //  0 At most once Fire and Forget        &lt;=1
+    qtAT_LEAST_ONCE,  //  1 At least once Acknowledged delivery &gt;=1
+    qtEXACTLY_ONCE,   //  2 Exactly once Assured delivery       =1
+    qtReserved3	      //  3 Reserved
+  );   </descr>
+      </element>
+      <element name="TMQTTSubscription.Filter">
+        <short>The filter as a UTF8String</short>
+      </element>
+      <element name="TMQTTSubscription.Tokens">
+        <short>The tokenized filter string.  Set Filter and then read Tokens to parse.</short>
+      </element>
+      <element name="TMQTTSubscription.Age">
+        <short>The age of the subscription in minutes.  At certain intervals, subscriptions older than a certain age will be removed.</short>
+      </element>
+      <element name="TMQTTSubscription.Persistent">
+        <short>Persistent means the subscription should be stored to a stream and persist between server instantiations</short>
+      </element>
+      <element name="TMQTTSubscriptionList.ClientID">
+        <short>The ClientID of this subscription list</short>
+      </element>
+      <element name="TMQTTSubscriptionList.Count">
+        <short>The number of subscriptions in the list</short>
+      </element>
+      <element name="TMQTTSubscriptionList.Items">
+        <short>An indexed array[0..Count-1] of subscriptions</short>
+      </element>
+      <short>Manages a list of MQTT subscriptions</short>
+    </module>
+    <short>MQTT client and server components</short>
+  </package>
+</fpdoc-descriptions>

@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fpdoc-descriptions>
+<package name="MyPackage">
+
+<!--
+  ====================================================================
+    mqttpacketdefs
+  ====================================================================
+-->
+
+<module name="mqttpacketdefs">
+<short>A set of classes that represent MQTT packets as sent over a network</short>
+<descr>
+</descr>
+
+<!-- class Visibility: default -->
+<element name="TMQTTWillMessage">
+<short>A will message is broadcast when a client connection ends by a means other than a DISCONNECT packet</short>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTWillMessage.Clear">
+<short>Clears the contents of the will message</short>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTWillMessage.Assign">
+<short>Assigns the values from ASource to this will message</short>
+<descr>
+</descr>
+</element>
+
+<!-- function Visibility: public -->
+<element name="TMQTTWillMessage.DisplayText">
+<short>Returns a text string representing the will message for display in grids, etc.</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTWillMessage.Retain">
+<short>Whether the will message should be published with the Retain flag set</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTWillMessage.QOS">
+<short>The QoS level that the will message should be published as</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTWillMessage.Enabled">
+<short>Whether the will message is enabled</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTWillMessage.Topic">
+<short>The topic of the will message</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTWillMessage.Message">
+<short>The payload of the will message</short>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTCONNECTPacket">
+<short>Represents a CONNECT packet sent over the network</short>
+<descr>
+</descr>
+</element>
+
+<!-- constructor Visibility: public -->
+<element name="TMQTTCONNECTPacket.Create">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- destructor Visibility: public -->
+<element name="TMQTTCONNECTPacket.Destroy">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTCONNECTPacket.WriteToBuffer">
+<short>Writes the contents of a connect packet to a buffer</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTCONNECTPacket.UsernameFlag">
+<short>If True, a username is supplied</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTCONNECTPacket.PasswordFlag">
+<short>If true, a password is supplied</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTCONNECTPacket.CleanSession">
+<short>If true, the session will be started cleanly (no saved state or subscriptions from previous sessions)</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTCONNECTPacket.KeepAlive">
+<short>How long the session should be kept alive in seconds</short>
+<descr>Default is MQTT_DEFAULT_KEEPALIVE which is set to 60 seconds in mqttconsts.pas</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTCONNECTPacket.ClientID">
+<short>A UTF8 ClientID string</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTCONNECTPacket.Username">
+<short>The Username the client is using to connect</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTCONNECTPacket.Password">
+<short>The password the client is using to connect</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTCONNECTPacket.WillMessage">
+<short>A will message this connection should send if it does not gracefully disconnect.</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTCONNECTPacket.ReturnCode">
+<short>The return code </short>
+<descr>This is used internally to pass a CONNACK return code to the server component.</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTCONNACKPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTCONNACKPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTCONNACKPacket.ReturnCode">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTCONNACKPacket.SessionPresent">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTPUBLISHPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- destructor Visibility: public -->
+<element name="TMQTTPUBLISHPacket.Destroy">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTPUBLISHPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTPUBLISHPacket.Duplicate">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTPUBLISHPacket.Retain">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTPUBLISHPacket.Topic">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTPUBLISHPacket.Data">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTPUBLISHPacket.QOS">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTPUBACKPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTPUBACKPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTPUBRECPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTPUBRECPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTPUBRELPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTPUBRELPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTPUBCOMPPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTPUBCOMPPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTSUBSCRIBEPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- constructor Visibility: public -->
+<element name="TMQTTSUBSCRIBEPacket.Create">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- destructor Visibility: public -->
+<element name="TMQTTSUBSCRIBEPacket.Destroy">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTSUBSCRIBEPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTSUBSCRIBEPacket.Subscriptions">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTSUBACKPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- constructor Visibility: public -->
+<element name="TMQTTSUBACKPacket.Create">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- destructor Visibility: public -->
+<element name="TMQTTSUBACKPacket.Destroy">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTSUBACKPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTSUBACKPacket.ReturnCodes">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTUNSUBSCRIBEPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- constructor Visibility: public -->
+<element name="TMQTTUNSUBSCRIBEPacket.Create">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- destructor Visibility: public -->
+<element name="TMQTTUNSUBSCRIBEPacket.Destroy">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTUNSUBSCRIBEPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTUNSUBSCRIBEPacket.Subscriptions">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTUNSUBACKPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTUNSUBACKPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTPINGREQPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTPINGREQPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTPINGRESPPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTPINGRESPPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTDISCONNECTPacket">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- procedure Visibility: public -->
+<element name="TMQTTDISCONNECTPacket.WriteToBuffer">
+<short/>
+<descr>
+</descr>
+</element>
+
+</module> <!-- mqttpacketdefs -->
+
+</package>
+</fpdoc-descriptions>

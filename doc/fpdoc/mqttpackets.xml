@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fpdoc-descriptions>
+  <package name="mqttcomponents">
+    <module name="mqttpackets">
+      <element name="TMQTTPacket.Destroy">
+        <short>Destroys the packet</short>
+      </element>
+      <element name="TMQTTPacket.WriteToBuffer">
+        <short>Writes the packet to ABuffer</short>
+      </element>
+      <element name="TMQTTPacket.PacketType">
+        <short>The packet type</short>
+      </element>
+      <element name="TMQTTPacket.PacketTypeName">
+        <short>The packet type as a user friendly text string</short>
+      </element>
+      <element name="TMQTTPacket.RemainingLength">
+        <short>The remaining length of a packet; the part after the first byte and remaining length data.</short>
+      </element>
+      <element name="TMQTTPacket">
+        <short>The base type for packets that are sent and received over the network</short>
+      </element>
+      <element name="TMQTTPacketIDPacket">
+        <short>A descendant of TMQTTPacket that introduces the PacketID field</short>
+      </element>
+      <element name="TMQTTPacketIDPacket.PacketID">
+        <short>A unique 16 bit packet identifier</short>
+      </element>
+      <element name="TMQTTQueuedPacket">
+        <short>A descendant of TMQTTPacketIDPacket that adds properties for storing the packet in a packet queue</short>
+      </element>
+      <element name="TMQTTQueuedPacket.SecondsInQueue">
+        <short>The number of seconds the packet has been in the queue</short>
+      </element>
+      <element name="TMQTTQueuedPacket.ResendCount">
+        <short>The number of times the packet has been resent</short>
+      </element>
+      <element name="TMQTTPacketQueue">
+        <short>A list of packets.  Not actually a queue</short>
+      </element>
+      <element name="TMQTTPacketQueue.Add">
+        <short>Adds the packet to the list</short>
+      </element>
+      <element name="TMQTTPacketQueue.Find">
+        <short>Finds a packet with a matching packet type and packet id.  Returns nil if not found.</short>
+      </element>
+      <element name="TMQTTPacketQueue.Remove">
+        <short>Removes a packet by object reference or by PacketType and PacketID</short>
+        <descr>procedure Remove(APacket: TMQTTQueuedPacket); overload;
+procedure Remove(PacketType: TMQTTPacketType; PacketID: Word); overload; </descr>
+      </element>
+      <element name="TMQTTPacketQueue.Delete">
+        <short>Deletes the Packet at Index from the list but does not free the packet</short>
+      </element>
+      <element name="TMQTTPacketQueue.Clear">
+        <short>Clears the packet list and frees all objects in it</short>
+      </element>
+      <element name="TMQTTPacketQueue.Items">
+        <short>An indexed array of packets in the list</short>
+      </element>
+      <element link="The number of packets in the list" name="TMQTTPacketQueue.Count"/>
+      <element name="TMQTTPacketIDManager">
+        <short>The packet ID manager maintains a list of allocated packet IDs and generates unique packet ids on request</short>
+      </element>
+      <element name="TMQTTPacketIDManager.GenerateID">
+        <short>Generate a unique packet id</short>
+      </element>
+      <element name="TMQTTPacketIDManager.ReleaseID">
+        <short>Release a packet ID</short>
+      </element>
+      <element name="TMQTTPacketIDManager.Reset">
+        <short>Clears the list of packet ids</short>
+      </element>
+      <element name="ReadWordFromBuffer">
+        <short>Reads a word from buffer in network byte order</short>
+      </element>
+      <element name="WriteWordToBuffer">
+        <short>Writes a word to a buffer in network byte order</short>
+      </element>
+      <element name="ReadUTF8StringFromBuffer">
+        <short>Reads a UTF8 String from a buffer in MQTT protocol format</short>
+      </element>
+      <element name="WriteUTF8StringToBuffer">
+        <short>Writes a UTF8 string to a buffer in MQTT protocol format</short>
+      </element>
+      <element name="ReadBinaryDataFromBuffer">
+        <short>Reads binary data from a buffer in MQTT protocol format.  Used to store password</short>
+      </element>
+      <element name="WriteBinaryDataToBuffer">
+        <short>Writes binary data to a buffer in MQTT protocol format.  Used to store password</short>
+      </element>
+      <element name="ReadRemainingLengthFromBuffer">
+        <short>Reads the remaining length of an MQTT packet from a buffer, which is stored in a special multi-byte format</short>
+      </element>
+      <element name="WriteRemainingLengthToBuffer">
+        <short>RWrites the remaining length of an MQTT packet to a buffer, which is stored in a special multi-byte format</short>
+      </element>
+      <element name="ReadMQTTPacketFromBuffer">
+        <short>Reads the packet type, flags and remaining length of a packet from a buffer.  Performs validation and returns an error code.  Creates the appropriate packet class and calls that packet class to finish reading the packet from the buffer.</short>
+      </element>
+      <short>MQTT packet and packet queues</short>
+    </module>
+    <short>MQTT client and server components</short>
+  </package>
+</fpdoc-descriptions>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fpdoc-descriptions><package name="mqttcomponents"><module name="mqttmessages"><element name="TMQTTMessage.Tokens"><short>The individual tokens that make up the message</short><descr>Set the topic string and then read Tokens to parse the topic string into individual tokens</descr>
+      </element><element name="TMQTTMessage.Topic"><short>The MQTT topic string</short>
+      </element><element name="TMQTTMessage.Data"><short>The MQTT message payload</short>
+      </element><element name="TMQTTMessage.QOS"><short>The QoS level of the message</short><descr>The default is qtAT_LEAST_ONCE</descr>
+      </element><element name="TMQTTMessage.Retain"><short>Whether or not the server should retain the message</short>
+      </element><element name="TMQTTMessage.Clone"><short>Creates an identical copy of the message</short>
+      </element><element name="TMQTTMessage"><short>An MQTT message </short>
+      </element><element name="TMQTTMessageList.Clear"><short>Clears the list and frees all messages stored in it</short>
+      </element><element name="TMQTTMessageList.New"><short>Creates a new message and adds it to the list</short>
+      </element><element name="TMQTTMessageList.Update"><short>Adds the message to the list, deleting any existing message with the same MQTT topic name</short><descr>Update is used to update the list of retained messages ensuring there are no duplicates</descr>
+      </element><element name="TMQTTMessage.ClientID"><short>The ClientID that sent this retained message.  Only used for display purposes.</short>
+      </element><element name="TMQTTMessageList.Find"><short>Finds a message by Topic, Data, QOS and Retain fields.</short>
+      </element><element name="TMQTTMessageList.Add"><short>Adds a message to the message list without checking for duplicates</short>
+      </element><element name="TMQTTMessageList.Delete"><short>Deletes the message from the list but does not destroy it</short>
+      </element><element name="TMQTTMessageList.Remove"><short>Removes the message from the list but does not destroy it</short>
+      </element><short>Message class and a message list class</short>
+    </module>
+  </package>
+</fpdoc-descriptions>

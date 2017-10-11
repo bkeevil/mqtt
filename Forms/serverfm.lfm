@@ -1,0 +1,429 @@
+object ServerForm: TServerForm
+  Left = 510
+  Height = 371
+  Top = 26
+  Width = 817
+  ActiveControl = PageControl
+  Caption = 'MQTT Server'
+  ClientHeight = 348
+  ClientWidth = 817
+  Menu = MainMenu
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poScreenCenter
+  LCLVersion = '1.6.4.0'
+  object PageControl: TPageControl
+    Left = 0
+    Height = 348
+    Top = 0
+    Width = 817
+    ActivePage = ConnectionsTab
+    Align = alClient
+    TabIndex = 0
+    TabOrder = 0
+    object ConnectionsTab: TTabSheet
+      Caption = 'Connections'
+      ClientHeight = 313
+      ClientWidth = 811
+      object ConnectionsGrid: TStringGrid
+        Left = 0
+        Height = 313
+        Top = 0
+        Width = 811
+        Align = alClient
+        AutoEdit = False
+        AutoFillColumns = True
+        ColCount = 4
+        Columns = <        
+          item
+            SizePriority = 0
+            Title.Caption = 'State'
+            Width = 80
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Remote Address'
+            Width = 120
+          end        
+          item
+            ButtonStyle = cbsEllipsis
+            SizePriority = 0
+            Title.Caption = 'User'
+            Width = 100
+          end        
+          item
+            ButtonStyle = cbsEllipsis
+            SizePriority = 0
+            Title.Caption = 'Will Message'
+            Width = 509
+          end>
+        DefaultRowHeight = 20
+        Enabled = False
+        ExtendedSelect = False
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goSmoothScroll]
+        PopupMenu = ConnectionsGridMenu
+        RowCount = 1
+        TabOrder = 0
+        ColWidths = (
+          80
+          120
+          100
+          509
+        )
+      end
+    end
+    object SubscriptionsTab: TTabSheet
+      Caption = 'Subscriptions'
+      ClientHeight = 313
+      ClientWidth = 811
+      object SubscriptionsGrid: TStringGrid
+        Left = 0
+        Height = 336
+        Top = 0
+        Width = 811
+        Align = alClient
+        AutoEdit = False
+        AutoFillColumns = True
+        ColCount = 4
+        Columns = <        
+          item
+            SizePriority = 0
+            Title.Caption = 'Client ID'
+            Width = 120
+          end        
+          item
+            Title.Caption = 'Topic Filter'
+            Width = 503
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'QOS'
+            Width = 120
+          end        
+          item
+            Alignment = taRightJustify
+            SizePriority = 0
+            Title.Alignment = taRightJustify
+            Title.Caption = 'Age'
+          end>
+        DefaultRowHeight = 20
+        Enabled = False
+        ExtendedSelect = False
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goRowSelect, goSmoothScroll]
+        PopupMenu = SubscriptionsGridMenu
+        RowCount = 1
+        TabOrder = 0
+        ColWidths = (
+          120
+          503
+          120
+          64
+        )
+      end
+    end
+    object SessionsTab: TTabSheet
+      Caption = 'Sessions'
+      ClientHeight = 313
+      ClientWidth = 811
+      object SessionsGrid: TStringGrid
+        Left = 0
+        Height = 336
+        Top = 0
+        Width = 811
+        Align = alClient
+        AutoEdit = False
+        AutoFillColumns = True
+        ColCount = 3
+        Columns = <        
+          item
+            SizePriority = 0
+            Title.Caption = 'Client ID'
+            Width = 120
+          end        
+          item
+            Title.Caption = 'Description'
+            Width = 547
+          end        
+          item
+            PickList.Strings = (
+              'AT MOST ONCE'
+              'AT LEAST ONCE'
+              'EXACTLY ONCE'
+            )
+            SizePriority = 0
+            Title.Caption = 'Max QoS'
+            Width = 140
+          end>
+        DefaultRowHeight = 20
+        Enabled = False
+        ExtendedSelect = False
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goSmoothScroll]
+        PopupMenu = SessionsGridMenu
+        RowCount = 1
+        TabOrder = 0
+        ColWidths = (
+          120
+          547
+          140
+        )
+      end
+    end
+    object RetainedMessagesTab: TTabSheet
+      Caption = 'Retained Messages'
+      ClientHeight = 313
+      ClientWidth = 811
+      object RetainedMessagesGrid: TStringGrid
+        Left = 0
+        Height = 336
+        Top = 0
+        Width = 811
+        Align = alClient
+        AutoEdit = False
+        AutoFillColumns = True
+        ColCount = 4
+        Columns = <        
+          item
+            SizePriority = 0
+            Title.Caption = 'Client ID'
+            Width = 120
+          end        
+          item
+            Title.Caption = 'Topic'
+            Width = 273
+          end        
+          item
+            Title.Caption = 'Data'
+            Width = 273
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'QOS'
+            Width = 140
+          end>
+        DefaultRowHeight = 20
+        Enabled = False
+        ExtendedSelect = False
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goRowSelect, goSmoothScroll]
+        PopupMenu = RetainedMessagesGridMenu
+        RowCount = 1
+        TabOrder = 0
+        ColWidths = (
+          120
+          273
+          273
+          140
+        )
+      end
+    end
+    object TabSheet1: TTabSheet
+      Caption = 'Log'
+      ClientHeight = 313
+      ClientWidth = 811
+      object LogGrid: TStringGrid
+        Left = 0
+        Height = 286
+        Top = 50
+        Width = 811
+        Align = alClient
+        AutoAdvance = aaNone
+        AutoEdit = False
+        AutoFillColumns = True
+        ColCount = 3
+        Columns = <        
+          item
+            ReadOnly = True
+            SizePriority = 0
+            Title.Caption = 'Type'
+            Width = 80
+          end        
+          item
+            ReadOnly = True
+            SizePriority = 0
+            Title.Caption = 'Module'
+            Width = 120
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Message'
+            Width = 607
+          end>
+        DefaultRowHeight = 18
+        ExtendedSelect = False
+        FixedCols = 0
+        Options = [goThumbTracking, goSmoothScroll]
+        RowCount = 1
+        TabOrder = 0
+        ColWidths = (
+          80
+          120
+          607
+        )
+      end
+      object LogToolbarPanel: TPanel
+        Left = 0
+        Height = 50
+        Top = 0
+        Width = 811
+        Align = alTop
+        BevelOuter = bvNone
+        ClientHeight = 50
+        ClientWidth = 811
+        TabOrder = 1
+        object FilterText: TEdit
+          Left = 8
+          Height = 27
+          Top = 9
+          Width = 144
+          OnExit = FilterTextExit
+          TabOrder = 0
+        end
+        object CBFiltered: TCheckBox
+          Left = 160
+          Height = 22
+          Top = 12
+          Width = 66
+          Caption = 'Filtered'
+          OnChange = CBFilteredChange
+          TabOrder = 1
+        end
+        object CBEnabled: TCheckBox
+          Left = 231
+          Height = 22
+          Top = 12
+          Width = 69
+          Caption = 'Enabled'
+          Checked = True
+          OnChange = CBEnabledChange
+          State = cbChecked
+          TabOrder = 2
+        end
+        object ClearBtn: TButton
+          Left = 312
+          Height = 25
+          Top = 9
+          Width = 75
+          Anchors = [akTop, akRight]
+          Caption = '&Clear'
+          OnClick = ClearBtnClick
+          TabOrder = 3
+        end
+      end
+    end
+  end
+  object MainMenu: TMainMenu
+    left = 256
+    top = 176
+    object ServerMenu: TMenuItem
+      Caption = '&Server'
+      object LoadConfigurationItm: TMenuItem
+        Caption = '&Load Configuration...'
+        OnClick = LoadConfigurationItmClick
+      end
+      object SaveConfigurationItm: TMenuItem
+        Caption = '&Save Configuration...'
+        OnClick = SaveConfigurationItmClick
+      end
+      object PropertiesItm: TMenuItem
+        Caption = '&Properties...'
+        OnClick = PropertiesItmClick
+      end
+      object PasswordManagerItm: TMenuItem
+        Caption = 'Password &Manager'
+        OnClick = PasswordManagerItmClick
+      end
+      object MenuDividerItem1: TMenuItem
+        Caption = '-'
+      end
+      object ExitItm: TMenuItem
+        Caption = 'E&xit'
+        OnClick = ExitItmClick
+      end
+    end
+  end
+  object OpenDialog: TOpenDialog
+    Title = 'Load server configuration'
+    DefaultExt = '.ini'
+    FileName = 'mqtt.ini'
+    Filter = 'INI Files|*.ini|All Files|*.*'
+    InitialDir = '/etc/mqtt/'
+    left = 80
+    top = 176
+  end
+  object SaveDialog: TSaveDialog
+    Title = 'Save server configuration'
+    DefaultExt = '.*.ini'
+    FileName = 'mqtt.ini'
+    Filter = 'INI Files|*.ini|All Files|*.*'
+    InitialDir = '/etc/mqtt'
+    left = 160
+    top = 176
+  end
+  object ConnectionsGridMenu: TPopupMenu
+    left = 512
+    top = 80
+    object RefreshConnectionsItm: TMenuItem
+      Caption = '&Refresh'
+      OnClick = RefreshConnectionsItmClick
+    end
+  end
+  object SubscriptionsGridMenu: TPopupMenu
+    left = 512
+    top = 144
+    object RefreshSubscriptionsItm: TMenuItem
+      Caption = '&Refresh'
+      OnClick = RefreshSubscriptionsItmClick
+    end
+  end
+  object Server: TMQTTServer
+    MaximumQOS = qtAT_LEAST_ONCE
+    RequireAuthentication = False
+    AllowNullClientIDs = True
+    OnAccepted = ServerAccepted
+    OnDisconnect = ServerDisconnect
+    OnDisconnected = ServerDisconnected
+    OnSendData = ServerSendData
+    OnError = ServerError
+    OnConnectionsChanged = RefreshConnectionsItmClick
+    OnSubscriptionsChanged = RefreshSubscriptionsItmClick
+    OnSessionsChanged = RefreshSessionsItmClick
+    OnRetainedMessagesChanged = RefreshRetainedMessagesItmClick
+    left = 160
+    top = 104
+  end
+  object SessionsGridMenu: TPopupMenu
+    left = 512
+    top = 208
+    object RefreshSessionsItm: TMenuItem
+      Caption = '&Refresh'
+      OnClick = RefreshSessionsItmClick
+    end
+  end
+  object TCP: TLTCPComponent
+    Port = 1883
+    OnReceive = TCPReceive
+    OnError = TCPError
+    OnDisconnect = TCPDisconnect
+    OnAccept = TCPAccept
+    Timeout = 0
+    ReuseAddress = True
+    left = 80
+    top = 104
+  end
+  object ListenTimer: TTimer
+    OnTimer = ListenTimerTimer
+    left = 256
+    top = 104
+  end
+  object RetainedMessagesGridMenu: TPopupMenu
+    left = 512
+    top = 272
+    object RefreshRetainedMessagesItm: TMenuItem
+      Caption = '&Refresh'
+      OnClick = RefreshRetainedMessagesItmClick
+    end
+  end
+end

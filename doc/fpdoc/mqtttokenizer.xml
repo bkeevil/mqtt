@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fpdoc-descriptions>
+<package name="MyPackage">
+
+<!--
+  ====================================================================
+    mqtttokenizer
+  ====================================================================
+-->
+
+<module name="mqtttokenizer">
+<short>A class that breaks an MQTT topic name or subscription filter into individual tokens and validates those tokens</short>
+<descr>
+</descr>
+
+<!-- enumeration type Visibility: default -->
+<element name="TMQTTTokenKind">
+<short/>
+<descr>tkInvalid - The token is invalid
+tkValid - A valid token that is UTF8 text
+tkMultiLevel - A multilevel token (#)
+tkSingleLevel - A singlelevel token (+)</descr>
+</element>
+
+<!-- enumeration value Visibility: default -->
+<element name="TMQTTTokenKind.tkInvalid">
+<short/>
+</element>
+
+<!-- enumeration value Visibility: default -->
+<element name="TMQTTTokenKind.tkValid">
+<short/>
+</element>
+
+<!-- enumeration value Visibility: default -->
+<element name="TMQTTTokenKind.tkMultiLevel">
+<short/>
+</element>
+
+<!-- enumeration value Visibility: default -->
+<element name="TMQTTTokenKind.tkSingleLevel">
+<short/>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTToken">
+<short>A token represents an individual element in an MQTT filter or topic string</short>
+<descr>Individual elements in a topic string are separated by the "/" character but those characters are not considered tokens by the tokenizer</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTToken.Kind">
+<short>The token kind</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTToken.Text">
+<short>The text of the token when the token is of Kind=tkValid</short>
+<descr>
+</descr>
+</element>
+
+<!-- class Visibility: default -->
+<element name="TMQTTTokenizer">
+<short>Create an instance of TMQTTTokenizer to break an MQTT subscription filter or MQTT topic name into individual tokens and validate those tokens.</short>
+<descr>
+</descr>
+</element>
+
+<!-- constructor Visibility: public -->
+<element name="TMQTTTokenizer.Create">
+<short>Creates a token list from a string</short>
+<descr>If filter is true then this token string is an MQTT subscription filter, otherwise it is an MQTT topic name.
+
+The constructor executes the private _Tokenize() method on the Str parameter and validates the results depending on the value of Filter.</descr>
+</element>
+
+<!-- destructor Visibility: public -->
+<element name="TMQTTTokenizer.Destroy">
+<short/>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTTokenizer.Valid">
+<short>Returns true if this is a valid topic name or subscription filter</short>
+<descr>Whether the token list is as a topic name or subscription filter is set at object creation time by the Filter parameter in the constructor.  </descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTTokenizer.Count">
+<short>The number of tokens parsed</short>
+<descr>
+</descr>
+</element>
+
+<!-- property Visibility: public -->
+<element name="TMQTTTokenizer.Items">
+<short>An indexed array of individual TMQTTToken objects</short>
+<descr>
+</descr>
+</element>
+
+<element name="TMQTTToken.ValidTopicName"/>
+    </module> <!-- mqtttokenizer -->
+
+</package>
+</fpdoc-descriptions>

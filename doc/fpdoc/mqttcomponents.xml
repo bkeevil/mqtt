@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fpdoc-descriptions>
+  <package name="mqttComponents">
+    <!--
+  ====================================================================
+    mqttcomponents
+  ====================================================================
+-->
+    <module name="mqttcomponents">
+      <short>The package file for the MQTT component set</short>
+    </module>
+    <!-- mqttcomponents -->
+  </package>
+</fpdoc-descriptions>

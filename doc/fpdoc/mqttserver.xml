@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fpdoc-descriptions>
+  <package name="mqttcomponents">
+    <module name="mqttserver">
+      <element name="TMQTTServer.OnAccepted">
+        <short>Event occurs when a connection is accepted by the server</short>
+      </element>
+      <element name="TMQTTServer.OnDisconnected">
+        <short>Event fires when a connection is disconnected by the client</short>
+      </element>
+      <element name="TMQTTServerSession.Disconnect">
+        <short>Call to disconnect the session</short>
+        <descr>This method sets Connected to False and then fires the OnDisconnect event handler.  It is intended to be used to provide integration with a networking stack.</descr>
+      </element>
+      <element name="TMQTTServerSession.Disconnected">
+        <short>This method is called when the client disconnects from the server</short>
+      </element>
+      <element name="TMQTTServerSession.Bail">
+        <short>This method disconnects the connection with an error message</short>
+        <descr>This method is used to abort connections due to various protocol violations.  It throws an exception.</descr>
+      </element>
+      <element name="TMQTTServer.AllowNullClientIDs">
+        <short>Allow clients who connect with null ClientIDs to be assigned random ClientIDs</short>
+        <descr>Default is True.  When set to false, clients connecting with NULL ClientIDs will recieve MQTT_CONNACK_CLIENTID_REJECTED</descr>
+      </element>
+      <element name="TMQTTServer.RequireAuthentication">
+        <short>Require clients to provide a valid username and password to connect</short>
+        <descr>If false, a username and password will be validated if it is provided but connections where no username and password are provided will also be allowed.  If a username and password are provided, the session will be associated with a user object.  The default is false.</descr>
+      </element>
+      <element name="TMQTTServerSession.InitializeNetworkConnection">
+        <short>Initializes a server network connection from a CONNECT packet and returns a CONNACK response code.</short>
+      </element>
+      <element name="TMQTTServerSession.InitSessionState">
+        <short>Initializes a session state from a CONNECT packet at returns true if this is a resumed session</short>
+      </element>
+      <element name="TMQTTServer.Enabled">
+        <short>Setting Enabled to false will prevent the server from accepting new connections</short>
+      </element>
+      <element name="TMQTTServer.KeepAlive">
+        <short>The number of seconds of inactivity before a client connection times out</short>
+      </element>
+      <element name="TMQTTServer.StrictClientIDValidation">
+        <short>If True, ClientIDs may only contain letters and numbers</short>
+      </element>
+      <short>The MQTT Server component</short>
+    </module>
+    <short>MQTT client and server components</short>
+  </package>
+</fpdoc-descriptions>

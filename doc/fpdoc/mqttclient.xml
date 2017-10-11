@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fpdoc-descriptions>
+  <package name="mqttcomponents">
+    <module name="mqttclient">
+      <element name="TMQTTClient.OnInitSession">
+        <short>This event is fired when a new clean session needs to be initialized.</short>
+      </element>
+      <element name="TMQTTClient.SendData">
+        <short>Triggers the OnSendData event</short>
+      </element>
+      <element name="TMQTTClient.DataAvailable">
+        <short>Called when data is available from the network.  Buffer contains the data to process.</short>
+      </element>
+      <short>The MQTT Client component</short>
+    </module>
+    <short>MQTT client and server components</short>
+    <errors>MQTT client and server components</errors>
+  </package>
+</fpdoc-descriptions>

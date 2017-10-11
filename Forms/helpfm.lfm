@@ -1,0 +1,33 @@
+object HelpForm: THelpForm
+  Left = 505
+  Height = 341
+  Top = 283
+  Width = 590
+  ActiveControl = CloseBtn
+  BorderStyle = bsToolWindow
+  Caption = 'HelpForm'
+  ClientHeight = 341
+  ClientWidth = 590
+  Position = poScreenCenter
+  LCLVersion = '1.6.4.0'
+  object StaticText: TStaticText
+    Left = 9
+    Height = 287
+    Top = 8
+    Width = 568
+    Caption = 'mqttserver Version 1.0 Useage:'#13#10#13#10'  mqttserver --config <filename>'#13#10'  mqttserver -i <interface> -p port'#13#10'  mqttserver --authenticate --strict-clientid'#13#10#13#10'  -c --config          Sets the default configuration file.  Default is'#13#10'                       /etc/mqtt/mqttserver.ini or mqttserver.ini in the'#13#10'                       current working directory if that is not found.'#13#10'  -i --interface       Sets the IP address of the interface to listen on.'#13#10'                       Default is all interfaces.'#13#10'  -p --port            Sets the TCP port number to listen on.  Default 1883.'#13#10'  -a --authenticate    When specified, clients are authenticated against the'#13#10'                       password database.  Default is no authentication.'#13#10'  -n --null-clientid   When no ClientID is provided by a client, generate a'#13#10'                       unique one automatically.  Default rejects connection.'#13#10'  -s --strict-clientid Validate Client IDs to ensure they contain only'#13#10'                       letters and numbers.  Default accepts any character.'#13#10'  -d --disabled        Starts the server in disabled state.  Use to create a'#13#10'                       config ini file using the GUI.'#13#10'     --help            Displays this help message'
+    Font.Height = -11
+    Font.Name = 'Liberation Mono'
+    Font.Pitch = fpFixed
+    ParentFont = False
+    TabOrder = 0
+  end
+  object CloseBtn: TButton
+    Left = 502
+    Height = 25
+    Top = 304
+    Width = 75
+    Caption = '&Close'
+    TabOrder = 1
+  end
+end

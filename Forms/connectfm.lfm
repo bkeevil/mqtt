@@ -1,0 +1,230 @@
+object ConnectDlg: TConnectDlg
+  Left = 521
+  Height = 374
+  Top = 169
+  Width = 369
+  ActiveControl = edClientID
+  BorderStyle = bsDialog
+  Caption = 'Connect Dialog'
+  ClientHeight = 374
+  ClientWidth = 369
+  Position = poMainFormCenter
+  LCLVersion = '1.6.4.0'
+  object edUsername: TEdit
+    Left = 16
+    Height = 27
+    Top = 140
+    Width = 152
+    TabOrder = 3
+  end
+  object edPassword: TEdit
+    Left = 16
+    Height = 27
+    Top = 198
+    Width = 152
+    EchoMode = emPassword
+    PasswordChar = '*'
+    TabOrder = 4
+  end
+  object lbClientID: TLabel
+    Left = 16
+    Height = 17
+    Top = 64
+    Width = 48
+    Caption = '&Client ID'
+    FocusControl = edClientID
+    ParentColor = False
+  end
+  object edClientID: TEdit
+    Left = 16
+    Height = 27
+    Top = 83
+    Width = 152
+    TabOrder = 2
+    Text = 'default'
+  end
+  object cbClean: TCheckBox
+    Left = 16
+    Height = 22
+    Top = 240
+    Width = 102
+    Caption = 'C&lean Session'
+    TabOrder = 5
+  end
+  object edKeepAlive: TSpinEdit
+    Left = 16
+    Height = 27
+    Top = 291
+    Width = 99
+    Increment = 10
+    MaxValue = 65535
+    TabOrder = 6
+    Value = 60
+  end
+  object lbKeepAlive: TLabel
+    Left = 16
+    Height = 17
+    Top = 272
+    Width = 116
+    Caption = '&Keep Alive (Seconds)'
+    FocusControl = edKeepAlive
+    ParentColor = False
+  end
+  object gbWillMessage: TGroupBox
+    Left = 184
+    Height = 254
+    Top = 64
+    Width = 175
+    Caption = 'Will Message'
+    ClientHeight = 236
+    ClientWidth = 173
+    TabOrder = 7
+    object lbTopic: TLabel
+      Left = 16
+      Height = 17
+      Top = 38
+      Width = 30
+      Caption = '&Topic'
+      FocusControl = edTopic
+      ParentColor = False
+    end
+    object edTopic: TEdit
+      Left = 16
+      Height = 27
+      Top = 58
+      Width = 152
+      TabOrder = 1
+    end
+    object lbMessage: TLabel
+      Left = 16
+      Height = 17
+      Top = 96
+      Width = 51
+      Caption = '&Message'
+      FocusControl = edMessage
+      ParentColor = False
+    end
+    object edMessage: TEdit
+      Left = 16
+      Height = 27
+      Top = 117
+      Width = 152
+      TabOrder = 2
+    end
+    object cbQOS: TComboBox
+      Left = 16
+      Height = 27
+      Top = 172
+      Width = 152
+      ItemHeight = 0
+      ItemIndex = 2
+      Items.Strings = (
+        'At most once'
+        'At least once'
+        'Exactly once'
+      )
+      Style = csDropDownList
+      TabOrder = 3
+      Text = 'Exactly once'
+    end
+    object lbQOS: TLabel
+      Left = 16
+      Height = 17
+      Top = 152
+      Width = 97
+      Caption = '&Quality of Service'
+      FocusControl = cbQOS
+      ParentColor = False
+    end
+    object cbRetain: TCheckBox
+      Left = 16
+      Height = 22
+      Top = 214
+      Width = 113
+      Caption = '&Retain Message'
+      TabOrder = 4
+    end
+    object cbEnabled: TCheckBox
+      Left = 16
+      Height = 22
+      Top = 6
+      Width = 69
+      Caption = '&Enabled'
+      TabOrder = 0
+    end
+  end
+  object btnConnect: TButton
+    Left = 279
+    Height = 25
+    Top = 336
+    Width = 75
+    Caption = 'Connect'
+    Default = True
+    ModalResult = 1
+    TabOrder = 8
+  end
+  object btnCancel: TButton
+    Left = 192
+    Height = 25
+    Top = 336
+    Width = 75
+    Cancel = True
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 9
+  end
+  object lbUsername: TLabel
+    Left = 16
+    Height = 17
+    Top = 120
+    Width = 59
+    Caption = '&Username'
+    FocusControl = edUsername
+    ParentColor = False
+  end
+  object lbPassword: TLabel
+    Left = 16
+    Height = 17
+    Top = 176
+    Width = 54
+    Caption = '&Password'
+    FocusControl = edPassword
+    ParentColor = False
+  end
+  object lbServerIP: TLabel
+    Left = 16
+    Height = 17
+    Top = 8
+    Width = 51
+    Caption = '&Server IP'
+    FocusControl = edIPAddress
+    ParentColor = False
+  end
+  object edIPAddress: TEdit
+    Left = 16
+    Height = 27
+    Top = 27
+    Width = 264
+    TabOrder = 0
+    Text = '127.0.0.1'
+  end
+  object sePort: TSpinEdit
+    Left = 289
+    Height = 27
+    Top = 27
+    Width = 65
+    MaxValue = 65535
+    MinValue = 80
+    TabOrder = 1
+    Value = 1883
+  end
+  object lbClientID2: TLabel
+    Left = 289
+    Height = 17
+    Top = 8
+    Width = 23
+    Caption = '&Port'
+    FocusControl = edIPAddress
+    ParentColor = False
+  end
+end

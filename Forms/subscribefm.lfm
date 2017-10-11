@@ -1,0 +1,125 @@
+object SubscribeForm: TSubscribeForm
+  Left = 565
+  Height = 335
+  Top = 316
+  Width = 562
+  BorderStyle = bsDialog
+  Caption = 'Subscribe Form'
+  ClientHeight = 335
+  ClientWidth = 562
+  Position = poMainFormCenter
+  LCLVersion = '1.6.4.0'
+  object OKBtn: TButton
+    Left = 469
+    Height = 25
+    Top = 296
+    Width = 75
+    Caption = '&OK'
+    Default = True
+    ModalResult = 1
+    TabOrder = 0
+  end
+  object CancelBtn: TButton
+    Left = 384
+    Height = 25
+    Top = 296
+    Width = 75
+    Cancel = True
+    Caption = '&Cancel'
+    ModalResult = 2
+    TabOrder = 1
+  end
+  object Grid: TStringGrid
+    Left = 16
+    Height = 260
+    Top = 24
+    Width = 528
+    AutoFillColumns = True
+    ColCount = 4
+    Columns = <    
+      item
+        ButtonStyle = cbsCheckboxColumn
+        SizePriority = 0
+        Title.Alignment = taCenter
+        Title.Caption = 'Selected'
+        Width = 80
+      end    
+      item
+        Title.Caption = 'Filter'
+        Width = 306
+      end    
+      item
+        PickList.Strings = (
+          'AT MOST ONCE'
+          'AT LEAST ONCE'
+          'EXACTLY ONCE'
+        )
+        SizePriority = 0
+        Title.Caption = 'QOS'
+        Width = 140
+      end    
+      item
+        ButtonStyle = cbsCheckboxColumn
+        SizePriority = 0
+        Title.Alignment = taCenter
+        Title.Caption = 'Persistent'
+        Width = 0
+        Visible = False
+      end>
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goAutoAddRows, goSmoothScroll]
+    TabOrder = 2
+    OnColRowInserted = GridColRowInserted
+    ColWidths = (
+      80
+      306
+      140
+      0
+    )
+  end
+  object AddBtn: TButton
+    Left = 16
+    Height = 25
+    Top = 296
+    Width = 75
+    Caption = '&Add'
+    OnClick = AddBtnClick
+    TabOrder = 3
+  end
+  object DeleteBtn: TButton
+    Left = 96
+    Height = 25
+    Top = 296
+    Width = 75
+    Caption = '&Delete'
+    OnClick = DeleteBtnClick
+    TabOrder = 4
+  end
+  object TestDataBtn: TButton
+    Left = 176
+    Height = 25
+    Top = 296
+    Width = 75
+    Caption = 'TestData'
+    OnClick = TestDataBtnClick
+    TabOrder = 5
+  end
+  object ValidateBtn: TButton
+    Left = 256
+    Height = 25
+    Top = 296
+    Width = 75
+    Caption = 'Validate'
+    OnClick = ValidateBtnClick
+    TabOrder = 6
+  end
+  object SelectAllBtn: TButton
+    Left = 177
+    Height = 25
+    Top = 296
+    Width = 75
+    Caption = 'Select All'
+    OnClick = SelectAllBtnClick
+    TabOrder = 7
+  end
+end
