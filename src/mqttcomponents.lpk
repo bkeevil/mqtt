@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <Name Value="mqttcomponents"/>
+    <Type Value="RunAndDesignTime"/>
+    <Author Value="Bond Keevil"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <IncludeAssertionCode Value="True"/>
+          <AllowLabel Value="False"/>
+          <UseAnsiStrings Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
+      <CodeGeneration>
+        <Checks>
+          <IOChecks Value="True"/>
+          <RangeChecks Value="True"/>
+          <OverflowChecks Value="True"/>
+          <StackChecks Value="True"/>
+        </Checks>
+        <VerifyObjMethodCallValidity Value="True"/>
+      </CodeGeneration>
+      <Linking>
+        <Debugging>
+          <UseHeaptrc Value="True"/>
+          <UseValgrind Value="True"/>
+          <UseExternalDbgSyms Value="True"/>
+        </Debugging>
+      </Linking>
+      <Other>
+        <WriteFPCLogo Value="False"/>
+        <CompilerMessages>
+          <IgnoredMessages idx5024="True"/>
+        </CompilerMessages>
+        <CreateMakefileOnBuild Value="True"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="MQTT client and server components that are independent of a specific network technology"/>
+    <License Value="CC-BY-SA 4.0"/>
+    <Version Minor="8" Release="1" Build="100"/>
+    <Files Count="9">
+      <Item1>
+        <Filename Value="mqttserver.pas"/>
+        <UnitName Value="mqttserver"/>
+      </Item1>
+      <Item2>
+        <Filename Value="mqttsubscriptions.pas"/>
+        <UnitName Value="mqttsubscriptions"/>
+      </Item2>
+      <Item3>
+        <Filename Value="mqtttokenizer.pas"/>
+        <UnitName Value="mqtttokenizer"/>
+      </Item3>
+      <Item4>
+        <Filename Value="mqttmessages.pas"/>
+        <UnitName Value="mqttmessages"/>
+      </Item4>
+      <Item5>
+        <Filename Value="mqttclient.pas"/>
+        <UnitName Value="mqttclient"/>
+      </Item5>
+      <Item6>
+        <Filename Value="mqttpacketdefs.pas"/>
+        <UnitName Value="mqttpacketdefs"/>
+      </Item6>
+      <Item7>
+        <Filename Value="mqttpackets.pas"/>
+        <UnitName Value="mqttpackets"/>
+      </Item7>
+      <Item8>
+        <Filename Value="mqttconsts.pas"/>
+        <UnitName Value="mqttconsts"/>
+      </Item8>
+      <Item9>
+        <Filename Value="mqttregister.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="mqttregister"/>
+      </Item9>
+    </Files>
+    <LazDoc Paths="/home/bkeevil/lazarus/mqtt/doc/fpdoc"/>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="LCLBase"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="bkutils"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
+  </Package>
+</CONFIG>
