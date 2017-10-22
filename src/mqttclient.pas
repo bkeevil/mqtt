@@ -411,6 +411,7 @@ begin
   FState := csDisconnected;
   if Assigned(FOnError) then
     FOnError(Self,ErrCode,Msg);
+  Reset;
 end;
 
 procedure TMQTTClient.SendData;

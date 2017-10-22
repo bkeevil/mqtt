@@ -393,8 +393,8 @@ begin
       if Assigned(AConnection.User) then
         Username := AConnection.User.Username
       else
-        Username := '(N/A)');
-      LogDispatcher.Send(mtInfo,'MQTT session started client=%s user=%s',[AConnection.Session.ClientID,Username]);
+        Username := '(N/A)';
+      Log.Send(mtInfo,'MQTT session started client=%s user=%s',[AConnection.Session.ClientID,Username]);
     end;
 end;
 
