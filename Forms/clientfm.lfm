@@ -1,7 +1,7 @@
 object ClientForm: TClientForm
-  Left = 535
+  Left = 534
   Height = 381
-  Top = 106
+  Top = 81
   Width = 695
   Caption = 'MQTT Client'
   ClientHeight = 381

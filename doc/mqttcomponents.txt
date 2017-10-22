@@ -1,0 +1,6664 @@
+
+========================================================================
+Chapter 1 : Reference for unit 'mqttclient'
+========================================================================
+
+
+
+------------------------------------------------------------------------
+Section 1.1 : Used units
+------------------------------------------------------------------------
+
+
+Unit Name
+---------
+Buffers
+Classes
+ExtCtrls
+Logging
+mqttconsts
+mqttmessages
+mqttpacketdefs
+mqttpackets
+mqttsubscriptions
+System
+SysUtils
+
+
+------------------------------------------------------------------------
+Section 1.2 : Constants, types and variables
+------------------------------------------------------------------------
+
+
+
+1.2.1 : Constants
+------------------------------------------------------------------------
+
+
+
+MQTT_CONNECTION_STATE_NAMES : Array[TMQTTConnectionState] of string =
+('New', 'Connecting', 'Connected', 'Disconnecting', 'Disconnected')
+
+
+1.2.2 : Types
+------------------------------------------------------------------------
+
+
+
+TMQTTClientErrorEvent = procedure(AClient: TMQTTClient; ErrCode: Word; 
+
+                                 ErrMsg: string) of object
+
+
+TMQTTClientReceiveMessageEvent = procedure(AClient: TMQTTClient; 
+      
+                                    Topic: UTF8String; 
+                
+                          Data: string; 
+                               
+           QOS: TMQTTQOSType; 
+                                         
+ Retain: Boolean) of object
+
+
+TMQTTClientSendDataEvent = procedure(AClient: TMQTTClient) of object
+
+
+TMQTTConnectionState = (csNew,csConnecting,csConnected,csDisconnecting,
+
+                       csDisconnected)
+------------------------------------------------------------------------
+Enumeration values for type TMQTTConnectionState
+Table 1 :Value
+    Explanation
+------------------------------------------------------------------------
+csConnected
+    
+csConnecting
+    
+csDisconnected
+    
+csDisconnecting
+    
+csNew
+    
+------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------
+Section 1.3 : TMQTTClient
+------------------------------------------------------------------------
+
+
+
+1.3.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Bail  
+Connect  
+Connected  
+Create  
+DataAvailable
+Called when data is
+available from the network.  Buffer contains the
+data to process. 
+Destroy  
+Disconnect  
+Disconnected  
+InitSession
+ 
+Loaded  
+Publish  
+ReceiveMessage  
+Reset  
+SendData Triggers the
+OnSendData event 
+Subscribe  
+Unsubscribe
+ 
+------------------------------------------------------------------------
+
+
+1.3.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+CleanSession rw  
+ClientID rw  
+KeepAlive rw  
+OnConnected rw  
+OnDisconnect
+rw  
+OnDisconnected rw  
+OnError rw  
+OnInitSession rw  This event
+is fired when a
+new clean session needs to be initialized.
+OnReceiveMessage
+rw  
+OnSendData rw  
+OnSubscriptionsChanged rw  
+PacketIDManager r
+ 
+Password rw  
+PingInterval rw  
+RecvBuffer r  
+SendBuffer r  
+Socket rw  
+State r  
+Subscriptions r  
+Username rw  
+WillMessage
+rw  
+------------------------------------------------------------------------
+
+
+1.3.3 : TMQTTClient.Connected
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Connected;  Virtual
+
+Visibility:
+protected
+
+
+1.3.4 : TMQTTClient.Loaded
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Loaded;  Override
+
+Visibility:
+protected
+
+
+1.3.5 : TMQTTClient.InitSession
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure InitSession;  Virtual
+
+Visibility:
+protected
+
+
+1.3.6 : TMQTTClient.SendData
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Triggers the OnSendData event
+Declaration:
+
+procedure SendData;  Virtual
+
+Visibility:
+protected
+
+
+1.3.7 : TMQTTClient.ReceiveMessage
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure ReceiveMessage(Topic: UTF8String; Data: string; 
+             
+          QOS: TMQTTQOSType; Retain: Boolean);  Virtual
+
+Visibility:
+protected
+
+
+1.3.8 : TMQTTClient.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create(AOwner: TComponent);  Override
+
+Visibility:
+public
+
+
+1.3.9 : TMQTTClient.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+1.3.10 : TMQTTClient.Reset
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Reset
+
+Visibility:
+public
+
+
+1.3.11 : TMQTTClient.Connect
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Connect : Boolean
+
+Visibility:
+public
+
+
+1.3.12 : TMQTTClient.Disconnect
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Disconnect
+
+Visibility:
+public
+
+
+1.3.13 : TMQTTClient.Publish
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Publish(Topic: UTF8String; Data: string; QOS: TMQTTQOSType; 
+ 
+               Retain: Boolean; Duplicate: Boolean)
+
+Visibility:
+public
+
+
+1.3.14 : TMQTTClient.Disconnected
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Disconnected;  Virtual
+
+Visibility:
+public
+
+
+1.3.15 : TMQTTClient.Bail
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Bail(ErrCode: Word)
+
+Visibility:
+public
+
+
+1.3.16 : TMQTTClient.Subscribe
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Subscribe(Subscriptions: TMQTTSubscriptionList) : Boolean
+
+Visibility:
+public
+
+
+1.3.17 : TMQTTClient.Unsubscribe
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Unsubscribe(Subscriptions: TMQTTSubscriptionList) : Boolean
+
+Visibility:
+public
+
+
+1.3.18 : TMQTTClient.DataAvailable
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Called when data is available from the network.  Buffer contains the
+data to process.
+Declaration:
+
+procedure DataAvailable;  Virtual
+
+Visibility:
+public
+
+
+1.3.19 : TMQTTClient.PacketIDManager
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property PacketIDManager : TMQTTPacketIDManager
+
+Visibility:
+protected
+
+Access:
+Read
+
+
+1.3.20 : TMQTTClient.SendBuffer
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property SendBuffer : TBuffer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+1.3.21 : TMQTTClient.RecvBuffer
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property RecvBuffer : TBuffer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+1.3.22 : TMQTTClient.Socket
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Socket : TObject
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+1.3.23 : TMQTTClient.State
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property State : TMQTTConnectionState
+
+Visibility:
+public
+
+Access:
+Read
+
+
+1.3.24 : TMQTTClient.Subscriptions
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Subscriptions : TMQTTSubscriptionList
+
+Visibility:
+public
+
+Access:
+Read
+
+
+1.3.25 : TMQTTClient.ClientID
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property ClientID : UTF8String
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.26 : TMQTTClient.Username
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Username : UTF8String
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.27 : TMQTTClient.Password
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Password : AnsiString
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.28 : TMQTTClient.WillMessage
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property WillMessage : TMQTTWillMessage
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.29 : TMQTTClient.CleanSession
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property CleanSession : Boolean
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.30 : TMQTTClient.KeepAlive
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property KeepAlive : Word
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.31 : TMQTTClient.PingInterval
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property PingInterval : Word
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.32 : TMQTTClient.OnConnected
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnConnected : TNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.33 : TMQTTClient.OnDisconnect
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnDisconnect : TNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.34 : TMQTTClient.OnDisconnected
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnDisconnected : TNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.35 : TMQTTClient.OnInitSession
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+This event is fired when a new clean session needs to be initialized.
+Declaration:
+
+Property OnInitSession : TNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.36 : TMQTTClient.OnError
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnError : TMQTTClientErrorEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.37 : TMQTTClient.OnSendData
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnSendData : TMQTTClientSendDataEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.38 : TMQTTClient.OnReceiveMessage
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnReceiveMessage : TMQTTClientReceiveMessageEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+1.3.39 : TMQTTClient.OnSubscriptionsChanged
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnSubscriptionsChanged : TNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+========================================================================
+Chapter 2 : Reference for unit 'mqttcomponents'
+========================================================================
+
+
+
+------------------------------------------------------------------------
+Section 2.1 : Used units
+------------------------------------------------------------------------
+
+
+Unit Name
+---------
+LazarusPackageIntf
+mqttclient
+mqttconsts
+mqttmessages
+mqttpacketdefs
+mqttpackets
+mqttregister
+mqttserver
+mqttsubscriptions
+mqtttokenizer
+System
+
+
+========================================================================
+Chapter 3 : Reference for unit 'mqttconsts'
+========================================================================
+
+
+
+------------------------------------------------------------------------
+Section 3.1 : Used units
+------------------------------------------------------------------------
+
+
+Unit Name
+---------
+Classes
+System
+SysUtils
+
+
+------------------------------------------------------------------------
+Section 3.2 : Constants, types and variables
+------------------------------------------------------------------------
+
+
+
+3.2.1 : Constants
+------------------------------------------------------------------------
+
+
+
+MQTTPacketTypeNames : Array[TMQTTPacketType] of string =
+('BROKERCONNECT', 'CONNECT', 'CONNACK', 'PUBLISH', 'PUBACK', 'PUBREC',
+'PUBREL', 'PUBCOMP', 'SUBSCRIBE', 'SUBACK', 'UNSUBSCRIBE', 'UNSUBACK',
+'PINGREQ', 'PINGRESP', 'DISCONNECT', 'Reserved15')
+
+
+MQTTQOSTypeNames : Array[TMQTTQOSType] of string = ('AT MOST ONCE', 'AT
+LEAST ONCE', 'EXACTLY ONCE', 'RESERVED')
+
+
+MQTT_CONNACK_BAD_USERNAME_PASSWORD = 4
+
+
+MQTT_CONNACK_CLIENTID_REJECTED = 2
+
+
+MQTT_CONNACK_NOT_AUTHORIZED = 5
+
+
+MQTT_CONNACK_SERVER_UNAVAILABLE = 3
+
+
+MQTT_CONNACK_SUCCESS = 0
+
+
+MQTT_CONNACK_UNACCEPTABLE_PROTOCOL = 1
+
+
+MQTT_DEFAULT_KEEPALIVE = 60
+
+
+MQTT_DEFAULT_PING_INTERVAL = 45
+
+
+MQTT_ERROR_ALREADY_CONNECTED = 101
+
+
+MQTT_ERROR_BAD_USERNAME_PASSWORD = 112
+
+
+MQTT_ERROR_CLIENTID_REJECTED = 110
+
+
+MQTT_ERROR_CONNECT_TIMEOUT = 121
+
+
+MQTT_ERROR_INSUFFICIENT_DATA = 103
+
+
+MQTT_ERROR_INVALID_PACKET_FLAGS = 105
+
+
+MQTT_ERROR_INVALID_RETURN_CODES = 120
+
+
+MQTT_ERROR_INVALID_SUBSCRIPTION_ENTRIES = 119
+
+
+MQTT_ERROR_NONE = 0
+
+
+MQTT_ERROR_NOT_AUTHORIZED = 113
+
+
+MQTT_ERROR_NOT_CONNECTED = 102
+
+
+MQTT_ERROR_NO_CLIENTID = 114
+
+
+MQTT_ERROR_NO_PING_RESPONSE = 116
+
+
+MQTT_ERROR_NO_SUBSCRIPTION_LIST = 118
+
+
+MQTT_ERROR_PACKET_INVALID = 106
+
+
+MQTT_ERROR_PAYLOAD_INVALID = 107
+
+
+MQTT_ERROR_REMAINING_LENGTH_ENCODING = 104
+
+
+MQTT_ERROR_SERVER_UNAVAILABLE = 111
+
+
+MQTT_ERROR_UNACCEPTABLE_PROTOCOL = 109
+
+
+MQTT_ERROR_UNHANDLED_PACKETTYPE = 117
+
+
+MQTT_ERROR_UNKNOWN = 1000
+
+
+MQTT_ERROR_VARHEADER_INVALID = 108
+
+
+MQTT_ERROR_WILLMESSAGE_INVALID = 115
+
+
+MQTT_MAX_PACKET_RESEND_TRIES = 3
+
+
+MQTT_MAX_SESSION_AGE = 1080
+
+
+MQTT_MAX_SUBSCRIPTION_AGE = 1080
+
+
+MQTT_RESEND_PACKET_TIMEOUT = 2
+
+
+3.2.2 : Types
+------------------------------------------------------------------------
+
+
+
+TMQTTPacketType = (ptBROKERCONNECT,ptCONNECT,ptCONNACK,ptPUBLISH,
+      
+            ptPUBACK,ptPUBREC,ptPUBREL,ptPUBCOMP,ptSUBSCRIBE,
+          
+        ptSUBACK,ptUNSUBSCRIBE,ptUNSUBACK,ptPINGREQ,
+                  
+ptPINGRESP,ptDISCONNECT,ptReserved15)
+------------------------------------------------------------------------
+Enumeration values for type TMQTTPacketType
+Table 2 :Value
+    Explanation
+------------------------------------------------------------------------
+ptBROKERCONNECT
+    
+ptCONNACK
+    
+ptCONNECT
+    
+ptDISCONNECT
+    
+ptPINGREQ
+    
+ptPINGRESP
+    
+ptPUBACK
+    
+ptPUBCOMP
+    
+ptPUBLISH
+    
+ptPUBREC
+    
+ptPUBREL
+    
+ptReserved15
+    
+ptSUBACK
+    
+ptSUBSCRIBE
+    
+ptUNSUBACK
+    
+ptUNSUBSCRIBE
+    
+------------------------------------------------------------------------
+ptCONNECT,        Client request to connect to Broker ptCONNACK,       
+Connect Acknowledgment ptPUBLISH,        Publish Packet ptPUBACK,       
+ Publish Acknowledgment ptPUBREC,         Publish Received (assured
+delivery part 1) ptPUBREL,         Publish Release (assured delivery
+part 2) ptPUBCOMP,       Publish Complete (assured delivery part 3)
+ptSUBSCRIBE,      Client Subscribe request ptSUBACK,         Subscribe
+Acknowledgment ptUNSUBSCRIBE,   Client Unsubscribe request ptUNSUBACK,  
+   Unsubscribe Acknowledgment ptPINGREQ,        PING Request ptPINGRESP,
+      PING Response ptDISCONNECT,    Client is Disconnecting
+
+TMQTTQOSType = (qtAT_MOST_ONCE,qtAT_LEAST_ONCE,qtEXACTLY_ONCE,
+         
+      qtReserved3)
+------------------------------------------------------------------------
+Enumeration values for type TMQTTQOSType
+Table 3 :Value
+    Explanation
+------------------------------------------------------------------------
+qtAT_LEAST_ONCE
+    
+qtAT_MOST_ONCE
+    
+qtEXACTLY_ONCE
+    
+qtReserved3
+    
+------------------------------------------------------------------------
+
+
+3.2.3 : Variables
+------------------------------------------------------------------------
+
+
+
+MQTTStrictClientIDValidationChars : Set of Char = ['0'..'9', 'a'..'z',
+'A'..'Z']
+
+
+------------------------------------------------------------------------
+Section 3.3 : Procedures and functions
+------------------------------------------------------------------------
+
+
+
+3.3.1 : GetMQTTErrorMessage
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetMQTTErrorMessage(ErrCode: Word) : string
+
+Visibility:
+default
+
+
+========================================================================
+Chapter 4 : Reference for unit 'mqttmessages'
+========================================================================
+
+
+
+------------------------------------------------------------------------
+Section 4.1 : Used units
+------------------------------------------------------------------------
+
+
+Unit Name
+---------
+Classes
+mqttconsts
+mqtttokenizer
+System
+SysUtils
+
+
+------------------------------------------------------------------------
+Section 4.2 : TMQTTMessage
+------------------------------------------------------------------------
+
+
+
+4.2.1 : Description
+------------------------------------------------------------------------
+
+
+An MQTT message 
+4.2.2 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Clone Creates an identical copy
+of the message 
+Create  
+Destroy  
+------------------------------------------------------------------------
+
+
+4.2.3 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+ClientID rw  The ClientID that sent this retained message. 
+Only used for display
+purposes.
+Data rw  The
+MQTT message payload
+QOS rw  The QoS
+level of the message
+Retain rw  Whether or not the server should retain the
+message
+Tokens r  The
+individual
+tokens that make up the message
+Topic rw  The
+MQTT topic string
+------------------------------------------------------------------------
+
+
+4.2.4 : TMQTTMessage.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create
+
+Visibility:
+public
+
+
+4.2.5 : TMQTTMessage.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+4.2.6 : TMQTTMessage.Clone
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Creates an identical copy of the message
+Declaration:
+
+function Clone : TMQTTMessage
+
+Visibility:
+public
+
+
+4.2.7 : TMQTTMessage.ClientID
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The ClientID that sent this retained message.  Only used for display
+purposes.
+Declaration:
+
+Property ClientID : UTF8String
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+4.2.8 : TMQTTMessage.Tokens
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The individual tokens that make up the message
+Declaration:
+
+Property Tokens : TMQTTTokenizer
+
+Visibility:
+public
+
+Access:
+Read
+
+Description:
+Set the topic string and then read Tokens to parse the topic string into
+individual tokens
+
+4.2.9 : TMQTTMessage.Topic
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The MQTT topic string
+Declaration:
+
+Property Topic : UTF8String
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+4.2.10 : TMQTTMessage.Data
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The MQTT message payload
+Declaration:
+
+Property Data : string
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+4.2.11 : TMQTTMessage.QOS
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The QoS level of the message
+Declaration:
+
+Property QOS : TMQTTQOSType
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+Description:
+The default is qtAT_LEAST_ONCE
+
+4.2.12 : TMQTTMessage.Retain
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+Whether or not the server should retain the message
+Declaration:
+
+Property Retain : Boolean
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+------------------------------------------------------------------------
+Section 4.3 : TMQTTMessageList
+------------------------------------------------------------------------
+
+
+
+4.3.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Add
+Adds a message to the message list without checking for duplicates 
+Clear Clears
+the list and
+frees all messages stored in it 
+Create  
+Delete Deletes the message from
+the
+list but does not destroy it 
+Destroy  
+Find Finds a message by Topic,
+Data, QOS
+and Retain fields. 
+New
+Creates a new message and adds it to the list 
+Remove Removes the message
+from
+the list but does not destroy it 
+Update Adds
+the message to the list,
+deleting any existing message with the same
+MQTT topic name 
+------------------------------------------------------------------------
+
+
+4.3.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Count r  
+Items r  
+------------------------------------------------------------------------
+
+
+4.3.3 : TMQTTMessageList.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create
+
+Visibility:
+public
+
+
+4.3.4 : TMQTTMessageList.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+4.3.5 : TMQTTMessageList.Clear
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Clears the list and frees all messages stored in it
+Declaration:
+
+procedure Clear
+
+Visibility:
+public
+
+
+4.3.6 : TMQTTMessageList.New
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Creates a new message and adds it to the list
+Declaration:
+
+function New(ATopic: UTF8String) : TMQTTMessage
+
+Visibility:
+public
+
+
+4.3.7 : TMQTTMessageList.Add
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Adds a message to the message list without checking for duplicates
+Declaration:
+
+procedure Add(AMessage: TMQTTMessage)
+
+Visibility:
+public
+
+
+4.3.8 : TMQTTMessageList.Update
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Adds the message to the list, deleting any existing message with the
+same MQTT topic name
+Declaration:
+
+procedure Update(AMessage: TMQTTMessage)
+
+Visibility:
+public
+
+Description:
+Update is used to update the list of retained messages ensuring there
+are no duplicates
+
+4.3.9 : TMQTTMessageList.Find
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Finds a message by Topic, Data, QOS and Retain fields.
+Declaration:
+
+function Find(Topic: UTF8String; Data: string; QOS: TMQTTQOSType; 
+     
+       Retain: Boolean) : TMQTTMessage
+
+Visibility:
+public
+
+
+4.3.10 : TMQTTMessageList.Remove
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Removes the message from the list but does not destroy it
+Declaration:
+
+procedure Remove(AMessage: TMQTTMessage)
+
+Visibility:
+public
+
+
+4.3.11 : TMQTTMessageList.Delete
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Deletes the message from the list but does not destroy it
+Declaration:
+
+procedure Delete(Index: Integer)
+
+Visibility:
+public
+
+
+4.3.12 : TMQTTMessageList.Count
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Count : Integer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+4.3.13 : TMQTTMessageList.Items
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Items[Index: Integer]: TMQTTMessage; default
+
+Visibility:
+public
+
+Access:
+Read
+
+
+========================================================================
+Chapter 5 : Reference for unit 'mqttpacketdefs'
+========================================================================
+
+
+
+------------------------------------------------------------------------
+Section 5.1 : Used units
+------------------------------------------------------------------------
+
+
+Unit Name
+---------
+Buffers
+Classes
+Logging
+mqttconsts
+mqttpackets
+mqttsubscriptions
+System
+SysUtils
+
+
+------------------------------------------------------------------------
+Section 5.2 : TMQTTCONNACKPacket
+------------------------------------------------------------------------
+
+
+
+5.2.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer  
+------------------------------------------------------------------------
+
+
+5.2.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+ReturnCode rw  
+SessionPresent rw  
+------------------------------------------------------------------------
+
+
+5.2.3 : TMQTTCONNACKPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.2.4 : TMQTTCONNACKPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.2.5 : TMQTTCONNACKPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.2.6 : TMQTTCONNACKPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+5.2.7 : TMQTTCONNACKPacket.ReturnCode
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property ReturnCode : Byte
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.2.8 : TMQTTCONNACKPacket.SessionPresent
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property SessionPresent : Boolean
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+------------------------------------------------------------------------
+Section 5.3 : TMQTTCONNECTPacket
+------------------------------------------------------------------------
+
+
+
+5.3.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Create  
+Destroy  
+GetPacketType  
+ReadFromBuffer  
+WriteToBuffer
+ 
+------------------------------------------------------------------------
+
+
+5.3.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+CleanSession rw  
+ClientID rw  
+KeepAlive rw  
+Password rw  
+PasswordFlag
+rw  
+ReturnCode r  
+Username rw  
+UsernameFlag rw  
+WillMessage
+rw  
+------------------------------------------------------------------------
+
+
+5.3.3 : TMQTTCONNECTPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.3.4 : TMQTTCONNECTPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.3.5 : TMQTTCONNECTPacket.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create
+
+Visibility:
+public
+
+
+5.3.6 : TMQTTCONNECTPacket.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+5.3.7 : TMQTTCONNECTPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+5.3.8 : TMQTTCONNECTPacket.UsernameFlag
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property UsernameFlag : Boolean
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.3.9 : TMQTTCONNECTPacket.PasswordFlag
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property PasswordFlag : Boolean
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.3.10 : TMQTTCONNECTPacket.CleanSession
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property CleanSession : Boolean
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.3.11 : TMQTTCONNECTPacket.KeepAlive
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property KeepAlive : Word
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.3.12 : TMQTTCONNECTPacket.ClientID
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property ClientID : UTF8String
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.3.13 : TMQTTCONNECTPacket.Username
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Username : UTF8String
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.3.14 : TMQTTCONNECTPacket.Password
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Password : AnsiString
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.3.15 : TMQTTCONNECTPacket.WillMessage
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property WillMessage : TMQTTWillMessage
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.3.16 : TMQTTCONNECTPacket.ReturnCode
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property ReturnCode : Byte
+
+Visibility:
+public
+
+Access:
+Read
+
+
+------------------------------------------------------------------------
+Section 5.4 : TMQTTDISCONNECTPacket
+------------------------------------------------------------------------
+
+
+
+5.4.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer  
+------------------------------------------------------------------------
+
+
+5.4.2 : TMQTTDISCONNECTPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.4.3 : TMQTTDISCONNECTPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.4.4 : TMQTTDISCONNECTPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.4.5 : TMQTTDISCONNECTPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+------------------------------------------------------------------------
+Section 5.5 : TMQTTPINGREQPacket
+------------------------------------------------------------------------
+
+
+
+5.5.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer  
+------------------------------------------------------------------------
+
+
+5.5.2 : TMQTTPINGREQPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.5.3 : TMQTTPINGREQPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.5.4 : TMQTTPINGREQPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.5.5 : TMQTTPINGREQPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+------------------------------------------------------------------------
+Section 5.6 : TMQTTPINGRESPPacket
+------------------------------------------------------------------------
+
+
+
+5.6.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer  
+------------------------------------------------------------------------
+
+
+5.6.2 : TMQTTPINGRESPPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.6.3 : TMQTTPINGRESPPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.6.4 : TMQTTPINGRESPPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.6.5 : TMQTTPINGRESPPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+------------------------------------------------------------------------
+Section 5.7 : TMQTTPUBACKPacket
+------------------------------------------------------------------------
+
+
+
+5.7.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer  
+------------------------------------------------------------------------
+
+
+5.7.2 : TMQTTPUBACKPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.7.3 : TMQTTPUBACKPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.7.4 : TMQTTPUBACKPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.7.5 : TMQTTPUBACKPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+------------------------------------------------------------------------
+Section 5.8 : TMQTTPUBCOMPPacket
+------------------------------------------------------------------------
+
+
+
+5.8.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer  
+------------------------------------------------------------------------
+
+
+5.8.2 : TMQTTPUBCOMPPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.8.3 : TMQTTPUBCOMPPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.8.4 : TMQTTPUBCOMPPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.8.5 : TMQTTPUBCOMPPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+------------------------------------------------------------------------
+Section 5.9 : TMQTTPUBLISHPacket
+------------------------------------------------------------------------
+
+
+
+5.9.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Destroy  
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer
+ 
+------------------------------------------------------------------------
+
+
+5.9.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Data rw  
+Duplicate rw  
+QOS rw  
+Retain rw  
+Topic rw  
+------------------------------------------------------------------------
+
+
+5.9.3 : TMQTTPUBLISHPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.9.4 : TMQTTPUBLISHPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.9.5 : TMQTTPUBLISHPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.9.6 : TMQTTPUBLISHPacket.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+5.9.7 : TMQTTPUBLISHPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+5.9.8 : TMQTTPUBLISHPacket.Duplicate
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Duplicate : Boolean
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.9.9 : TMQTTPUBLISHPacket.Retain
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Retain : Boolean
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.9.10 : TMQTTPUBLISHPacket.Topic
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Topic : UTF8String
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.9.11 : TMQTTPUBLISHPacket.Data
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Data : string
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.9.12 : TMQTTPUBLISHPacket.QOS
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property QOS : TMQTTQOSType
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+------------------------------------------------------------------------
+Section 5.10 : TMQTTPUBRECPacket
+------------------------------------------------------------------------
+
+
+
+5.10.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer  
+------------------------------------------------------------------------
+
+
+5.10.2 : TMQTTPUBRECPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.10.3 : TMQTTPUBRECPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.10.4 : TMQTTPUBRECPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.10.5 : TMQTTPUBRECPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+------------------------------------------------------------------------
+Section 5.11 : TMQTTPUBRELPacket
+------------------------------------------------------------------------
+
+
+
+5.11.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer  
+------------------------------------------------------------------------
+
+
+5.11.2 : TMQTTPUBRELPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.11.3 : TMQTTPUBRELPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.11.4 : TMQTTPUBRELPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.11.5 : TMQTTPUBRELPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+------------------------------------------------------------------------
+Section 5.12 : TMQTTSUBACKPacket
+------------------------------------------------------------------------
+
+
+
+5.12.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Create  
+Destroy  
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer
+ 
+------------------------------------------------------------------------
+
+
+5.12.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+ReturnCodes r  
+------------------------------------------------------------------------
+
+
+5.12.3 : TMQTTSUBACKPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.12.4 : TMQTTSUBACKPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.12.5 : TMQTTSUBACKPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.12.6 : TMQTTSUBACKPacket.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create
+
+Visibility:
+public
+
+
+5.12.7 : TMQTTSUBACKPacket.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+5.12.8 : TMQTTSUBACKPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+5.12.9 : TMQTTSUBACKPacket.ReturnCodes
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property ReturnCodes : TBuffer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+------------------------------------------------------------------------
+Section 5.13 : TMQTTSUBSCRIBEPacket
+------------------------------------------------------------------------
+
+
+
+5.13.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Create  
+Destroy  
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer
+ 
+------------------------------------------------------------------------
+
+
+5.13.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Subscriptions r  
+------------------------------------------------------------------------
+
+
+5.13.3 : TMQTTSUBSCRIBEPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.13.4 : TMQTTSUBSCRIBEPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.13.5 : TMQTTSUBSCRIBEPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.13.6 : TMQTTSUBSCRIBEPacket.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create
+
+Visibility:
+public
+
+
+5.13.7 : TMQTTSUBSCRIBEPacket.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+5.13.8 : TMQTTSUBSCRIBEPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+5.13.9 : TMQTTSUBSCRIBEPacket.Subscriptions
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Subscriptions : TMQTTSubscriptionList
+
+Visibility:
+public
+
+Access:
+Read
+
+
+------------------------------------------------------------------------
+Section 5.14 : TMQTTUNSUBACKPacket
+------------------------------------------------------------------------
+
+
+
+5.14.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer  
+------------------------------------------------------------------------
+
+
+5.14.2 : TMQTTUNSUBACKPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.14.3 : TMQTTUNSUBACKPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.14.4 : TMQTTUNSUBACKPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.14.5 : TMQTTUNSUBACKPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+------------------------------------------------------------------------
+Section 5.15 : TMQTTUNSUBSCRIBEPacket
+------------------------------------------------------------------------
+
+
+
+5.15.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Create  
+Destroy  
+GetPacketType  
+ReadFromBuffer  
+Validate  
+WriteToBuffer
+ 
+------------------------------------------------------------------------
+
+
+5.15.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Subscriptions r  
+------------------------------------------------------------------------
+
+
+5.15.3 : TMQTTUNSUBSCRIBEPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Override
+
+Visibility:
+protected
+
+
+5.15.4 : TMQTTUNSUBSCRIBEPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Override
+
+Visibility:
+protected
+
+
+5.15.5 : TMQTTUNSUBSCRIBEPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Override
+
+Visibility:
+protected
+
+
+5.15.6 : TMQTTUNSUBSCRIBEPacket.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create
+
+Visibility:
+public
+
+
+5.15.7 : TMQTTUNSUBSCRIBEPacket.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+5.15.8 : TMQTTUNSUBSCRIBEPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Override
+
+Visibility:
+public
+
+
+5.15.9 : TMQTTUNSUBSCRIBEPacket.Subscriptions
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Subscriptions : TMQTTSubscriptionList
+
+Visibility:
+public
+
+Access:
+Read
+
+
+------------------------------------------------------------------------
+Section 5.16 : TMQTTWillMessage
+------------------------------------------------------------------------
+
+
+
+5.16.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Assign  
+Clear  
+DisplayText  
+------------------------------------------------------------------------
+
+
+5.16.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Enabled rw  
+Message rw  
+QOS rw  
+Retain rw  
+Topic rw  
+------------------------------------------------------------------------
+
+
+5.16.3 : TMQTTWillMessage.Clear
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Clear
+
+Visibility:
+public
+
+
+5.16.4 : TMQTTWillMessage.Assign
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Assign(ASource: TPersistent);  Override
+
+Visibility:
+public
+
+
+5.16.5 : TMQTTWillMessage.DisplayText
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function DisplayText : string
+
+Visibility:
+public
+
+
+5.16.6 : TMQTTWillMessage.Retain
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Retain : Boolean
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.16.7 : TMQTTWillMessage.QOS
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property QOS : TMQTTQOSType
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.16.8 : TMQTTWillMessage.Enabled
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Enabled : Boolean
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.16.9 : TMQTTWillMessage.Topic
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Topic : UTF8String
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+5.16.10 : TMQTTWillMessage.Message
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Message : UTF8String
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+========================================================================
+Chapter 6 : Reference for unit 'mqttpackets'
+========================================================================
+
+
+
+------------------------------------------------------------------------
+Section 6.1 : Used units
+------------------------------------------------------------------------
+
+
+Unit Name
+---------
+Buffers
+Classes
+mqttconsts
+System
+SysUtils
+
+
+------------------------------------------------------------------------
+Section 6.2 : Procedures and functions
+------------------------------------------------------------------------
+
+
+
+6.2.1 : ReadBinaryDataFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Reads binary data from a buffer in MQTT protocol format.  Used to store
+password
+Declaration:
+
+function ReadBinaryDataFromBuffer(ABuffer: TBuffer; 
+                   
+             out Data: AnsiString) : Boolean
+
+Visibility:
+default
+
+
+6.2.2 : ReadMQTTPacketFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Reads the packet type, flags and remaining length of a packet from a
+buffer.  Performs validation and returns an error code.  Creates the
+appropriate packet class and calls that packet class to finish reading
+the packet from the buffer.
+Declaration:
+
+function ReadMQTTPacketFromBuffer(ABuffer: TBuffer; 
+                   
+             out Packet: TMQTTPacket; 
+                                
+Connected: Boolean) : Word
+
+Visibility:
+default
+
+
+6.2.3 : ReadRemainingLengthFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Reads the remaining length of an MQTT packet from a buffer, which is
+stored in a special multi-byte format
+Declaration:
+
+function ReadRemainingLengthFromBuffer(ABuffer: TBuffer; 
+              
+                       out Value: DWORD) : Boolean
+
+Visibility:
+default
+
+
+6.2.4 : ReadUTF8StringFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Reads a UTF8 String from a buffer in MQTT protocol format
+Declaration:
+
+function ReadUTF8StringFromBuffer(ABuffer: TBuffer; out Str: UTF8String)
+                                  : Boolean
+
+Visibility:
+default
+
+
+6.2.5 : ReadWordFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Reads a word from buffer in network byte order
+Declaration:
+
+function ReadWordFromBuffer(ABuffer: TBuffer; out Value: Word) : Boolean
+
+Visibility:
+default
+
+
+6.2.6 : WriteBinaryDataToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Writes binary data to a buffer in MQTT protocol format.  Used to store
+password
+Declaration:
+
+procedure WriteBinaryDataToBuffer(ABuffer: TBuffer; Data: AnsiString)
+
+Visibility:
+default
+
+
+6.2.7 : WriteRemainingLengthToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+RWrites the remaining length of an MQTT packet to a buffer, which is
+stored in a special multi-byte format
+Declaration:
+
+procedure WriteRemainingLengthToBuffer(ABuffer: TBuffer; 
+              
+                       const Value: DWORD)
+
+Visibility:
+default
+
+
+6.2.8 : WriteUTF8StringToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Writes a UTF8 string to a buffer in MQTT protocol format
+Declaration:
+
+procedure WriteUTF8StringToBuffer(ABuffer: TBuffer; Str: UTF8String)
+
+Visibility:
+default
+
+
+6.2.9 : WriteWordToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Writes a word to a buffer in network byte order
+Declaration:
+
+procedure WriteWordToBuffer(ABuffer: TBuffer; const Value: Word)
+
+Visibility:
+default
+
+
+------------------------------------------------------------------------
+Section 6.3 : TMQTTPacket
+------------------------------------------------------------------------
+
+
+
+6.3.1 : Description
+------------------------------------------------------------------------
+
+
+The base type for packets that are sent and received over the network
+6.3.2 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Destroy Destroys the packet 
+GetPacketType  
+ReadFromBuffer
+ 
+Validate  
+WriteToBuffer Writes the
+packet to ABuffer 
+------------------------------------------------------------------------
+
+
+6.3.3 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+PacketType r  The packet type
+PacketTypeName r  The packet type as a
+user
+friendly text string
+RemainingLength rw  The
+remaining length of a packet; the part after
+the first byte and
+remaining length data.
+------------------------------------------------------------------------
+
+
+6.3.4 : TMQTTPacket.Validate
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Validate : Boolean;  Virtual
+
+Visibility:
+protected
+
+
+6.3.5 : TMQTTPacket.ReadFromBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ReadFromBuffer(ABuffer: TBuffer) : Word;  Virtual;  Abstract
+
+Visibility:
+protected
+
+
+6.3.6 : TMQTTPacket.GetPacketType
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetPacketType : TMQTTPacketType;  Virtual;  Abstract
+
+Visibility:
+protected
+
+
+6.3.7 : TMQTTPacket.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Destroys the packet
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+6.3.8 : TMQTTPacket.WriteToBuffer
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Writes the packet to ABuffer
+Declaration:
+
+procedure WriteToBuffer(ABuffer: TBuffer);  Virtual;  Abstract
+
+Visibility:
+public
+
+
+6.3.9 : TMQTTPacket.PacketType
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The packet type
+Declaration:
+
+Property PacketType : TMQTTPacketType
+
+Visibility:
+public
+
+Access:
+Read
+
+
+6.3.10 : TMQTTPacket.PacketTypeName
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The packet type as a user friendly text string
+Declaration:
+
+Property PacketTypeName : string
+
+Visibility:
+public
+
+Access:
+Read
+
+
+6.3.11 : TMQTTPacket.RemainingLength
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The remaining length of a packet; the part after the first byte and
+remaining length data.
+Declaration:
+
+Property RemainingLength : DWORD
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+------------------------------------------------------------------------
+Section 6.4 : TMQTTPacketIDManager
+------------------------------------------------------------------------
+
+
+
+6.4.1 : Description
+------------------------------------------------------------------------
+
+
+The packet ID manager maintains a list of allocated packet IDs and
+generates unique packet ids on request
+6.4.2 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Create  
+Destroy  
+GenerateID Generate a
+unique packet id 
+ReleaseID Release a packet ID 
+Reset Clears
+the list of packet ids 
+------------------------------------------------------------------------
+
+
+6.4.3 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Count r  
+Items r  
+------------------------------------------------------------------------
+
+
+6.4.4 : TMQTTPacketIDManager.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create
+
+Visibility:
+public
+
+
+6.4.5 : TMQTTPacketIDManager.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+6.4.6 : TMQTTPacketIDManager.GenerateID
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Generate a unique packet id
+Declaration:
+
+function GenerateID : Word
+
+Visibility:
+public
+
+
+6.4.7 : TMQTTPacketIDManager.ReleaseID
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Release a packet ID
+Declaration:
+
+procedure ReleaseID(PacketID: Word)
+
+Visibility:
+public
+
+
+6.4.8 : TMQTTPacketIDManager.Reset
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Clears the list of packet ids
+Declaration:
+
+procedure Reset
+
+Visibility:
+public
+
+
+6.4.9 : TMQTTPacketIDManager.Count
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Count : Integer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+6.4.10 : TMQTTPacketIDManager.Items
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Items[Index: Integer]: Word
+
+Visibility:
+public
+
+Access:
+Read
+
+
+------------------------------------------------------------------------
+Section 6.5 : TMQTTPacketIDPacket
+------------------------------------------------------------------------
+
+
+
+6.5.1 : Description
+------------------------------------------------------------------------
+
+
+A descendant of TMQTTPacket that introduces the PacketID field
+6.5.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+PacketID rw  A unique 16 bit packet
+identifier
+------------------------------------------------------------------------
+
+
+6.5.3 : TMQTTPacketIDPacket.PacketID
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+A unique 16 bit packet identifier
+Declaration:
+
+Property PacketID : Word
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+------------------------------------------------------------------------
+Section 6.6 : TMQTTPacketQueue
+------------------------------------------------------------------------
+
+
+
+6.6.1 : Description
+------------------------------------------------------------------------
+
+
+A list of packets.  Not actually a queue
+6.6.2 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Add Adds the packet to the list 
+Clear Clears
+the packet list
+and frees all objects in it 
+Create  
+Delete Deletes the Packet at
+Index
+from the list but does not free the packet 
+Destroy  
+Find Finds a
+packet with a matching packet type and packet id. 
+Returns nil if not
+found. 
+Remove Removes a packet by object reference or
+by
+PacketType and PacketID 
+------------------------------------------------------------------------
+
+
+6.6.3 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Count r  
+Items r  An indexed
+array of packets in the list
+------------------------------------------------------------------------
+
+
+6.6.4 : TMQTTPacketQueue.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create
+
+Visibility:
+public
+
+
+6.6.5 : TMQTTPacketQueue.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+6.6.6 : TMQTTPacketQueue.Add
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Adds the packet to the list
+Declaration:
+
+procedure Add(Packet: TMQTTQueuedPacket)
+
+Visibility:
+public
+
+
+6.6.7 : TMQTTPacketQueue.Find
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Finds a packet with a matching packet type and packet id.  Returns nil
+if not found.
+Declaration:
+
+function Find(PacketType: TMQTTPacketType; PacketID: Word)
+             
+: TMQTTQueuedPacket
+
+Visibility:
+public
+
+
+6.6.8 : TMQTTPacketQueue.Remove
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Removes a packet by object reference or by PacketType and PacketID
+Declaration:
+
+procedure Remove(APacket: TMQTTQueuedPacket);  Overload
+procedure Remove(PacketType: TMQTTPacketType; PacketID: Word);  Overload
+
+Visibility:
+public
+
+Description:
+procedure Remove(APacket: TMQTTQueuedPacket); overload; procedure
+Remove(PacketType: TMQTTPacketType; PacketID: Word); overload; 
+
+6.6.9 : TMQTTPacketQueue.Delete
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Deletes the Packet at Index from the list but does not free the packet
+Declaration:
+
+procedure Delete(Index: Integer)
+
+Visibility:
+public
+
+
+6.6.10 : TMQTTPacketQueue.Clear
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Clears the packet list and frees all objects in it
+Declaration:
+
+procedure Clear
+
+Visibility:
+public
+
+
+6.6.11 : TMQTTPacketQueue.Items
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+An indexed array of packets in the list
+Declaration:
+
+Property Items[Index: Integer]: TMQTTQueuedPacket; default
+
+Visibility:
+public
+
+Access:
+Read
+
+
+6.6.12 : TMQTTPacketQueue.Count
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Count : Integer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+------------------------------------------------------------------------
+Section 6.7 : TMQTTQueuedPacket
+------------------------------------------------------------------------
+
+
+
+6.7.1 : Description
+------------------------------------------------------------------------
+
+
+A descendant of TMQTTPacketIDPacket that adds properties for storing the
+packet in a packet queue
+6.7.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+ResendCount rw  The
+number of times the packet has been resent
+SecondsInQueue rw  The number of seconds
+the
+packet has been in the queue
+------------------------------------------------------------------------
+
+
+6.7.3 : TMQTTQueuedPacket.SecondsInQueue
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The number of seconds the packet has been in the queue
+Declaration:
+
+Property SecondsInQueue : DWORD
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+6.7.4 : TMQTTQueuedPacket.ResendCount
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The number of times the packet has been resent
+Declaration:
+
+Property ResendCount : Byte
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+========================================================================
+Chapter 7 : Reference for unit 'mqttregister'
+========================================================================
+
+
+
+------------------------------------------------------------------------
+Section 7.1 : Used units
+------------------------------------------------------------------------
+
+
+Unit Name
+---------
+Classes
+mqttclient
+mqttserver
+System
+SysUtils
+
+
+------------------------------------------------------------------------
+Section 7.2 : Procedures and functions
+------------------------------------------------------------------------
+
+
+
+7.2.1 : Register
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Register
+
+Visibility:
+default
+
+
+========================================================================
+Chapter 8 : Reference for unit 'mqttserver'
+========================================================================
+
+
+
+------------------------------------------------------------------------
+Section 8.1 : Used units
+------------------------------------------------------------------------
+
+
+Unit Name
+---------
+Buffers
+Classes
+ExtCtrls
+Logging
+mqttconsts
+mqttmessages
+mqttpacketdefs
+mqttpackets
+mqttsubscriptions
+PasswordMan
+System
+SysUtils
+
+
+------------------------------------------------------------------------
+Section 8.2 : Constants, types and variables
+------------------------------------------------------------------------
+
+
+
+8.2.1 : Constants
+------------------------------------------------------------------------
+
+
+
+SERVER_CONNECTION_STATE_NAMES : Array[TMQTTServerConnectionState] of
+string = ('New', 'Connected', 'Disconnecting', 'Disconnected')
+
+
+8.2.2 : Types
+------------------------------------------------------------------------
+
+
+
+TMQTTConnectionErrorEvent = procedure
+                                  
+   (AConnection: TMQTTServerConnection; 
+                               
+      ErrCode: Word; ErrMsg: string)
+                                   
+   of object
+
+
+TMQTTConnectionNotifyEvent = procedure
+                                 
+     (AConnection: TMQTTServerConnection)
+                              
+         of object
+
+
+TMQTTConnectionSendDataEvent = procedure
+                               
+         (AConnection: TMQTTServerConnection)
+                          
+               of object
+
+
+TMQTTServerConnectionState = (ssNew,ssConnected,ssDisconnecting,
+       
+                      ssDisconnected)
+------------------------------------------------------------------------
+Enumeration values for type TMQTTServerConnectionState
+Table 4 :Value
+    Explanation
+------------------------------------------------------------------------
+ssConnected
+    
+ssDisconnected
+    
+ssDisconnecting
+    
+ssNew
+    
+------------------------------------------------------------------------
+
+
+TMQTTValidateClientIDEvent = procedure(AServer: TMQTTServer; 
+          
+                            AClientID: UTF8String; 
+                    
+                  var Allow: Boolean) of object
+
+
+TMQTTValidateSubscriptionEvent = procedure
+                             
+             (AConnection: TMQTTServerConnection; 
+                     
+                     ASubscription: TMQTTSubscription; 
+                
+                          var QOS: TMQTTQOSType; 
+                      
+                    var Allow: Boolean) of object
+
+
+------------------------------------------------------------------------
+Section 8.3 : EMQTTConnectionError
+------------------------------------------------------------------------
+
+
+
+------------------------------------------------------------------------
+Section 8.4 : TMQTTServer
+------------------------------------------------------------------------
+
+
+
+8.4.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Accepted  
+ConnectionsChanged  
+Create  
+Destroy  
+Disconnect  
+Disconnected  
+DispatchMessage  
+Loaded  
+RetainedMessagesChanged 
+
+SendData  
+SendPendingMessages  
+SendRetainedMessages  
+SessionsChanged
+ 
+StartConnection  
+SubscriptionsChanged  
+ValidateClientID  
+------------------------------------------------------------------------
+
+
+8.4.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+AllowNullClientIDs rw  Allow clients who connect with null
+ClientIDs to be assigned random
+ClientIDs
+Connections r  
+Enabled
+rw  Setting
+Enabled to false will prevent the server from accepting new
+connections
+MaximumQOS rw  
+OnAccepted rw  Event occurs when a connection is
+accepted by the server
+OnConnectionsChanged rw  
+OnDisconnect rw  
+OnDisconnected rw 
+Event
+fires when a connection is disconnected by the client
+OnError rw
+ 
+OnRetainedMessagesChanged rw  
+OnSendData rw  
+OnSessionsChanged
+rw  
+OnSubscriptionsChanged rw  
+OnValidateClientID rw  
+OnValidateSubscription
+rw  
+Passwords r  
+RequireAuthentication rw  Require clients to provide
+a valid username and
+password to connect
+RetainedMessages r  
+Sessions
+r  
+StrictClientIDValidation
+rw  If True, ClientIDs may only contain letters and numbers
+------------------------------------------------------------------------
+
+
+8.4.3 : TMQTTServer.Accepted
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Accepted(Connection: TMQTTServerConnection);  Virtual
+
+Visibility:
+protected
+
+
+8.4.4 : TMQTTServer.Disconnected
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Disconnected(Connection: TMQTTServerConnection);  Virtual
+
+Visibility:
+protected
+
+
+8.4.5 : TMQTTServer.Disconnect
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Disconnect(Connection: TMQTTServerConnection);  Virtual
+
+Visibility:
+protected
+
+
+8.4.6 : TMQTTServer.SendData
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure SendData(Connection: TMQTTServerConnection);  Virtual
+
+Visibility:
+protected
+
+
+8.4.7 : TMQTTServer.ConnectionsChanged
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure ConnectionsChanged;  Virtual
+
+Visibility:
+protected
+
+
+8.4.8 : TMQTTServer.SubscriptionsChanged
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure SubscriptionsChanged;  Virtual
+
+Visibility:
+protected
+
+
+8.4.9 : TMQTTServer.SessionsChanged
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure SessionsChanged;  Virtual
+
+Visibility:
+protected
+
+
+8.4.10 : TMQTTServer.RetainedMessagesChanged
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure RetainedMessagesChanged;  Virtual
+
+Visibility:
+protected
+
+
+8.4.11 : TMQTTServer.Loaded
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Loaded;  Override
+
+Visibility:
+protected
+
+
+8.4.12 : TMQTTServer.DispatchMessage
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure DispatchMessage(Sender: TMQTTSession; Topic: UTF8String; 
+    
+                    Data: string; QOS: TMQTTQOSType; 
+                  
+      Retain: Boolean)
+
+Visibility:
+protected
+
+
+8.4.13 : TMQTTServer.SendPendingMessages
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure SendPendingMessages
+
+Visibility:
+protected
+
+
+8.4.14 : TMQTTServer.SendRetainedMessages
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure SendRetainedMessages(Session: TMQTTSession);  Overload
+procedure SendRetainedMessages(Session: TMQTTSession; 
+                 
+            Subscription: TMQTTSubscription)
+                           
+  ;  Overload
+
+Visibility:
+protected
+
+
+8.4.15 : TMQTTServer.ValidateClientID
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function ValidateClientID(AClientID: UTF8String) : Boolean;  Virtual
+
+Visibility:
+protected
+
+
+8.4.16 : TMQTTServer.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create(AOwner: TComponent);  Override
+
+Visibility:
+public
+
+
+8.4.17 : TMQTTServer.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+8.4.18 : TMQTTServer.StartConnection
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function StartConnection : TMQTTServerConnection;  Virtual
+
+Visibility:
+public
+
+
+8.4.19 : TMQTTServer.Connections
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Connections : TMQTTServerConnectionList
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.4.20 : TMQTTServer.Sessions
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Sessions : TMQTTSessionList
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.4.21 : TMQTTServer.Passwords
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Passwords : TPasswordManager
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.4.22 : TMQTTServer.RetainedMessages
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property RetainedMessages : TMQTTMessageList
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.4.23 : TMQTTServer.Enabled
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+Setting Enabled to false will prevent the server from accepting new
+connections
+Declaration:
+
+Property Enabled : Boolean
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.24 : TMQTTServer.MaximumQOS
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property MaximumQOS : TMQTTQOSType
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.25 : TMQTTServer.RequireAuthentication
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+Require clients to provide a valid username and password to connect
+Declaration:
+
+Property RequireAuthentication : Boolean
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+Description:
+If false, a username and password will be validated if it is provided
+but connections where no username and password are provided will also be
+allowed.  If a username and password are provided, the session will be
+associated with a user object.  The default is false.
+
+8.4.26 : TMQTTServer.AllowNullClientIDs
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+Allow clients who connect with null ClientIDs to be assigned random
+ClientIDs
+Declaration:
+
+Property AllowNullClientIDs : Boolean
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+Description:
+Default is True.  When set to false, clients connecting with NULL
+ClientIDs will recieve MQTT_CONNACK_CLIENTID_REJECTED
+
+8.4.27 : TMQTTServer.StrictClientIDValidation
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+If True, ClientIDs may only contain letters and numbers
+Declaration:
+
+Property StrictClientIDValidation : Boolean
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.28 : TMQTTServer.OnAccepted
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+Event occurs when a connection is accepted by the server
+Declaration:
+
+Property OnAccepted : TMQTTConnectionNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.29 : TMQTTServer.OnDisconnect
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnDisconnect : TMQTTConnectionNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.30 : TMQTTServer.OnDisconnected
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+Event fires when a connection is disconnected by the client
+Declaration:
+
+Property OnDisconnected : TMQTTConnectionNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.31 : TMQTTServer.OnSendData
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnSendData : TMQTTConnectionSendDataEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.32 : TMQTTServer.OnError
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnError : TMQTTConnectionErrorEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.33 : TMQTTServer.OnConnectionsChanged
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnConnectionsChanged : TNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.34 : TMQTTServer.OnValidateSubscription
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnValidateSubscription : TMQTTValidateSubscriptionEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.35 : TMQTTServer.OnValidateClientID
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnValidateClientID : TMQTTValidateClientIDEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.36 : TMQTTServer.OnSubscriptionsChanged
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnSubscriptionsChanged : TNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.37 : TMQTTServer.OnSessionsChanged
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnSessionsChanged : TNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+8.4.38 : TMQTTServer.OnRetainedMessagesChanged
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property OnRetainedMessagesChanged : TNotifyEvent
+
+Visibility:
+published
+
+Access:
+Read,Write
+
+
+------------------------------------------------------------------------
+Section 8.5 : TMQTTServerConnection
+------------------------------------------------------------------------
+
+
+
+8.5.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Create  
+DataAvailable  
+Destroy  
+Disconnected  
+Publish  
+------------------------------------------------------------------------
+
+
+8.5.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+ClientIDGenerated rw  
+RecvBuffer r  
+SendBuffer r  
+Server r  
+Session
+r  
+Socket rw  
+State r  
+User r  
+WillMessage rw  
+------------------------------------------------------------------------
+
+
+8.5.3 : TMQTTServerConnection.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create(AServer: TMQTTServer)
+
+Visibility:
+public
+
+
+8.5.4 : TMQTTServerConnection.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+8.5.5 : TMQTTServerConnection.Publish
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Publish(Topic: UTF8String; Data: string; QOS: TMQTTQOSType; 
+ 
+               Retain: Boolean; Duplicate: Boolean)
+
+Visibility:
+public
+
+
+8.5.6 : TMQTTServerConnection.Disconnected
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Disconnected
+
+Visibility:
+public
+
+
+8.5.7 : TMQTTServerConnection.DataAvailable
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure DataAvailable(Buffer: TBuffer)
+
+Visibility:
+public
+
+
+8.5.8 : TMQTTServerConnection.SendBuffer
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property SendBuffer : TBuffer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.5.9 : TMQTTServerConnection.RecvBuffer
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property RecvBuffer : TBuffer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.5.10 : TMQTTServerConnection.Socket
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Socket : TObject
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+8.5.11 : TMQTTServerConnection.State
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property State : TMQTTServerConnectionState
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.5.12 : TMQTTServerConnection.WillMessage
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property WillMessage : TMQTTWillMessage
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+8.5.13 : TMQTTServerConnection.Server
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Server : TMQTTServer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.5.14 : TMQTTServerConnection.Session
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Session : TMQTTSession
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.5.15 : TMQTTServerConnection.User
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property User : TPasswordManagerAccount
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.5.16 : TMQTTServerConnection.ClientIDGenerated
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property ClientIDGenerated : Boolean
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+------------------------------------------------------------------------
+Section 8.6 : TMQTTServerConnectionList
+------------------------------------------------------------------------
+
+
+
+8.6.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Add  
+Clear  
+Create  
+Delete  
+Destroy  
+Remove  
+------------------------------------------------------------------------
+
+
+8.6.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Count r  
+Items r  
+------------------------------------------------------------------------
+
+
+8.6.3 : TMQTTServerConnectionList.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create
+
+Visibility:
+public
+
+
+8.6.4 : TMQTTServerConnectionList.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+8.6.5 : TMQTTServerConnectionList.Clear
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Clear
+
+Visibility:
+public
+
+
+8.6.6 : TMQTTServerConnectionList.Add
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Add(ASession: TMQTTServerConnection)
+
+Visibility:
+public
+
+
+8.6.7 : TMQTTServerConnectionList.Remove
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Remove(ASession: TMQTTServerConnection)
+
+Visibility:
+public
+
+
+8.6.8 : TMQTTServerConnectionList.Delete
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Delete(Index: Integer)
+
+Visibility:
+public
+
+
+8.6.9 : TMQTTServerConnectionList.Count
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Count : Integer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.6.10 : TMQTTServerConnectionList.Items
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Items[Index: Integer]: TMQTTServerConnection; default
+
+Visibility:
+public
+
+Access:
+Read
+
+
+------------------------------------------------------------------------
+Section 8.7 : TMQTTSession
+------------------------------------------------------------------------
+
+
+
+8.7.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Clean  
+Create  
+Destroy  
+------------------------------------------------------------------------
+
+
+8.7.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Age rw  
+ClientID r  
+Connection rw  
+Description rw  
+MaximumQOS
+rw  
+Server r  
+Subscriptions r  
+------------------------------------------------------------------------
+
+
+8.7.3 : TMQTTSession.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create(AServer: TMQTTServer; AClientID: UTF8String)
+
+Visibility:
+public
+
+
+8.7.4 : TMQTTSession.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+8.7.5 : TMQTTSession.Clean
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Clean
+
+Visibility:
+public
+
+
+8.7.6 : TMQTTSession.Subscriptions
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Subscriptions : TMQTTSubscriptionList
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.7.7 : TMQTTSession.Server
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Server : TMQTTServer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.7.8 : TMQTTSession.Connection
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Connection : TMQTTServerConnection
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+8.7.9 : TMQTTSession.ClientID
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property ClientID : UTF8String
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.7.10 : TMQTTSession.Description
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Description : string
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+8.7.11 : TMQTTSession.MaximumQOS
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property MaximumQOS : TMQTTQOSType
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+8.7.12 : TMQTTSession.Age
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Age : Integer
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+------------------------------------------------------------------------
+Section 8.8 : TMQTTSessionList
+------------------------------------------------------------------------
+
+
+
+8.8.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Add  
+Clear  
+Create  
+Delete  
+Destroy  
+Find  
+GetUniqueClientID
+ 
+IsStrictlyValid  
+New  
+Remove  
+------------------------------------------------------------------------
+
+
+8.8.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Count r  
+Items r  
+Server r  
+------------------------------------------------------------------------
+
+
+8.8.3 : TMQTTSessionList.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create(AServer: TMQTTServer)
+
+Visibility:
+public
+
+
+8.8.4 : TMQTTSessionList.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+8.8.5 : TMQTTSessionList.Clear
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Clear
+
+Visibility:
+public
+
+
+8.8.6 : TMQTTSessionList.IsStrictlyValid
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function IsStrictlyValid(ClientID: UTF8String) : Boolean
+
+Visibility:
+public
+
+
+8.8.7 : TMQTTSessionList.GetUniqueClientID
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function GetUniqueClientID : UTF8String
+
+Visibility:
+public
+
+
+8.8.8 : TMQTTSessionList.New
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function New(ClientID: UTF8String) : TMQTTSession
+
+Visibility:
+public
+
+
+8.8.9 : TMQTTSessionList.Add
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Add(AItem: TMQTTSession)
+
+Visibility:
+public
+
+
+8.8.10 : TMQTTSessionList.Find
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+function Find(ClientID: UTF8String) : TMQTTSession
+
+Visibility:
+public
+
+
+8.8.11 : TMQTTSessionList.Delete
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Delete(Index: Integer)
+
+Visibility:
+public
+
+
+8.8.12 : TMQTTSessionList.Remove
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+procedure Remove(AItem: TMQTTSession)
+
+Visibility:
+public
+
+
+8.8.13 : TMQTTSessionList.Server
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Server : TMQTTServer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.8.14 : TMQTTSessionList.Count
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Count : Integer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+8.8.15 : TMQTTSessionList.Items
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Items[Index: Integer]: TMQTTSession; default
+
+Visibility:
+public
+
+Access:
+Read
+
+
+========================================================================
+Chapter 9 : Reference for unit 'mqttsubscriptions'
+========================================================================
+
+
+
+------------------------------------------------------------------------
+Section 9.1 : Used units
+------------------------------------------------------------------------
+
+
+Unit Name
+---------
+Classes
+mqttconsts
+mqtttokenizer
+System
+SysUtils
+
+
+------------------------------------------------------------------------
+Section 9.2 : TMQTTSubscription
+------------------------------------------------------------------------
+
+
+
+9.2.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Assign
+Copies the contents of ASource into this object.  Resets Age to zero. 
+Create Creates
+a subscription, optionally assigning a
+Filter and QoS but does not add
+it to any list 
+Destroy Destroys the
+subscription but does not remove it from any list 
+IsMatch Returns true if
+ATokens matches this subscription's filter 
+LoadFromStream Loads
+a subscription from
+a stream, resets Age, and sets Persistent to True. 
+SaveToStream
+Saves the subscription to a stream (even if not marked persistent) 
+------------------------------------------------------------------------
+
+
+9.2.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Age rw  The age
+of the subscription in minutes.  At certain intervals,
+subscriptions
+older than a certain age will be removed.
+Filter
+rw  The filter as a UTF8String
+Persistent
+rw  Persistent means the subscription
+should be stored to a stream and
+persist between server instantiations
+QOS
+rw  The QoS of the subscription
+Tokens r  The tokenized filter
+string.  Set
+Filter and then read Tokens to parse.
+------------------------------------------------------------------------
+
+
+9.2.3 : TMQTTSubscription.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Creates a subscription, optionally assigning a Filter and QoS but does
+not add it to any list
+Declaration:
+
+constructor Create(AFilter: UTF8String; AQOS: TMQTTQOSType)
+
+Visibility:
+public
+
+
+9.2.4 : TMQTTSubscription.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Destroys the subscription but does not remove it from any list
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+9.2.5 : TMQTTSubscription.Assign
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Copies the contents of ASource into this object.  Resets Age to zero.
+Declaration:
+
+procedure Assign(ASource: TMQTTSubscription)
+
+Visibility:
+public
+
+
+9.2.6 : TMQTTSubscription.IsMatch
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Returns true if ATokens matches this subscription's filter
+Declaration:
+
+function IsMatch(ATokens: TMQTTTokenizer) : Boolean
+
+Visibility:
+public
+
+Description:
+ATokens is a tokenized topic from a PUBLISH message.  IsMatch processes
+single level and multi level wildcards as defined in the MQTT specs.
+
+9.2.7 : TMQTTSubscription.LoadFromStream
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Loads a subscription from a stream, resets Age, and sets Persistent to
+True.
+Declaration:
+
+procedure LoadFromStream(Stream: TStream)
+
+Visibility:
+public
+
+
+9.2.8 : TMQTTSubscription.SaveToStream
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Saves the subscription to a stream (even if not marked persistent)
+Declaration:
+
+procedure SaveToStream(Stream: TStream)
+
+Visibility:
+public
+
+
+9.2.9 : TMQTTSubscription.QOS
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The QoS of the subscription
+Declaration:
+
+Property QOS : TMQTTQOSType
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+Description:
+TMQTTQOSType =   (     qtAT_MOST_ONCE,   //  0 At most once Fire and
+Forget        <=1     qtAT_LEAST_ONCE,  //  1 At least once Acknowledged
+delivery >=1     qtEXACTLY_ONCE,   //  2 Exactly once Assured delivery  
+    =1     qtReserved3	      //  3 Reserved   );   
+
+9.2.10 : TMQTTSubscription.Filter
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The filter as a UTF8String
+Declaration:
+
+Property Filter : UTF8String
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+9.2.11 : TMQTTSubscription.Tokens
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The tokenized filter string.  Set Filter and then read Tokens to parse.
+Declaration:
+
+Property Tokens : TMQTTTokenizer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+9.2.12 : TMQTTSubscription.Age
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The age of the subscription in minutes.  At certain intervals,
+subscriptions older than a certain age will be removed.
+Declaration:
+
+Property Age : Integer
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+9.2.13 : TMQTTSubscription.Persistent
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+Persistent means the subscription should be stored to a stream and
+persist between server instantiations
+Declaration:
+
+Property Persistent : Boolean
+
+Visibility:
+public
+
+Access:
+Read,Write
+
+
+------------------------------------------------------------------------
+Section 9.3 : TMQTTSubscriptionList
+------------------------------------------------------------------------
+
+
+
+9.3.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Assign Clears the subscription list and replaces it with the
+contents of
+ASource 
+Clear Clears the subscription list, destroying all
+objects it contains 
+Create Creates a
+new subscription list 
+Delete Deletes the index'th subscription and frees the
+subscription 
+DeleteList
+Deletes a list of subscriptions from this list 
+Destroy Destroys the
+subscription list and all subscriptions it contains 
+Find Finds a
+subscription by Filter.  Returns nil if no match was found. 
+LoadFromStream
+Loads
+subscriptions from Stream and adds them to the list. 
+MergeList Merges a
+list of subscriptions into this subscription list.  Any duplicates
+subscriptions are updated with the new subscriptions. 
+New Creates a
+new
+subscription and returns the result.  If a subscription with the
+same
+filter already exists it is updated and returned instead. 
+Remove Removes
+a
+subscription from the list and destroys it 
+RemoveInvalidSubscriptions Deletes and frees any
+subscriptions
+with invalid tokens.  Returns the number of subscriptions
+removed. 
+SaveToStream Saves
+subscriptions marked persistent to the stream 
+Update Adds or updates a
+subscription.  If a subscription
+with a matching filter already exists,
+it is updated. 
+------------------------------------------------------------------------
+
+
+9.3.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Count r  The number of
+subscriptions in the list
+Items r  An indexed array[0..Count-1] of
+subscriptions
+------------------------------------------------------------------------
+
+
+9.3.3 : TMQTTSubscriptionList.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Creates a new subscription list
+Declaration:
+
+constructor Create
+
+Visibility:
+public
+
+
+9.3.4 : TMQTTSubscriptionList.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Destroys the subscription list and all subscriptions it contains
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+9.3.5 : TMQTTSubscriptionList.LoadFromStream
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Loads subscriptions from Stream and adds them to the list.
+Declaration:
+
+procedure LoadFromStream(Stream: TStream)
+
+Visibility:
+public
+
+Description:
+Any existing subscriptions are retained.  Any subscriptions with a
+matching filter are replaced.  Subscriptions read from the stream will
+have their Persistent property set to True.
+
+9.3.6 : TMQTTSubscriptionList.SaveToStream
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Saves subscriptions marked persistent to the stream
+Declaration:
+
+procedure SaveToStream(Stream: TStream)
+
+Visibility:
+public
+
+
+9.3.7 : TMQTTSubscriptionList.Assign
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Clears the subscription list and replaces it with the contents of
+ASource
+Declaration:
+
+procedure Assign(ASource: TMQTTSubscriptionList)
+
+Visibility:
+public
+
+
+9.3.8 : TMQTTSubscriptionList.Clear
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Clears the subscription list, destroying all objects it contains
+Declaration:
+
+procedure Clear
+
+Visibility:
+public
+
+
+9.3.9 : TMQTTSubscriptionList.New
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Creates a new subscription and returns the result.  If a subscription
+with the same filter already exists it is updated and returned instead.
+Declaration:
+
+function New(AFilter: UTF8String; AQOS: TMQTTQOSType)
+             :
+TMQTTSubscription
+
+Visibility:
+public
+
+
+9.3.10 : TMQTTSubscriptionList.Update
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Adds or updates a subscription.  If a subscription with a matching
+filter already exists, it is updated.
+Declaration:
+
+procedure Update(ASubscription: TMQTTSubscription)
+
+Visibility:
+public
+
+
+9.3.11 : TMQTTSubscriptionList.Find
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Finds a subscription by Filter.  Returns nil if no match was found.
+Declaration:
+
+function Find(AFilter: UTF8String) : TMQTTSubscription
+
+Visibility:
+public
+
+
+9.3.12 : TMQTTSubscriptionList.Remove
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Removes a subscription from the list and destroys it
+Declaration:
+
+procedure Remove(ASubscription: TMQTTSubscription)
+
+Visibility:
+public
+
+
+9.3.13 : TMQTTSubscriptionList.Delete
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Deletes the index'th subscription and frees the subscription
+Declaration:
+
+procedure Delete(Index: Integer)
+
+Visibility:
+public
+
+
+9.3.14 : TMQTTSubscriptionList.MergeList
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Merges a list of subscriptions into this subscription list.  Any
+duplicates subscriptions are updated with the new subscriptions.
+Declaration:
+
+procedure MergeList(AList: TMQTTSubscriptionList)
+
+Visibility:
+public
+
+
+9.3.15 : TMQTTSubscriptionList.DeleteList
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Deletes a list of subscriptions from this list
+Declaration:
+
+procedure DeleteList(AList: TMQTTSubscriptionList)
+
+Visibility:
+public
+
+
+9.3.16 : TMQTTSubscriptionList.RemoveInvalidSubscriptions
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Synopsis:
+Deletes and frees any subscriptions with invalid tokens.  Returns the
+number of subscriptions removed.
+Declaration:
+
+function RemoveInvalidSubscriptions : Integer
+
+Visibility:
+public
+
+
+9.3.17 : TMQTTSubscriptionList.Count
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+The number of subscriptions in the list
+Declaration:
+
+Property Count : Integer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+9.3.18 : TMQTTSubscriptionList.Items
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Synopsis:
+An indexed array[0..Count-1] of subscriptions
+Declaration:
+
+Property Items[Index: Integer]: TMQTTSubscription; default
+
+Visibility:
+public
+
+Access:
+Read
+
+
+========================================================================
+Chapter 10 : Reference for unit 'mqtttokenizer'
+========================================================================
+
+
+
+------------------------------------------------------------------------
+Section 10.1 : Used units
+------------------------------------------------------------------------
+
+
+Unit Name
+---------
+Classes
+Logging
+mqttconsts
+System
+SysUtils
+
+
+------------------------------------------------------------------------
+Section 10.2 : Constants, types and variables
+------------------------------------------------------------------------
+
+
+
+10.2.1 : Types
+------------------------------------------------------------------------
+
+
+
+TMQTTTokenKind = (tkInvalid,tkValid,tkMultiLevel,tkSingleLevel)
+------------------------------------------------------------------------
+Enumeration values for type TMQTTTokenKind
+Table 5 :Value
+    Explanation
+------------------------------------------------------------------------
+tkInvalid
+    
+tkMultiLevel
+    
+tkSingleLevel
+    
+tkValid
+    
+------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------
+Section 10.3 : TMQTTToken
+------------------------------------------------------------------------
+
+
+
+10.3.1 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Kind r  
+Text r  
+------------------------------------------------------------------------
+
+
+10.3.2 : TMQTTToken.Kind
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Kind : TMQTTTokenKind
+
+Visibility:
+public
+
+Access:
+Read
+
+
+10.3.3 : TMQTTToken.Text
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Text : UTF8String
+
+Visibility:
+public
+
+Access:
+Read
+
+
+------------------------------------------------------------------------
+Section 10.4 : TMQTTTokenizer
+------------------------------------------------------------------------
+
+
+
+10.4.1 : Method overview
+------------------------------------------------------------------------
+
+
+Method Description
+------------------
+Create  
+Destroy  
+------------------------------------------------------------------------
+
+
+10.4.2 : Property overview
+------------------------------------------------------------------------
+
+
+Properties Access Description
+-----------------------------
+Count r  
+Items r  
+Valid r  
+------------------------------------------------------------------------
+
+
+10.4.3 : TMQTTTokenizer.Create
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+constructor Create(Str: UTF8String; Filter: Boolean)
+
+Visibility:
+public
+
+
+10.4.4 : TMQTTTokenizer.Destroy
+------------------------------------------------------------------------
+
+
+Procedure:
+
+Declaration:
+
+destructor Destroy;  Override
+
+Visibility:
+public
+
+
+10.4.5 : TMQTTTokenizer.Valid
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Valid : Boolean
+
+Visibility:
+public
+
+Access:
+Read
+
+
+10.4.6 : TMQTTTokenizer.Count
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Count : Integer
+
+Visibility:
+public
+
+Access:
+Read
+
+
+10.4.7 : TMQTTTokenizer.Items
+------------------------------------------------------------------------
+
+
+
+Property:
+
+Declaration:
+
+Property Items[Index: Integer]: TMQTTToken; default
+
+Visibility:
+public
+
+Access:
+Read
+

@@ -1,7 +1,7 @@
 object ServerForm: TServerForm
-  Left = 510
+  Left = 508
   Height = 371
-  Top = 26
+  Top = 258
   Width = 817
   ActiveControl = PageControl
   Caption = 'MQTT Server'

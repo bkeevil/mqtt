@@ -15,6 +15,8 @@
       </element><element name="TMQTTMessageList.Delete"><short>Deletes the message from the list but does not destroy it</short>
       </element><element name="TMQTTMessageList.Remove"><short>Removes the message from the list but does not destroy it</short>
       </element><short>Message class and a message list class</short>
+    <element name="TMQTTMessageList.DeleteByTopic"><short>Deletes all messages from the list with a matching topic name</short>
+      </element>
     </module>
   </package>
 </fpdoc-descriptions>

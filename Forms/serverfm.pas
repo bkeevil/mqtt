@@ -158,9 +158,9 @@ begin
   else
     Log.Send(mtWarning,'Config file %s not found. Using default values.',[FConfigFilename]);
   LoadCommandLineOptions;
-  Log.Send(mtInfo,'RequireAuthentication=%s',[BoolToStr(Server.RequireAuthentication,'True','False')]);
-  Log.Send(mtInfo,'AllowNullClientIDs=%s',[BoolToStr(Server.AllowNullClientIDs,'True','False')]);
-  Log.Send(mtInfo,'StrictClientIDValidation=%s',[BoolToStr(Server.StrictClientIDValidation,'true','false')]);
+  Log.Send(mtDebug,'RequireAuthentication=%s',[BoolToStr(Server.RequireAuthentication,'True','False')]);
+  Log.Send(mtDebug,'AllowNullClientIDs=%s',[BoolToStr(Server.AllowNullClientIDs,'True','False')]);
+  Log.Send(mtDebug,'StrictClientIDValidation=%s',[BoolToStr(Server.StrictClientIDValidation,'true','false')]);
   if not Server.Enabled then
     Log.Send(mtWarning,'The server is being started in a disabled state');
   SaveConfigurationItm.Enabled := CheckConfigWriteAccess(FConfigFilename);
@@ -175,7 +175,7 @@ begin
       SaveConfiguration(FConfigFilename);
     except
     end;
-  Server.Free;
+  //Server.Free;
   CRT.Free;
   Log.Free;
   FListener.Destroy;
@@ -379,16 +379,23 @@ var
   Conn: TMQTTServerConnection;
 begin
   Conn := Server.StartConnection;
-  Log.Send(mtInfo,'Session accepted from %s on port %d',[aSocket.PeerAddress,aSocket.PeerPort]);
+  Log.Send(mtInfo,'TCP connection accepted from %s on port %d',[aSocket.PeerAddress,aSocket.PeerPort]);
   aSocket.UserData := Conn;
   Conn.Socket := aSocket;
 end;
 
 procedure TServerForm.ServerAccepted(AConnection: TMQTTServerConnection);
+var
+  Username: String;
 begin
-  RefreshConnectionsItmClick(nil);
   if AConnection.Socket is TLSocket then
-    Log.Send(mtInfo,'A connection was accepted from %s on port %d',[(AConnection.Socket as TLSocket).PeerAddress,(AConnection.Socket as TLSocket).PeerPort]);
+    begin
+      if Assigned(AConnection.User) then
+        Username := AConnection.User.Username
+      else
+        Username := '(N/A)');
+      LogDispatcher.Send(mtInfo,'MQTT session started client=%s user=%s',[AConnection.Session.ClientID,Username]);
+    end;
 end;
 
 procedure TServerForm.TCPDisconnect(aSocket: TLSocket);
@@ -575,16 +582,19 @@ begin
   for I := 0 to Server.Connections.Count - 1 do
     begin
       C := Server.Connections[I];
-      for X := 0 to C.Session.Subscriptions.Count - 1 do
+      if Assigned(C) and Assigned(C.Session) then
         begin
-          S := C.Session.Subscriptions[X];
-          if J >= SubscriptionsGrid.RowCount then
-            SubscriptionsGrid.RowCount     := SubscriptionsGrid.RowCount + 1;
-          SubscriptionsGrid.Cells[0,J] := C.Session.ClientID;
-          SubscriptionsGrid.Cells[1,J] := S.Filter;
-          SubscriptionsGrid.Cells[2,J] := MQTTQOSTypeNames[S.QOS];
-          SubscriptionsGrid.Cells[3,J] := IntToStr(S.Age);
-          inc(J);
+          for X := 0 to C.Session.Subscriptions.Count - 1 do
+            begin
+              S := C.Session.Subscriptions[X];
+              if J >= SubscriptionsGrid.RowCount then
+                SubscriptionsGrid.RowCount     := SubscriptionsGrid.RowCount + 1;
+              SubscriptionsGrid.Cells[0,J] := C.Session.ClientID;
+              SubscriptionsGrid.Cells[1,J] := S.Filter;
+              SubscriptionsGrid.Cells[2,J] := MQTTQOSTypeNames[S.QOS];
+              SubscriptionsGrid.Cells[3,J] := IntToStr(S.Age);
+              inc(J);
+            end;
         end;
     end;
   SubscriptionsGrid.RowCount := J;

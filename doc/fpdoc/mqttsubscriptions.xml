@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <fpdoc-descriptions>
   <package name="mqttcomponents">
     <module name="mqttsubscriptions">
@@ -71,7 +71,7 @@
     qtAT_MOST_ONCE,   //  0 At most once Fire and Forget        &lt;=1
     qtAT_LEAST_ONCE,  //  1 At least once Acknowledged delivery &gt;=1
     qtEXACTLY_ONCE,   //  2 Exactly once Assured delivery       =1
-    qtReserved3	      //  3 Reserved
+    qtReserved3&#x9;      //  3 Reserved
   );   </descr>
       </element>
       <element name="TMQTTSubscription.Filter">
@@ -82,9 +82,13 @@
       </element>
       <element name="TMQTTSubscription.Age">
         <short>The age of the subscription in minutes.  At certain intervals, subscriptions older than a certain age will be removed.</short>
+      <descr>Currently this is set to 1080 minutes or 18 hours.</descr>
       </element>
       <element name="TMQTTSubscription.Persistent">
         <short>Persistent means the subscription should be stored to a stream and persist between server instantiations</short>
+      <descr>Marking a subscription as persistent does two things:
+1) It prevents a subscription from ever timing out and getting deleted due to non-use
+2) It indicates that the subscription should be stored to a stream and persist between server instantiations</descr>
       </element>
       <element name="TMQTTSubscriptionList.ClientID">
         <short>The ClientID of this subscription list</short>

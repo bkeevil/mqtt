@@ -5,7 +5,7 @@ unit mqttserver;
 interface
 
 uses
-  Classes, SysUtils, ExtCtrls, Buffers, Logging, PasswordMan,
+  Classes, SysUtils, fptimer, Buffers, Logging, PasswordMan,
   MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions,
   MQTTMessages;
 
@@ -27,11 +27,11 @@ type
 
   { TMQTTServerConnection }
 
-  TMQTTServerConnectionState = (ssNew,ssConnected,ssDisconnecting,ssDisconnected);
+  TMQTTServerConnectionState = (ssNew,ssConnecting,ssConnected,ssDisconnecting,ssDisconnected);
 
 const
   SERVER_CONNECTION_STATE_NAMES: array[TMQTTServerConnectionState] of String =
-    ('New','Connected','Disconnecting','Disconnected');
+    ('New','Connecting','Connected','Disconnecting','Disconnected');
 
 type
   TMQTTServerConnection = class(TLogObject)
@@ -48,6 +48,7 @@ type
       FClientIDGenerated   : Boolean;
       FRecvBuffer          : TBuffer;
       FSendBuffer          : TBuffer;
+      procedure CheckTerminateSession;
       procedure HandleDISCONNECTPacket;
       procedure HandleCONNECTPacket(APacket: TMQTTCONNECTPacket);
       procedure HandlePINGREQPacket;
@@ -125,7 +126,7 @@ type
       FStrictClientIDValidation   : Boolean;
       FMaximumQOS                 : TMQTTQOSType;
       //
-      FTimer                      : TTimer;
+      FTimer                      : TFPTimer;
       FTimerTicks                 : Byte;                    // Accumulator
       // Connection related events
       FOnAccepted                 : TMQTTConnectionNotifyEvent;
@@ -158,8 +159,8 @@ type
       //
       procedure DispatchMessage(Sender: TMQTTSession; Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean);
       procedure SendPendingMessages;
-      procedure SendRetainedMessages(Session: TMQTTSession); overload;
-      procedure SendRetainedMessages(Session: TMQTTSession; Subscription: TMQTTSubscription); overload;
+      //procedure SendRetainedMessages(Session: TMQTTSession); overload;
+      procedure SendRetainedMessages(Session: TMQTTSession; Subscription: TMQTTSubscription);
       function ValidateClientID(AClientID: UTF8String): Boolean; virtual;
     public
       Log: TLogDispatcher;
@@ -207,7 +208,7 @@ type
       FAge                 : Integer;
       procedure SendRetainedMessages(NewSubscriptions: TMQTTSubscriptionList);
       procedure SendPendingMessages;
-      procedure DispatchMessage(Msg: TMQTTMessage);
+      procedure DispatchMessage(Message: TMQTTMessage);
       procedure ProcessAckQueue;
       procedure ProcessSessionAges;
     public
@@ -270,7 +271,7 @@ begin
   FPasswords             := TPasswordManager.Create;
   FConnections           := TMQTTServerConnectionList.Create;
   FSessions              := TMQTTSessionList.Create(Self);
-  FTimer                 := TTimer.Create(nil);
+  FTimer                 := TFPTimer.Create(nil);
   FTimer.OnTimer         := @HandleTimer;
 end;
 
@@ -417,11 +418,22 @@ begin
       begin
         if M.Retain then
           begin
-            RetainedMessages.Update(M);
+           {A PUBLISH Packet with a RETAIN flag set to 1 and a payload containing zero bytes will be processed as
+           normal by the Server and sent to Clients with a subscription matching the topic name. Additionally any
+           existing retained message with the same topic name MUST be removed and any future subscribers for the
+           topic will not receive a retained message [MQTT-3.3.1-10]. “As normal” means that the RETAIN flag is
+           not set in the message received by existing Clients. A zero byte retained message MUST NOT be stored
+           as a retained message on the Server [MQTT-3.3.1-11].}
+            if M.Data = '' then
+              RetainedMessages.DeleteByTopic(M.Topic)
+            else
+              begin
+                RetainedMessages.Update(M);
+                M := M.Clone; // Store the message in the RetainedMessages list and continue processing using a clone of the original message
+              end;
             RetainedMessagesChanged;
-            M := M.Clone;
-            M.Retain := False;
           end;
+        M.Retain := False;
         for I := 0 to Sessions.Count - 1 do
           begin
             S := Sessions[I];
@@ -452,7 +464,7 @@ begin
     end;
 end;
 
-procedure TMQTTServer.SendRetainedMessages(Session: TMQTTSession);
+{procedure TMQTTServer.SendRetainedMessages(Session: TMQTTSession);
 var
   I: Integer;
   M: TMQTTMessage;
@@ -463,7 +475,7 @@ begin
       M.Retain := True;
       Session.DispatchMessage(M);
     end;
-end;
+end;  }
 
 procedure TMQTTServer.SendRetainedMessages(Session: TMQTTSession; Subscription: TMQTTSubscription);
 var
@@ -509,8 +521,10 @@ end;
 
 procedure TMQTTServerConnection.Accepted;
 begin
-  Assert(State = ssNew);
+  Assert(State = ssConnecting);
   Log.Send(mtInfo,'New connection accepted');
+  FState := ssConnected;
+  Server.ConnectionsChanged;
   Server.Accepted(Self);
 end;
 
@@ -531,6 +545,21 @@ begin
     end;
 end;
 
+procedure TMQTTServerConnection.CheckTerminateSession;
+begin
+  if Assigned(FSession) then
+    if Self.FClientIDGenerated then
+      begin
+        Log.Send(mtInfo,'Terminating auto created session %s',[Session.ClientID]);
+        FSession.Clean;
+        Server.Sessions.Remove(FSession);
+        FSession.Destroy;
+        Server.SessionsChanged;
+      end
+    else
+      FSession.FConnection := nil;
+end;
+
 procedure TMQTTServerConnection.Disconnect;
 begin
   if (State = ssConnected) then
@@ -538,36 +567,23 @@ begin
       Log.Send(mtInfo,'Connection disconnecting');
       FState := ssDisconnecting;
       Server.Disconnect(Self);
-      if Assigned(FSession) then
-        if Self.FClientIDGenerated then
-          begin
-            FSession.Clean;
-            Server.Sessions.Remove(FSession);
-            FSession.Destroy;
-          end
-        else
-          FSession.FConnection := nil;
-      FState := ssDisconnected;
+      CheckTerminateSession;
       Destroy;
     end;
 end;
 
 procedure TMQTTServerConnection.Disconnected;
 begin
-  if (State in [ssConnected,ssDisconnecting]) then
+  if State = ssConnected then
+    begin
+      FState := ssDisconnecting;
+      SendWillMessage;
+    end;
+  if State = ssDisconnected then
     begin
       Log.Send(mtInfo,'Connection disconnected');
-      FState := ssDisconnected;
       Server.Disconnected(Self);
-      if Assigned(FSession) then
-        if Self.FClientIDGenerated then
-          begin
-            FSession.Clean;
-            Server.Sessions.Remove(FSession);
-            FSession.Destroy;
-          end
-        else
-          FSession.FConnection := nil;
+      CheckTerminateSession;
       Destroy;
     end;
 end;
@@ -597,6 +613,10 @@ begin
   Packet := TMQTTPUBLISHPacket.Create;
   try
     Packet.QOS := QOS;
+    if ord(Packet.QOS) > ord(Server.MaximumQOS) then
+      Packet.QOS := Server.MaximumQOS;
+    if ord(Packet.QOS) > ord(Session.MaximumQOS) then
+      Packet.QOS := Session.MaximumQOS;
     Packet.Duplicate := Duplicate;
     Packet.Retain := Retain;
     Packet.Topic := Topic;
@@ -685,7 +705,8 @@ var
   X: Integer;
   C: TMQTTServerConnection;
 begin
-  Assert(State = ssNew);
+  Assert(State = ssConnecting);
+
   // See if a return code has already been set by the parser.
   Result := APacket.ReturnCode;
   if Result <> MQTT_CONNACK_SUCCESS then Exit;
@@ -696,6 +717,7 @@ begin
       Result := MQTT_CONNACK_SERVER_UNAVAILABLE;
       Exit;
     end;
+
 
   // If a zero length ClientID is provided, generate a unique random ClientID
   if APacket.ClientID = '' then
@@ -756,25 +778,34 @@ end;
 
 function TMQTTServerConnection.InitSessionState(APacket: TMQTTCONNECTPacket): Boolean;
 begin
-  // Retrieve any existing session state
+  Assert(State=ssConnecting);
+  // Retrieve existing session, if any
   FSession := Server.Sessions.Find(APacket.ClientID);
   if Assigned(FSession) then
     begin
+      // If an existing session is found and the client is requesting a
+      // clean session then clean that session.
       Result := not APacket.CleanSession;
       if APacket.CleanSession then
         FSession.Clean;
     end
   else
     begin
+      // Otherwise create a new one
       Result := False;
       FSession := Server.Sessions.New(APacket.ClientID);
     end;
 
+  // Initialize the session state
   FSession.FConnection := Self;
   FKeepAlive           := APacket.KeepAlive;
   FKeepAliveRemaining  := FKeepAlive;
-  FState               := ssConnected;
+  Log.Name             := 'Connection['+Session.ClientID+']';
+  Session.Log.Name     := 'Session['+Session.ClientID+']';
   FWillMessage.Assign(APacket.WillMessage);
+  if ord(Server.MaximumQOS) < ord(WillMessage.QOS) then
+    WillMessage.QOS := Server.MaximumQOS;
+  //
   Server.SessionsChanged;
 end;
 
@@ -791,7 +822,7 @@ var
   Reply          : TMQTTCONNACKPacket;
 begin
   Assert(State = ssNew);
-
+  FState := ssConnecting;
   ReturnCode := InitNetworkConnection(APacket);
 
   if ReturnCode <> MQTT_CONNACK_SUCCESS then
@@ -860,10 +891,6 @@ begin
       Q := S.QOS;
       if ValidateSubscription(S,Q) then
         begin
-          if ord(Q) < ord(S.QOS) then
-            Log.Send(mtInfo,'Downgraded QoS of subscription "%s"',[S.Filter]);
-          if ord(Q) > ord(S.QOS) then
-            Q := S.QOS;
           RC := ord(Q);
           S.QOS := Q;
         end
@@ -890,8 +917,14 @@ end;
 procedure TMQTTServerConnection.SendWillMessage;
 begin
   Assert(State = ssDisconnecting);
-  Publish(WillMessage.Topic,WillMessage.Message,WillMessage.QOS,WillMessage.Retain,False);
-  if WillMessage.QOS = qtAT_MOST_ONCE then
+  if WillMessage.Enabled then
+    begin
+      Log.Send(mtInfo,'Sending Will Message');
+      Publish(WillMessage.Topic,WillMessage.Message,WillMessage.QOS,WillMessage.Retain,False);
+      if WillMessage.QOS = qtAT_MOST_ONCE then
+        FState := ssDisconnected;
+    end
+  else
     FState := ssDisconnected;
 end;
 
@@ -942,6 +975,7 @@ begin
   Log.Send(mtInfo,'Received PUBACK (%d)',[APacket.PacketID]);
   Session.FPacketIDManager.ReleaseID(APacket.PacketID);
   Session.FWaitingForAck.Remove(ptPUBLISH,APacket.PacketID);
+  // Disconnects the connection after the willmessage has been sent
   if State = ssDisconnecting then
     Disconnected;
 end;
@@ -992,6 +1026,7 @@ begin
   Log.Send(mtInfo,'Received PUBCOMP (%d)',[APacket.PacketID]);
   Session.FPacketIDManager.ReleaseID(APacket.PacketID);
   Session.FWaitingForAck.Remove(ptPUBREL,APacket.PacketID);
+  // Disconnects the connection after the willmessage has been sent
   if State = ssDisconnecting then
     Disconnected;
 end;
@@ -1255,51 +1290,58 @@ end;
 
 procedure TMQTTSession.Clean;
 begin
+  // FWillMessage.Clear;  // WillMessage is associated with a Connection, not a Session
   FSubscriptions.Clear;
   FPendingTransmission.Clear;
   FWaitingForAck.Clear;
   FPendingDispatch.Clear;
   FPacketIDManager.Reset;
-  FServer.SubscriptionsChanged;
 end;
 
 procedure TMQTTSession.SendPendingMessages;
 var
-  I: Integer;
+  I,C: Integer;
   M: TMQTTMessage;
 begin
-  for I := 0 to FPendingTransmission.Count - 1 do
+  C := FPendingTransmission.Count;
+  if C > 0 then
     begin
-      M := FPendingTransmission[I];
-      Connection.Publish(M.Topic,M.Data,M.QOS,M.Retain);
+      Log.Send(mtInfo,'Sending %d pending messages',[C]);
+      for I := 0 to C - 1 do
+        begin
+          M := FPendingTransmission[I];
+          Connection.Publish(M.Topic,M.Data,M.QOS,M.Retain);
+        end;
+      FPendingTransmission.Clear;
     end;
-  FPendingTransmission.Clear;
 end;
 
-procedure TMQTTSession.DispatchMessage(Msg: TMQTTMessage);
+procedure TMQTTSession.DispatchMessage(Message: TMQTTMessage);
 var
   I: Integer;
-  Sub: TMQTTSubscription;
-  M2: TMQTTMessage;
+  Subscription: TMQTTSubscription;
+  QueuedMessage: TMQTTMessage;
 begin
+  Assert(Message.Retain = False);
   for I := 0 to Subscriptions.Count - 1 do
     begin
-      Sub := Subscriptions[I];
-      if Sub.IsMatch(Msg.Tokens) then
+      Subscription := Subscriptions[I];
+      if Subscription.IsMatch(Message.Tokens) then
         begin
-          Sub.Age := 0;
-          if Msg.QOS = qtAT_MOST_ONCE then
+          Subscription.Age := 0;
+          if Message.QOS = qtAT_MOST_ONCE then
             begin
               // If this is a QoS0 message, send it right away
               if Assigned(Connection) and (Connection.State <> ssDisconnected) then
-                Connection.Publish(Msg.Topic,Msg.Data,Msg.QOS,Msg.Retain);
+                Connection.Publish(Message.Topic,Message.Data,Subscription.QOS,False);
             end
           else
             begin
               // Otherwise queue it to send later
-              M2 := Msg.Clone;
-              M2.QOS := Sub.QOS;
-              FPendingTransmission.Add(M2);
+              QueuedMessage        := Message.Clone;
+              QueuedMessage.Retain := False;                // Is this necessary?
+              QueuedMessage.QOS    := Subscription.QOS;
+              FPendingTransmission.Add(QueuedMessage);
             end;
         end;
     end;

@@ -5,7 +5,7 @@ unit mqttclient;
 interface
 
 uses
-  Classes, SysUtils, ExtCtrls, Buffers, Logging,
+  Classes, SysUtils, fptimer, Buffers, Logging,
   MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTMessages, MQTTSubscriptions;
 
 type
@@ -46,7 +46,7 @@ type
       FPingInterval        : Word;
       FPingCount           : Byte;
       FPingIntRemaining    : Word;
-      FTimer               : TTimer;
+      FTimer               : TFPTimer;
       // State Fields
       FInsufficientData    : Byte;
       //
@@ -153,7 +153,7 @@ begin
   FPingInterval        := MQTT_DEFAULT_PING_INTERVAL;
   FPingIntRemaining    := FPingInterval;
   FCleanSession        := True;
-  FTimer               := TTimer.Create(nil);
+  FTimer               := TFPTimer.Create(nil);
   FTimer.OnTimer       := @HandleTimer;
   FTimer.Enabled       := False;
 end;
@@ -258,13 +258,13 @@ begin
             OnError(Self,MQTT_ERROR_BAD_USERNAME_PASSWORD,GetMQTTErrorMessage(MQTT_ERROR_BAD_USERNAME_PASSWORD));
           Exit;
         end;
-      if (FClientID = '') then
+{      if (FClientID = '') then
         begin
           Result := False;
           if Assigned(OnError) then
             OnError(Self,MQTT_ERROR_NO_CLIENTID,GetMQTTErrorMessage(MQTT_ERROR_NO_CLIENTID));
           Exit;
-        end;
+        end;}
       if (FWillMessage.Enabled) and ((FWillMessage.Topic = '') or (FWillMessage.Message = '')) then
         begin
           Result := False;
