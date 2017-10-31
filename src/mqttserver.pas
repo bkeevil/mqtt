@@ -5,11 +5,11 @@ unit mqttserver;
 interface
 
 uses
-  Classes, SysUtils, fptimer, Buffers, Logging, PasswordMan,
+  Classes, SysUtils, CustomTimer, Buffers, Logging, PasswordMan,
   MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions,
   MQTTMessages;
 
-// TODO: Send Willmessage on disconnect
+// TODO: Test Send Willmessage on disconnect
 type
   TMQTTServer               = class;
   TMQTTServerConnection     = class;
@@ -126,8 +126,11 @@ type
       FStrictClientIDValidation   : Boolean;
       FMaximumQOS                 : TMQTTQOSType;
       //
-      FTimer                      : TFPTimer;
+      FTimer                      : TCustomTimer;
       FTimerTicks                 : Byte;                    // Accumulator
+      //
+      FSystemClock                : Boolean;
+      FLastTime                   : TSystemTime;
       // Connection related events
       FOnAccepted                 : TMQTTConnectionNotifyEvent;
       FOnDisconnect               : TMQTTConnectionNotifyEvent;
@@ -142,9 +145,11 @@ type
       FOnSessionsChanged          : TNotifyEvent;
       FOnRetainedMessagesChanged  : TNotifyEvent;
       // Timer routines
+      procedure InitSystemClockMessages;
       procedure ProcessAckQueues;
       procedure ProcessSessionAges;
       procedure HandleTimer(Sender: TObject);
+      procedure UpdateSystemClockMessages;
     protected
       // Methods that trigger event handlers
       procedure Accepted(Connection: TMQTTServerConnection); virtual;
@@ -173,6 +178,7 @@ type
       property RetainedMessages: TMQTTMessageList read FRetainedMessages;
     published
       property Enabled: Boolean read FEnabled write FEnabled default true;
+      property SystemClock: Boolean read FSystemClock write FSystemClock default true;
       property MaximumQOS: TMQTTQOSType read FMaximumQOS write FMaximumQOS default qtEXACTLY_ONCE;
       property RequireAuthentication: Boolean read FRequireAuthentication write FRequireAuthentication default true;
       property AllowNullClientIDs: Boolean read FAllowNullClientIDs write FAllowNullClientIds default false;
@@ -267,11 +273,12 @@ begin
   FEnabled               := True;
   FAllowNullClientIDs    := False;
   FRequireAuthentication := True;
+  FSystemClock           := True;
   FRetainedMessages      := TMQTTMessageList.Create;
   FPasswords             := TPasswordManager.Create;
   FConnections           := TMQTTServerConnectionList.Create;
   FSessions              := TMQTTSessionList.Create(Self);
-  FTimer                 := TFPTimer.Create(nil);
+  FTimer                 := TCustomTimer.Create(nil);
   FTimer.OnTimer         := @HandleTimer;
 end;
 
@@ -286,6 +293,46 @@ begin
   FRetainedMessages.Free;
   Log.Free;
   inherited Destroy;
+end;
+
+procedure TMQTTServer.InitSystemClockMessages;
+begin
+  if FSystemClock then
+    begin
+      DateTimeToSystemTime(Now(),FLastTime);
+      DispatchMessage(nil,'System/Time/Year',IntToStr(FLastTime.Year),qtAT_MOST_ONCE,true);
+      DispatchMessage(nil,'System/Time/Month',IntToStr(FLastTime.Month),qtAT_MOST_ONCE,true);
+      DispatchMessage(nil,'System/Time/Day',IntToStr(FLastTime.Day),qtAT_MOST_ONCE,true);
+      DispatchMessage(nil,'System/Time/Hour',IntToStr(FLastTime.Hour),qtAT_MOST_ONCE,true);
+      DispatchMessage(nil,'System/Time/Minute',IntToStr(FLastTime.Minute),qtAT_MOST_ONCE,true);
+//      DispatchMessage(nil,'System/Time/Second',IntToStr(FLastTime.Second),qtAT_MOST_ONCE,true);
+      DispatchMessage(nil,'System/Time/DOW',IntToStr(FLastTime.DayOfWeek),qtAT_MOST_ONCE,true);
+    end;
+end;
+
+procedure TMQTTServer.UpdateSystemClockMessages;
+var
+  LNow: TSystemTime;
+begin
+  DateTimeToSystemTime(Now(),LNow);
+  if (LNow.Year <> FLastTime.Year) then
+    DispatchMessage(nil,'System/Time/Year',IntToStr(LNow.Year),qtAT_MOST_ONCE,true);
+  if (LNow.Month <> FLastTime.Month) then
+    DispatchMessage(nil,'System/Time/Month',IntToStr(LNow.Month),qtAT_MOST_ONCE,true);
+  if (LNow.Day <> FLastTime.Day) then
+    DispatchMessage(nil,'System/Time/Day',IntToStr(LNow.Day),qtAT_MOST_ONCE,true);
+  if (LNow.Hour <> FLastTime.Hour) then
+    DispatchMessage(nil,'System/Time/Hour',IntToStr(LNow.Hour),qtAT_MOST_ONCE,true);
+  if (LNow.DayOfWeek <> FLastTime.DayOfWeek) then
+    DispatchMessage(nil,'System/Time/DOW',IntToStr(LNow.DayOfWeek),qtAT_MOST_ONCE,true);
+  if (LNow.Minute <> FLastTime.Minute) then
+    begin
+      DispatchMessage(nil,'System/Time/Minute',IntToStr(LNow.Minute),qtAT_MOST_ONCE,true);
+      RetainedMessagesChanged;
+    end;
+//      if (LNow.Second <> FLastTime.Second) then
+//        DispatchMessage(nil,'System/Time/Second',IntToStr(FLastTime.Second),qtAT_MOST_ONCE,true);
+  FLastTime := LNow;
 end;
 
 procedure TMQTTServer.ProcessSessionAges;
@@ -320,6 +367,8 @@ begin
   Connections.CheckTimeouts;
   ProcessAckQueues;
   inc(FTimerTicks);
+  if FSystemClock then
+    UpdateSystemClockMessages;
   if FTimerTicks = 60 then
     begin
       FTimerTicks := 0;
@@ -344,6 +393,7 @@ procedure TMQTTServer.Disconnect(Connection: TMQTTServerConnection);
 begin
   if Assigned(FOnDisconnect) then
     FOnDisconnect(Connection);
+  Connections.Remove(Connection);
 end;
 
 procedure TMQTTServer.SendData(Connection: TMQTTServerConnection);
@@ -384,6 +434,7 @@ procedure TMQTTServer.Loaded;
 begin
   inherited Loaded;
   Log.Name := Name;
+  InitSystemClockMessages;
 end;
 
 function TMQTTServer.ValidateClientID(AClientID: UTF8String): Boolean;
@@ -409,7 +460,8 @@ var
 begin
   M := TMQTTMessage.Create;
   try
-    M.ClientID := Sender.ClientID;
+    if Assigned(Sender) then
+      M.ClientID := Sender.ClientID;
     M.Topic := Topic;
     M.Data := Data;
     M.QOS := QOS;
@@ -437,7 +489,7 @@ begin
         for I := 0 to Sessions.Count - 1 do
           begin
             S := Sessions[I];
-            if S <> Sender then
+            if (Sender = nil) or (S <> Sender) then
               S.DispatchMessage(M);
           end;
       end;
@@ -566,8 +618,17 @@ begin
     begin
       Log.Send(mtInfo,'Connection disconnecting');
       FState := ssDisconnecting;
-      Server.Disconnect(Self);
       CheckTerminateSession;
+      Server.Disconnect(Self);
+      Destroy;
+    end
+  else
+  if (State = ssConnecting) then
+    begin
+      Log.Send(mtInfo,'Connection failed');
+      FState := ssDisconnecting;
+      //Server.Disconnect(Self);
+      //CheckTerminateSession;
       Destroy;
     end;
 end;
@@ -837,9 +898,12 @@ begin
     Reply.ReturnCode := ReturnCode;
     Reply.SessionPresent := SessionPresent;
     Reply.WriteToBuffer(SendBuffer);
-    Accepted;
     Log.Send(mtInfo,'Sending CONNACK.  ReturnCode=%d',[ReturnCode]);
     Server.SendData(Self);
+    if ReturnCode = MQTT_CONNACK_SUCCESS then
+      Accepted
+    else
+      Disconnect;
   finally
     Reply.Free;
   end;

@@ -112,6 +112,7 @@ const
   MQTT_ERROR_INVALID_SUBSCRIPTION_ENTRIES = 119;
   MQTT_ERROR_INVALID_RETURN_CODES         = 120;
   MQTT_ERROR_CONNECT_TIMEOUT              = 121;
+  MQTT_ERROR_NOT_IMPLEMENTED              = 122;
 
   MQTT_ERROR_UNKNOWN                      = 1000;
 
@@ -144,6 +145,7 @@ begin
     MQTT_ERROR_INVALID_SUBSCRIPTION_ENTRIES : Result := 'Invalid entries in subscription list';
     MQTT_ERROR_INVALID_RETURN_CODES         : Result := 'Return codes are invalid';
     MQTT_ERROR_CONNECT_TIMEOUT              : Result := 'Timed out waiting for connect';
+    MQTT_ERROR_NOT_IMPLEMENTED              : Result := 'Not implemented';
   else
     Result := 'An unknown error ocurred ('+IntToStr(ErrCode)+')';
   end;

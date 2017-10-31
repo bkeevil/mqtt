@@ -1,12 +1,12 @@
 object ServerPropertiesForm: TServerPropertiesForm
-  Left = 609
-  Height = 163
-  Top = 308
+  Left = 608
+  Height = 191
+  Top = 283
   Width = 374
   ActiveControl = cbEnabled
   BorderStyle = bsDialog
   Caption = 'MQTT Server Properties'
-  ClientHeight = 163
+  ClientHeight = 191
   ClientWidth = 374
   Position = poScreenCenter
   LCLVersion = '1.6.4.0'
@@ -31,7 +31,7 @@ object ServerPropertiesForm: TServerPropertiesForm
   object CancelBtn: TButton
     Left = 197
     Height = 25
-    Top = 123
+    Top = 152
     Width = 75
     Cancel = True
     Caption = '&Cancel'
@@ -41,7 +41,7 @@ object ServerPropertiesForm: TServerPropertiesForm
   object OKBtn: TButton
     Left = 281
     Height = 25
-    Top = 123
+    Top = 152
     Width = 75
     Caption = '&OK'
     Default = True
@@ -115,5 +115,23 @@ object ServerPropertiesForm: TServerPropertiesForm
     Style = csDropDownList
     TabOrder = 7
     Text = 'Exactly once'
+  end
+  object cbSystemClock: TCheckBox
+    Left = 13
+    Height = 22
+    Top = 124
+    Width = 158
+    Caption = 'System Clock Messages'
+    Checked = True
+    State = cbChecked
+    TabOrder = 8
+  end
+  object cbStrictClientIDValidation: TCheckBox
+    Left = 184
+    Height = 22
+    Top = 95
+    Width = 162
+    Caption = 'Strict Client ID Validation'
+    TabOrder = 9
   end
 end

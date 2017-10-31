@@ -323,6 +323,7 @@ begin
     Server.RequireAuthentication := Ini.ReadBool('Server','RequireAuthentication',False);
     Server.AllowNullClientIDs := Ini.ReadBool('Server','AllowNullClientIDs',True);
     Server.StrictClientIDValidation := Ini.ReadBool('Server','StrictClientIDValidation',False);
+    Server.SystemClock := Ini.ReadBool('Server','UseSystemClock',True);
 
     I := Ini.ReadInteger('Server','MaximumQOS',2);
     if I < 0 then
@@ -356,6 +357,7 @@ begin
     Ini.WriteBool('Server','RequireAuthentication',Server.RequireAuthentication);
     Ini.WriteBool('Server','AllowNullClientIDs',Server.AllowNullClientIDs);
     Ini.WriteBool('Server','StrictClientIDValidation',Server.StrictClientIDValidation);
+    Ini.WriteBool('Server','UseSystemClock',Server.SystemClock);
     I := ord(Server.MaximumQOS);
     Ini.WriteInteger('Server','MaximumQOS',I);
     Ini.WriteString('Server','Host',TCP.Host);
@@ -405,11 +407,14 @@ begin
   if Assigned(ASocket) then
     begin
       Conn := TMQTTServerConnection(aSocket.UserData);
-      Conn.Socket := nil;
       aSocket.UserData := nil;
       if Assigned(Conn) then
-          if Conn.State <> ssDisconnected then
-            Conn.Disconnected;
+        begin
+          Conn.Socket := nil;
+          if Assigned(Conn) then
+              if Conn.State <> ssDisconnected then
+                Conn.Disconnected;
+        end;
     end;
 end;
 
@@ -449,20 +454,23 @@ var
   Data: Pointer;
   Size: Integer;
 begin
-  Conn := TMQTTServerConnection(aSocket.UserData);
-  if Assigned(Conn) and (Conn is TMQTTServerConnection) then
+  if aSocket.Connected then
     begin
-      GetMem(Data,32);
-      try
-        repeat
-          Size := aSocket.Get(Data^,32);
-          if Size > 0 then
-            Conn.RecvBuffer.Write(Data,Size);
-        until Size < 32;
-        Conn.DataAvailable(Conn.RecvBuffer);
-      finally
-        FreeMem(Data,32);
-      end;
+      Conn := TMQTTServerConnection(aSocket.UserData);
+      if Assigned(Conn) and (Conn is TMQTTServerConnection) then
+        begin
+          GetMem(Data,32);
+          try
+            repeat
+              Size := aSocket.Get(Data^,32);
+              if Size > 0 then
+                Conn.RecvBuffer.Write(Data,Size);
+            until Size < 32;
+            Conn.DataAvailable(Conn.RecvBuffer);
+          finally
+            FreeMem(Data,32);
+          end;
+        end;
     end;
 end;
 

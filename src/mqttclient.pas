@@ -33,7 +33,7 @@ type
       FSendBuffer          : TBuffer;
       FRecvBuffer          : TBuffer;
       // Packet Queues
-      FPendingTransmission : TMQTTMessageList; // QoS 1 and QoS 2 messages pending transmission to the Client.
+      //FPendingTransmission : TMQTTMessageList; // QoS 1 and QoS 2 messages pending transmission to the Client.
       FWaitingForAck       : TMQTTPacketQueue; // QoS 1 and QoS 2 messages which have been sent to the Client, but have not been completely acknowledged.
       FPendingReceive      : TMQTTPacketQueue; // QoS 2 messages which have been received from the Client, but have not been completely acknowledged.
        // Attributes
@@ -64,7 +64,7 @@ type
       procedure MergeSubscriptions(Subscriptions: TMQTTSubscriptionList; ReturnCodes: TBuffer);
       procedure ProcessPingIntervals;
       procedure ProcessAckQueueIntervals;
-      procedure SendPendingMessages;
+      //procedure SendPendingMessages;
       // Methods to handle incomming packets
       procedure HandleCONNACKPacket(APacket: TMQTTCONNACKPacket);
       procedure HandlePINGRESPPacket;
@@ -145,7 +145,7 @@ begin
   FRecvBuffer          := TBuffer.Create;
   FPacketIDManager     := TMQTTPacketIDManager.Create;
   FSubscriptions       := TMQTTSubscriptionList.Create;
-  FPendingTransmission := TMQTTMessageList.Create;
+  //FPendingTransmission := TMQTTMessageList.Create;
   FWaitingForAck       := TMQTTPacketQueue.Create;
   FPendingReceive      := TMQTTPacketQueue.Create;
   FWillMessage         := TMQTTWillMessage.Create;
@@ -165,7 +165,7 @@ begin
   FTimer.Free;
   FWillMessage.Free;
   FWaitingForAck.Free;
-  FPendingTransmission.Free;
+  //FPendingTransmission.Free;
   FPendingReceive.Free;
   FSubscriptions.Free;
   FPacketIDManager.Free;
@@ -177,7 +177,7 @@ end;
 
 procedure TMQTTClient.Reset;
 begin
-  FPendingTransmission.Clear;
+  //FPendingTransmission.Clear;
   FPendingReceive.Clear;
   FWaitingForAck.Clear;
   FPacketIDManager.Reset;
@@ -358,7 +358,7 @@ procedure TMQTTClient.InitSession;
 begin
   FSubscriptions.Clear;
   FWaitingForAck.Clear;
-  FPendingTransmission.Clear;
+  //FPendingTransmission.Clear;
   FPendingReceive.Clear;
   if Assigned(FOnInitSession) then
     FOnInitSession(Self);
@@ -483,9 +483,10 @@ procedure TMQTTClient.ProcessPingIntervals;
 begin
   if FPingIntRemaining = 1 then
     begin
-      if FPingCount = 2 then
+      if FPingCount >= 2 then
         begin
           FPingIntRemaining := 0;
+          FPingCount := 0;
           Bail(MQTT_ERROR_NO_PING_RESPONSE);
           Exit;
         end;
@@ -694,7 +695,7 @@ begin
     end;
 end;
 
-procedure TMQTTClient.SendPendingMessages;
+{procedure TMQTTClient.SendPendingMessages;
 var
   I: Integer;
   M: TMQTTMessage;
@@ -705,7 +706,7 @@ begin
       Publish(M.Topic,M.Data,M.QOS,M.Retain);
     end;
   FPendingTransmission.Clear;
-end;
+end;}
 
 procedure TMQTTClient.ReceiveMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean);
 begin
@@ -753,8 +754,8 @@ begin
         qtAT_LEAST_ONCE : HandlePUBLISHPacket1(APacket);
         qtEXACTLY_ONCE  : HandlePUBLISHPacket2(APacket);
       end;
-      if APacket.QOS in [qtAT_LEAST_ONCE,qtEXACTLY_ONCE] then
-        SendPendingMessages;
+      {if APacket.QOS in [qtAT_LEAST_ONCE,qtEXACTLY_ONCE] then
+        SendPendingMessages;}
     end;
 end;
 

@@ -96,13 +96,12 @@ function ReadBinaryDataFromBuffer(ABuffer: TBuffer; out Data: AnsiString): Boole
 procedure WriteBinaryDataToBuffer(ABuffer: TBuffer; Data: AnsiString);
 function ReadRemainingLengthFromBuffer(ABuffer: TBuffer; out Value: DWORD): Boolean;
 procedure WriteRemainingLengthToBuffer(ABuffer: TBuffer; const Value: DWORD);
-
 function ReadMQTTPacketFromBuffer(ABuffer: TBuffer; out Packet: TMQTTPacket; Connected: Boolean = True): Word;
 
 implementation
 
 uses
-  LazUTF8, MQTTPacketDefs;
+  Sockets, LazUTF8, MQTTPacketDefs;
 
 { TMQTTPacketQueue }
 
@@ -273,15 +272,11 @@ end;
 { Functions }
 
 function ReadWordFromBuffer(ABuffer: TBuffer; out Value: Word): Boolean;
-var
-  B : Byte;
 begin
   if ABuffer.Size >= 2 then
     begin
-      ABuffer.Read(@B,1);
-      Value := B shl 8;
-      ABuffer.Read(@B,1);
-      Value := Value or B;
+      ABuffer.Read(@Value,2);
+      Value := htons(Value);
       Result := True;
     end
   else
@@ -290,12 +285,10 @@ end;
 
 procedure WriteWordToBuffer(ABuffer: TBuffer; const Value: Word);
 var
-  B : Byte;
+  W: Word;
 begin
-  B := Value shr 8;
-  ABuffer.Write(@B,1);
-  B := Value and $FF;
-  ABuffer.Write(@B,1);
+  W := htons(Value);
+  ABuffer.Write(@W,2);
 end;
 
 function ReadBinaryDataFromBuffer(ABuffer: TBuffer; out Data: AnsiString): Boolean;
