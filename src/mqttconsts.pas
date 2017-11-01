@@ -113,7 +113,11 @@ const
   MQTT_ERROR_INVALID_RETURN_CODES         = 120;
   MQTT_ERROR_CONNECT_TIMEOUT              = 121;
   MQTT_ERROR_NOT_IMPLEMENTED              = 122;
-
+  MQTT_ERROR_PACKET_QUEUE_FULL            = 123;
+  MQTT_ERROR_PACKETID_NOT_FOUND           = 124;
+  MQTT_ERROR_SEND_PUBCOMP_FAILED          = 125;
+  MQTT_ERROR_SEND_PUBREL_FAILED           = 126;
+  MQTT_ERROR_PACKET_QUEUE_TIMEOUT         = 127;
   MQTT_ERROR_UNKNOWN                      = 1000;
 
 function GetMQTTErrorMessage(ErrCode: Word): String;
@@ -146,6 +150,11 @@ begin
     MQTT_ERROR_INVALID_RETURN_CODES         : Result := 'Return codes are invalid';
     MQTT_ERROR_CONNECT_TIMEOUT              : Result := 'Timed out waiting for connect';
     MQTT_ERROR_NOT_IMPLEMENTED              : Result := 'Not implemented';
+    MQTT_ERROR_PACKET_QUEUE_FULL            : Result := 'Packet queue full';
+    MQTT_ERROR_PACKETID_NOT_FOUND           : Result := 'Packet ID not found';
+    MQTT_ERROR_SEND_PUBCOMP_FAILED          : Result := 'Send PUBCOMP failed';
+    MQTT_ERROR_SEND_PUBREL_FAILED           : Result := 'Send PUBREL failed';
+    MQTT_ERROR_PACKET_QUEUE_TIMEOUT         : Result := 'Packet Queue timeout';
   else
     Result := 'An unknown error ocurred ('+IntToStr(ErrCode)+')';
   end;
