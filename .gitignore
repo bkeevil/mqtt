@@ -11,3 +11,6 @@ Apps/MQTTServerCLI/MQTTServerCLI
 Apps/MQTTServer/MQTTServer
 Apps/MQTTClient/MQTTClient
 tree.xml
+Apps/MQTTServer/mqttserver.ini
+src/Makefile
+src/Makefile.fpc

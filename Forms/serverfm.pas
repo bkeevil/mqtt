@@ -454,7 +454,7 @@ var
   Data: Pointer;
   Size: Integer;
 begin
-  if aSocket.Connected then
+  if Assigned(aSocket) and (aSocket.Connected) then
     begin
       Conn := TMQTTServerConnection(aSocket.UserData);
       if Assigned(Conn) and (Conn is TMQTTServerConnection) then

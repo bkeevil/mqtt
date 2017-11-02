@@ -1,7 +1,7 @@
 object ServerForm: TServerForm
-  Left = 506
+  Left = 505
   Height = 371
-  Top = 208
+  Top = 183
   Width = 817
   ActiveControl = PageControl
   Caption = 'MQTT Server'
@@ -379,7 +379,7 @@ object ServerForm: TServerForm
     end
   end
   object Server: TMQTTServer
-    MaximumQOS = qtAT_LEAST_ONCE
+    MaximumQOS = qtAT_MOST_ONCE
     RequireAuthentication = False
     AllowNullClientIDs = True
     OnAccepted = ServerAccepted
