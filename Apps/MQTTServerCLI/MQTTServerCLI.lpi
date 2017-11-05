@@ -79,6 +79,9 @@
           </Linking>
         </CompilerOptions>
       </Item3>
+      <SharedMatrixOptions Count="1">
+        <Item1 ID="602205293610" Type="IDEMacro"/>
+      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -88,16 +91,22 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="lnetbase"/>
+        <PackageName Value="crytopkg"/>
       </Item1>
       <Item2>
-        <PackageName Value="bkutils"/>
+        <PackageName Value="LCLBase"/>
       </Item2>
       <Item3>
-        <PackageName Value="mqttcomponents"/>
+        <PackageName Value="lnetbase"/>
       </Item3>
+      <Item4>
+        <PackageName Value="bkutils"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="mqttcomponents"/>
+      </Item5>
     </RequiredPackages>
     <Units Count="1">
       <Unit0>

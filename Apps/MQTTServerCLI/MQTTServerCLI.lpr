@@ -2,11 +2,13 @@ program MQTTServerCLI;
 
 {$mode objfpc}{$H+}
 
+{$DEFINE UseCThreads}
+
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Classes, SysUtils, CustApp, CRT, Logging, fptimer, inifiles, lnetbase, lnet,
+  Classes, SysUtils, CustApp, CRT, Logging, inifiles, lnetbase, lnet,
   mqttconsts, mqttserver;
 
 type
@@ -48,6 +50,7 @@ procedure TMQTTServerCLI.DoRun;
 begin
   repeat
     TCP.Callaction; // eventize the lNet
+    CheckSynchronize;
     if Keypressed and (readKey = #27) then
       Terminate;
   until Terminated; // until user quit

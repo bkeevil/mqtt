@@ -5,7 +5,7 @@ unit mqttserver;
 interface
 
 uses
-  Classes, SysUtils, CustomTimer, Buffers, Logging, PasswordMan,
+  Classes, SysUtils, FPTimer, Buffers, Logging, PasswordMan,
   MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions,
   MQTTMessages;
 
@@ -126,7 +126,7 @@ type
       FStrictClientIDValidation   : Boolean;
       FMaximumQOS                 : TMQTTQOSType;
       //
-      FTimer                      : TCustomTimer;
+      FTimer                      : TFPTimer;
       FTimerTicks                 : Byte;                    // Accumulator
       //
       FSystemClock                : Boolean;
@@ -278,8 +278,10 @@ begin
   FPasswords             := TPasswordManager.Create;
   FConnections           := TMQTTServerConnectionList.Create;
   FSessions              := TMQTTSessionList.Create(Self);
-  FTimer                 := TCustomTimer.Create(nil);
+  FTimer                 := TFPTimer.Create(nil);
+  FTimer.Interval        := 1000;
   FTimer.OnTimer         := @HandleTimer;
+  FTimer.Enabled         := True;
 end;
 
 destructor TMQTTServer.Destroy;
