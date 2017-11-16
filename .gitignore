@@ -4,6 +4,7 @@
 Makefile.compiled
 fpmake.pp
 src/lib/
+src/backup/
 Apps/MQTTClient/lib/
 Apps/MQTTServer/lib/
 Apps/MQTTServerCLI/lib/

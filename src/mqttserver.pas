@@ -564,7 +564,9 @@ end;
 
 destructor TMQTTServerConnection.Destroy;
 begin
+  FSocket.UserData := nil;
   FSocket := nil;
+  FSession := nil;
   FWillMessage.Free;
   FSendBuffer.Free;
   FRecvBuffer.Free;
@@ -893,7 +895,7 @@ begin
   else
     SessionPresent := InitSessionState(APacket);
 
-  Log.Send(mtInfo,'Received CONNECT. ClientID=%s Username=%s SessionPresent=%s',[APacket.ClientID,APacket.Username,BoolToStr(SessionPresent)]);
+  Log.Send(mtInfo,'Received CONNECT. ClientID=%s Username=%s SessionPresent=%s KeepAlive=%d',[APacket.ClientID,APacket.Username,BoolToStr(SessionPresent),APacket.KeepAlive]);
 
   Reply := TMQTTCONNACKPACKET.Create;
   try
