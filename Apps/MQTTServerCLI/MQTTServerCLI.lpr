@@ -1,3 +1,4 @@
+
 program MQTTServerCLI;
 
 {$mode objfpc}{$H+}
@@ -25,6 +26,7 @@ type
       procedure ServerDisconnected(AConnection: TMQTTServerConnection);
       procedure ServerError(AConnection: TMQTTServerConnection; ErrCode: Word; ErrMsg: String);
       procedure ServerSendData(AConnection: TMQTTServerConnection);
+      procedure ServerConnectionDestroy(AConnection: TMQTTServerConnection);
       procedure TCPAccept(aSocket: TLSocket);
       procedure TCPCanSend(aSocket: TLSocket);
       procedure TCPDisconnect(aSocket: TLSocket);
@@ -83,6 +85,7 @@ begin
   Server.OnDisconnected := @ServerDisconnected;
   Server.OnError := @ServerError;
   Server.OnSendData := @ServerSendData;
+  Server.OnConnectionDestroy := @ServerConnectionDestroy;
   LoadConfiguration;
   if Terminated then Exit;
   if TCP.Listen then
@@ -267,7 +270,8 @@ begin
   if Assigned(ASocket) then
     begin
       Conn := TMQTTServerConnection(aSocket.UserData);
-      Conn.Socket := nil;
+      if Assigned(Conn) then
+        Conn.Socket := nil;
       aSocket.UserData := nil;
       if Assigned(Conn) then
         if Conn.State <> ssDisconnected then
@@ -329,6 +333,13 @@ end;
 procedure TMQTTServerCLI.ServerSendData(AConnection: TMQTTServerConnection);
 begin
   TCPCanSend(AConnection.Socket as TLSocket);
+end;
+
+procedure TMQTTServerCLI.ServerConnectionDestroy(
+  AConnection: TMQTTServerConnection);
+begin
+  if (AConnection.Socket is TLSocket) then
+    (AConnection.Socket as TLSocket).UserData := nil;
 end;
 
 procedure TMQTTServerCLI.TCPCanSend(aSocket: TLSocket);
