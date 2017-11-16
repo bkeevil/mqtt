@@ -54,7 +54,7 @@ begin
     TCP.Callaction; // eventize the lNet
     if Keypressed and (readKey = #27) then
       Terminate;
-    CheckSynchronize;
+//    CheckSynchronize;
     Sleep(100);
   until Terminated; // until user quit
   Terminate;
@@ -339,7 +339,10 @@ procedure TMQTTServerCLI.ServerConnectionDestroy(
   AConnection: TMQTTServerConnection);
 begin
   if (AConnection.Socket is TLSocket) then
-    (AConnection.Socket as TLSocket).UserData := nil;
+    begin
+      (AConnection.Socket as TLSocket).UserData := nil;
+      (AConnection.Socket as TLSocket).Disconnect;
+    end;
 end;
 
 procedure TMQTTServerCLI.TCPCanSend(aSocket: TLSocket);
@@ -349,15 +352,18 @@ var
   Sent,Size: Integer;
 begin
   Conn := TMQTTServerConnection(aSocket.UserData);
-  Size := Conn.SendBuffer.Size;
-  GetMem(Data,Size);
-  try
-    Conn.SendBuffer.Peek(Data,Size);
-    Sent := aSocket.Send(Data^,Size);
-    Conn.SendBuffer.Read(Data,Sent);
-  finally
-    FreeMem(Data,Size);
-  end;
+  if Assigned(Conn) then
+    begin
+      Size := Conn.SendBuffer.Size;
+      GetMem(Data,Size);
+      try
+        Conn.SendBuffer.Peek(Data,Size);
+        Sent := aSocket.Send(Data^,Size);
+        Conn.SendBuffer.Read(Data,Sent);
+      finally
+        FreeMem(Data,Size);
+      end;
+    end;
 end;
 {var
   Conn: TMQTTServerConnection;

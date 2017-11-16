@@ -960,12 +960,12 @@ procedure TMQTTServerConnection.HandlePINGREQPacket;
 var
   Reply: TMQTTPINGRESPPacket;
 begin
-  Log.Send(mtInfo,'Received PINGREQ');
+  //Log.Send(mtInfo,'Received PINGREQ');
   Reply := TMQTTPINGRESPPacket.Create;
   try
     // KeepAlive is reset in DataAvailable() in response to all packets
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtInfo,'Sending PINGRESP');
+    //Log.Send(mtInfo,'Sending PINGRESP');
     Server.SendData(Self);
   finally
     Reply.Free;
