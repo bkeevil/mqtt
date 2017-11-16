@@ -22,7 +22,7 @@ type
   TMQTTValidateClientIDEvent = procedure (AServer: TMQTTServer; AClientID: UTF8String; var Allow: Boolean) of object;
   TMQTTConnectionErrorEvent = procedure (AConnection: TMQTTServerConnection; ErrCode: Word; ErrMsg: String) of object;
   TMQTTConnectionSendDataEvent = procedure (AConnection: TMQTTServerConnection) of object;
-
+  TMQTTConnectionDestroyEvent = procedure (AConnection: TMQTTServerConnection) of object;
   EMQTTConnectionError = class(Exception);
 
   { TMQTTServerConnection }
@@ -137,6 +137,7 @@ type
       FOnDisconnected             : TMQTTConnectionNotifyEvent;
       FOnError                    : TMQTTConnectionErrorEvent;
       FOnConnectionsChanged       : TNotifyEvent;
+      FOnConnectionDestroy        : TMQTTConnectionDestroyEvent;
       //
       FOnSendData                 : TMQTTConnectionSendDataEvent;
       FOnValidateSubscription     : TMQTTValidateSubscriptionEvent;
@@ -156,6 +157,7 @@ type
       procedure Disconnected(Connection: TMQTTServerConnection); virtual;
       procedure Disconnect(Connection: TMQTTServerConnection); virtual;
       procedure SendData(Connection: TMQTTServerConnection); virtual;
+      procedure DestroyConnection(Connection: TMQTTServerConnection); virtual;
       procedure ConnectionsChanged; virtual;
       procedure SubscriptionsChanged; virtual;
       procedure SessionsChanged; virtual;
@@ -190,6 +192,7 @@ type
       property OnSendData                 : TMQTTConnectionSendDataEvent read FOnSendData write FOnSendData;
       property OnError                    : TMQTTConnectionErrorEvent read FOnError write FOnError;
       property OnConnectionsChanged       : TNotifyEvent read FOnConnectionsChanged write FOnConnectionsChanged;
+      property OnConnectionDestroy        : TMQTTConnectionDestroyEvent read FOnConnectionDestroy write FOnConnectionDestroy;
       property OnValidateSubscription     : TMQTTValidateSubscriptionEvent read FOnValidateSubscription write FOnValidateSubscription;
       property OnValidateClientID         : TMQTTValidateClientIDEvent read FOnValidateClientID write FOnValidateClientID;
       property OnSubscriptionsChanged     : TNotifyEvent read FOnSubscriptionsChanged write FOnSubscriptionsChanged;
@@ -406,6 +409,12 @@ begin
     FOnSendData(Connection);
 end;
 
+procedure TMQTTServer.DestroyConnection(Connection: TMQTTServerConnection);
+begin
+  if Assigned(FOnConnectionDestroy) then
+    FOnConnectionDestroy(Connection);
+end;
+
 procedure TMQTTServer.ConnectionsChanged;
 begin
   if Assigned(FOnConnectionsChanged) then
@@ -564,7 +573,7 @@ end;
 
 destructor TMQTTServerConnection.Destroy;
 begin
-  FSocket.UserData := nil;
+  FServer.DestroyConnection(Self);
   FSocket := nil;
   FSession := nil;
   FWillMessage.Free;
