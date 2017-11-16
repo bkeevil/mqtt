@@ -7,9 +7,10 @@
       <Unit0>
         <Filename Value="MQTTServerCLI.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="49"/>
-        <CursorPos X="22" Y="53"/>
-        <UsageCount Value="21"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="44"/>
+        <CursorPos X="31" Y="80"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -20,7 +21,7 @@
         <EditorIndex Value="7"/>
         <TopLine Value="151"/>
         <CursorPos X="19" Y="163"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -29,7 +30,7 @@
         <EditorIndex Value="6"/>
         <TopLine Value="164"/>
         <CursorPos Y="194"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -50,16 +51,16 @@
         <EditorIndex Value="8"/>
         <TopLine Value="21"/>
         <CursorPos X="28" Y="45"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="../../../lnet/trunk/lib/lnet.pp"/>
         <UnitName Value="lNet"/>
         <EditorIndex Value="9"/>
-        <TopLine Value="266"/>
-        <CursorPos X="30" Y="275"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="1458"/>
+        <CursorPos Y="1471"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
@@ -76,16 +77,15 @@
         <EditorIndex Value="3"/>
         <TopLine Value="115"/>
         <CursorPos Y="129"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="../../src/mqttserver.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="281"/>
-        <CursorPos X="3" Y="284"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="250"/>
+        <CursorPos Y="373"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit9>
       <Unit10>
@@ -93,7 +93,7 @@
         <EditorIndex Value="4"/>
         <TopLine Value="87"/>
         <CursorPos X="7" Y="105"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit10>
       <Unit11>
@@ -108,7 +108,7 @@
         <Filename Value="../../src/mqttclient.pas"/>
         <EditorIndex Value="5"/>
         <CursorPos X="44" Y="9"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit12>
       <Unit13>
@@ -171,130 +171,142 @@
         <EditorIndex Value="1"/>
         <TopLine Value="197"/>
         <CursorPos X="16" Y="209"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit20>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="281" Column="29" TopLine="267"/>
+        <Caret Line="380" TopLine="361"/>
       </Position1>
       <Position2>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="8" Column="30"/>
+        <Filename Value="MQTTServerCLI.lpr"/>
+        <Caret Line="55" TopLine="47"/>
       </Position2>
       <Position3>
-        <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="253" Column="28" TopLine="238"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="369" TopLine="361"/>
       </Position3>
       <Position4>
-        <Filename Value="../../src/mqttclient.pas"/>
-        <Caret Line="251" Column="39" TopLine="234"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="370" TopLine="361"/>
       </Position4>
       <Position5>
-        <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="379" TopLine="356"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="371" TopLine="361"/>
       </Position5>
       <Position6>
-        <Filename Value="../../src/mqttsubscriptions.pas"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="372" TopLine="361"/>
       </Position6>
       <Position7>
-        <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="379" TopLine="357"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="373" TopLine="361"/>
       </Position7>
       <Position8>
-        <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="364" Column="106" TopLine="357"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="374" TopLine="361"/>
       </Position8>
       <Position9>
-        <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="24" Column="65" TopLine="12"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="380" TopLine="361"/>
       </Position9>
       <Position10>
         <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="379" TopLine="353"/>
+        <Caret Line="55" TopLine="47"/>
       </Position10>
       <Position11>
-        <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="117" Column="53" TopLine="90"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="369" TopLine="361"/>
       </Position11>
       <Position12>
-        <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="19" Column="71"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="370" TopLine="361"/>
       </Position12>
       <Position13>
         <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="8" Column="33"/>
+        <Caret Line="371" TopLine="361"/>
       </Position13>
       <Position14>
         <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="129" Column="44" TopLine="115"/>
+        <Caret Line="372" TopLine="361"/>
       </Position14>
       <Position15>
         <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="281" Column="36" TopLine="267"/>
+        <Caret Line="373" TopLine="361"/>
       </Position15>
       <Position16>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="108" Column="25" TopLine="81"/>
+        <Filename Value="MQTTServerCLI.lpr"/>
+        <Caret Line="52" TopLine="44"/>
       </Position16>
       <Position17>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="289" Column="38" TopLine="262"/>
+        <Filename Value="../../../lnet/trunk/lib/lnet.pp"/>
+        <Caret Line="1468" TopLine="1458"/>
       </Position17>
       <Position18>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="367"/>
+        <Filename Value="../../../lnet/trunk/lib/lnet.pp"/>
+        <Caret Line="1469" TopLine="1458"/>
       </Position18>
       <Position19>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="129" Column="45" TopLine="106"/>
+        <Filename Value="../../../lnet/trunk/lib/lnet.pp"/>
+        <Caret Line="1470" TopLine="1458"/>
       </Position19>
       <Position20>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="283" Column="26" TopLine="258"/>
+        <Filename Value="../../../lnet/trunk/lib/lnet.pp"/>
+        <Caret Line="1471" TopLine="1458"/>
       </Position20>
       <Position21>
         <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="2"/>
+        <Caret Line="53" TopLine="44"/>
       </Position21>
       <Position22>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="8" Column="30"/>
+        <Filename Value="MQTTServerCLI.lpr"/>
+        <Caret Line="55" TopLine="44"/>
       </Position22>
       <Position23>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="129" Column="38" TopLine="106"/>
+        <Filename Value="MQTTServerCLI.lpr"/>
+        <Caret Line="56" TopLine="44"/>
       </Position23>
       <Position24>
         <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="2"/>
+        <Caret Line="57" TopLine="44"/>
       </Position24>
       <Position25>
         <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="381" TopLine="355"/>
+        <Caret Line="52" TopLine="44"/>
       </Position25>
       <Position26>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="8" Column="33"/>
+        <Filename Value="MQTTServerCLI.lpr"/>
+        <Caret Line="53" TopLine="44"/>
       </Position26>
       <Position27>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="278" Column="3" TopLine="268"/>
+        <Filename Value="MQTTServerCLI.lpr"/>
+        <Caret Line="55" TopLine="44"/>
       </Position27>
       <Position28>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="8" Column="25"/>
+        <Filename Value="MQTTServerCLI.lpr"/>
+        <Caret Line="56" TopLine="44"/>
       </Position28>
       <Position29>
-        <Filename Value="../../src/mqttserver.pas"/>
-        <Caret Line="129" Column="40" TopLine="115"/>
+        <Filename Value="MQTTServerCLI.lpr"/>
+        <Caret Line="57" TopLine="44"/>
       </Position29>
       <Position30>
         <Filename Value="MQTTServerCLI.lpr"/>
-        <Caret Line="53" Column="22" TopLine="49"/>
+        <Caret Line="52" TopLine="44"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="1">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="../../src/mqttserver.pas"/>
+        <Line Value="373"/>
+      </Item1>
+    </BreakPoints>
+  </Debugging>
 </CONFIG>

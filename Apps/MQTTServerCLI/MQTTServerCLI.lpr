@@ -50,9 +50,10 @@ procedure TMQTTServerCLI.DoRun;
 begin
   repeat
     TCP.Callaction; // eventize the lNet
-    CheckSynchronize;
     if Keypressed and (readKey = #27) then
       Terminate;
+    CheckSynchronize;
+    Sleep(100);
   until Terminated; // until user quit
   Terminate;
 end;
@@ -76,6 +77,7 @@ begin
   Server.AllowNullClientIDS := True;
   Server.MaximumQOS := qtEXACTLY_ONCE;
   Server.RequireAuthentication := False;
+  Server.SystemClock := False;
   Server.OnAccepted := @ServerAccepted;
   Server.OnDisconnect := @ServerDisconnect;
   Server.OnDisconnected := @ServerDisconnected;
