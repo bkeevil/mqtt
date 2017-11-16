@@ -5,7 +5,7 @@ unit mqttserver;
 interface
 
 uses
-  Classes, SysUtils, FPTimer, Buffers, Logging, PasswordMan,
+  Classes, SysUtils, Buffers, Logging, PasswordMan,
   MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions,
   MQTTMessages;
 
@@ -112,6 +112,16 @@ type
       property Items[Index: Integer]: TMQTTServerConnection read GetItem; default;
   end;
 
+  { TMQTTServerThread }
+
+  TMQTTServerThread = class(TThread)
+    private
+      FServer: TMQTTServer;
+      procedure OnTimer;
+    protected
+      procedure Execute; override;
+  end;
+
   { TMQTTServer }
 
   TMQTTServer = class(TComponent)
@@ -126,7 +136,8 @@ type
       FStrictClientIDValidation   : Boolean;
       FMaximumQOS                 : TMQTTQOSType;
       //
-      FTimer                      : TFPTimer;
+      FThread                     : TMQTTServerThread;
+      //FTimer                      : TFPTimer;
       FTimerTicks                 : Byte;                    // Accumulator
       //
       FSystemClock                : Boolean;
@@ -266,6 +277,23 @@ type
 
 implementation
 
+{ TMQTTServerThread }
+
+procedure TMQTTServerThread.OnTimer;
+begin
+  FServer.HandleTimer(nil);
+end;
+
+procedure TMQTTServerThread.Execute;
+begin
+  while not Terminated do
+    begin
+      Sleep(1000);
+      if Assigned(FServer) then
+        Synchronize(@OnTimer);
+    end;
+end;
+
 { TMQTTServer }
 
 constructor TMQTTServer.Create(AOwner: TComponent);
@@ -281,17 +309,23 @@ begin
   FPasswords             := TPasswordManager.Create;
   FConnections           := TMQTTServerConnectionList.Create;
   FSessions              := TMQTTSessionList.Create(Self);
-  FTimer                 := TFPTimer.Create(nil);
-  FTimer.Interval        := 1000;
-  FTimer.OnTimer         := @HandleTimer;
-  FTimer.Enabled         := True;
+  //
+  FThread                 := TMQTTServerThread.Create(False);
+  FThread.FreeOnTerminate := True;
+  FThread.FServer         := Self;
+  //FTimer                 := TFPTimer.Create(nil);
+  //FTimer.Interval        := 1000;
+  //FTimer.OnTimer         := @HandleTimer;
+  //FTimer.Enabled         := True;
 end;
 
 destructor TMQTTServer.Destroy;
 begin
-  FTimer.OnTimer := nil;
-  FTimer.Enabled := False;
-  FTimer.Free;
+  FThread.FServer := nil;
+  FThread.Terminate;
+  //FTimer.OnTimer := nil;
+  //FTimer.Enabled := False;
+  //FTimer.Free;
   FSessions.Free;
   FConnections.Free;
   FPasswords.Free;
