@@ -3,9 +3,9 @@ program MQTTClient;
 {$mode objfpc}{$H+}
 
 uses
-  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  {$IFDEF UNIX}
   cthreads,
-  {$ENDIF}{$ENDIF}
+  {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, connectfm,
   clientfm, publishfm, mqttregister, subscribefm, lnetvisual;

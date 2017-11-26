@@ -5,7 +5,7 @@ unit mqttclient;
 interface
 
 uses
-  Classes, SysUtils, fptimer, Buffers, Logging,
+  Classes, SysUtils, CustomTimer, Buffers, Logging,
   MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTMessages, MQTTSubscriptions;
 
 type
@@ -46,7 +46,7 @@ type
       FPingInterval        : Word;
       FPingCount           : Byte;
       FPingIntRemaining    : Word;
-      FTimer               : TFPTimer;
+      FTimer               : TCustomTimer;
       // State Fields
       FInsufficientData    : Byte;
       //
@@ -153,7 +153,7 @@ begin
   FPingInterval        := MQTT_DEFAULT_PING_INTERVAL;
   FPingIntRemaining    := FPingInterval;
   FCleanSession        := True;
-  FTimer               := TFPTimer.Create(nil);
+  FTimer               := TCustomTimer.Create(nil);
   FTimer.OnTimer       := @HandleTimer;
   FTimer.Enabled       := False;
 end;
