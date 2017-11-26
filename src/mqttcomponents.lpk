@@ -83,22 +83,13 @@
       </Item9>
     </Files>
     <LazDoc Paths="/home/bkeevil/lazarus/mqtt/doc/fpdoc"/>
-    <RequiredPkgs Count="5">
+    <RequiredPkgs Count="2">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="LCLBase"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCLBase"/>
-      </Item2>
-      <Item3>
-        <PackageName Value="LazUtils"/>
-      </Item3>
-      <Item4>
         <PackageName Value="bkutils"/>
-      </Item4>
-      <Item5>
-        <PackageName Value="FCL"/>
-      </Item5>
+      </Item2>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

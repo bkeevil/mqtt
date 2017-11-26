@@ -25,22 +25,25 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="lnetvisual"/>
+        <PackageName Value="crytopkg"/>
       </Item1>
       <Item2>
-        <PackageName Value="FCL"/>
+        <PackageName Value="lnetvisual"/>
       </Item2>
       <Item3>
-        <PackageName Value="bkutils"/>
+        <PackageName Value="FCL"/>
       </Item3>
       <Item4>
-        <PackageName Value="mqttcomponents"/>
+        <PackageName Value="bkutils"/>
       </Item4>
       <Item5>
-        <PackageName Value="LCL"/>
+        <PackageName Value="mqttcomponents"/>
       </Item5>
+      <Item6>
+        <PackageName Value="LCL"/>
+      </Item6>
     </RequiredPackages>
     <Units Count="5">
       <Unit0>
