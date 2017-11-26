@@ -7,6 +7,6 @@ For the client and server demo applications I am using the LNet components becau
 
 Currently the client and server demo applications are working but need further testing and verification against the standards before it can be considered done.  
 
-I have a command line version of the server demo app about done and will be uploading that shortly.  I am developing on my own private svn server and uploading here when I have something relatively stable.
+## Installation
 
-To build this package you will need to place buffers.pas, logging.pas and passwordman.pas from my lazarus repository into the mqttcomponents package and remove the dependency on the bkutils.lpk package.
+To build this package you will need to check out and install my "crypto" package and my "bkutils" package.
