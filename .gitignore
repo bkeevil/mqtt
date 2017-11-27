@@ -10,3 +10,5 @@ lib
 Makefile
 backup
 
+/src/Makefile.fpc
+/src/fpmake.pp
