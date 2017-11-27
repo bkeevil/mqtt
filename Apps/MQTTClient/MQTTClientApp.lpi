@@ -2,18 +2,21 @@
 <CONFIG>
   <ProjectOptions>
     <Version Value="10"/>
+    <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="MQTTServer"/>
+      <Title Value="MQTTClientApp"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <Icon Value="0"/>
     </General>
-    <LazDoc Paths="../../doc/fpdoc"/>
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
+    <VersionInfo>
+      <StringTable ProductVersion=""/>
+    </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
     </BuildModes>
@@ -25,101 +28,67 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="crytopkg"/>
+        <PackageName Value="mqttcomponents"/>
       </Item1>
       <Item2>
         <PackageName Value="lnetvisual"/>
       </Item2>
       <Item3>
-        <PackageName Value="FCL"/>
+        <PackageName Value="bkutils"/>
       </Item3>
       <Item4>
-        <PackageName Value="bkutils"/>
-      </Item4>
-      <Item5>
-        <PackageName Value="mqttcomponents"/>
-      </Item5>
-      <Item6>
         <PackageName Value="LCL"/>
-      </Item6>
+      </Item4>
     </RequiredPackages>
     <Units Count="5">
       <Unit0>
-        <Filename Value="MQTTServer.lpr"/>
+        <Filename Value="MQTTClientApp.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="../../Forms/serverfm.pas"/>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="ServerForm"/>
+        <ComponentName Value="ClientForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit1>
       <Unit2>
-        <Filename Value="../../Forms/serverpropertiesfm.pas"/>
+        <Filename Value="..\..\Forms\connectfm.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="ServerPropertiesForm"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="ServerPropertiesFM"/>
       </Unit2>
       <Unit3>
-        <Filename Value="../../Forms/passwordmanfm.pas"/>
+        <Filename Value="..\..\Forms\publishfm.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="PassManForm"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit3>
       <Unit4>
-        <Filename Value="../../Forms/helpfm.pas"/>
+        <Filename Value="..\..\Forms\subscribefm.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="HelpForm"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
+    <PathDelim Value="\"/>
     <Target>
-      <Filename Value="MQTTServer"/>
+      <Filename Value="MQTTClientApp"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="../../Forms"/>
-      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      <OtherUnitFiles Value="..\..\Forms"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
-    <Parsing>
-      <SyntaxOptions>
-        <IncludeAssertionCode Value="True"/>
-      </SyntaxOptions>
-    </Parsing>
-    <CodeGeneration>
-      <Checks>
-        <IOChecks Value="True"/>
-        <RangeChecks Value="True"/>
-        <OverflowChecks Value="True"/>
-        <StackChecks Value="True"/>
-      </Checks>
-      <VerifyObjMethodCallValidity Value="True"/>
-    </CodeGeneration>
     <Linking>
-      <Debugging>
-        <UseHeaptrc Value="True"/>
-      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <IgnoredMessages idx5024="True"/>
-      </CompilerMessages>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

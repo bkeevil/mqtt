@@ -5,11 +5,12 @@
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="MQTTClient"/>
+      <Title Value="MQTTServerApp"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <Icon Value="0"/>
     </General>
+    <LazDoc Paths="../../doc/fpdoc"/>
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
@@ -24,7 +25,7 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="3">
       <Item1>
         <PackageName Value="lnetvisual"/>
       </Item1>
@@ -34,40 +35,38 @@
       <Item3>
         <PackageName Value="mqttcomponents"/>
       </Item3>
-      <Item4>
-        <PackageName Value="LCL"/>
-      </Item4>
     </RequiredPackages>
     <Units Count="5">
       <Unit0>
-        <Filename Value="MQTTClient.lpr"/>
+        <Filename Value="MQTTServerApp.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="../../Forms/connectfm.pas"/>
+        <Filename Value="../../Forms/serverfm.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="ConnectDlg"/>
+        <ComponentName Value="ServerForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit1>
       <Unit2>
-        <Filename Value="../../Forms/clientfm.pas"/>
+        <Filename Value="../../Forms/serverpropertiesfm.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="ClientForm"/>
+        <ComponentName Value="ServerPropertiesForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ServerPropertiesFM"/>
       </Unit2>
       <Unit3>
-        <Filename Value="../../Forms/publishfm.pas"/>
+        <Filename Value="../../Forms/passwordmanfm.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="PublishForm"/>
+        <ComponentName Value="PassManForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit3>
       <Unit4>
-        <Filename Value="../../Forms/subscribefm.pas"/>
+        <Filename Value="../../Forms/helpfm.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SubscribeForm"/>
+        <ComponentName Value="HelpForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit4>
@@ -76,7 +75,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="MQTTClient"/>
+      <Filename Value="MQTTServerApp"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -99,7 +98,7 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <UseHeaptrc Value="True"/>
+        <GenerateDebugInfo Value="False"/>
       </Debugging>
       <Options>
         <Win32>

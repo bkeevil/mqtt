@@ -1,4 +1,4 @@
-program MQTTServer;
+program MQTTServerApp;
 
 {$mode objfpc}{$H+}
 
