@@ -159,7 +159,7 @@ type
       procedure InitSystemClockMessages;
       procedure ProcessAckQueues;
       procedure ProcessSessionAges;
-      procedure HandleTimer(Sender: TObject);
+      procedure HandleTimer;
       procedure UpdateSystemClockMessages;
     protected
       // Methods that trigger event handlers
@@ -281,7 +281,7 @@ implementation
 
 procedure TMQTTServerThread.OnTimer;
 begin
-  FServer.HandleTimer(nil);
+  FServer.HandleTimer;
 end;
 
 procedure TMQTTServerThread.Execute;
@@ -360,8 +360,6 @@ begin
       DispatchMessage(nil,'System/Time/Minute',IntToStr(LNow.Minute),qtAT_MOST_ONCE,true);
       RetainedMessagesChanged;
     end;
-//      if (LNow.Second <> FLastTime.Second) then
-//        DispatchMessage(nil,'System/Time/Second',IntToStr(FLastTime.Second),qtAT_MOST_ONCE,true);
   FLastTime := LNow;
 end;
 
@@ -391,7 +389,7 @@ begin
     end;
 end;
 
-procedure TMQTTServer.HandleTimer(Sender: TObject);
+procedure TMQTTServer.HandleTimer;
 begin
   // Runs every second
   Connections.CheckTimeouts;

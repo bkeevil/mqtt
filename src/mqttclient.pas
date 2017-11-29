@@ -5,8 +5,8 @@ unit mqttclient;
 interface
 
 uses
-  Classes, SysUtils, CustomTimer, Buffers, Logging,
-  MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTMessages, MQTTSubscriptions;
+  Classes, SysUtils, Buffers, Logging,
+  MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions;
 
 type
   TMQTTClient = class;
@@ -22,6 +22,18 @@ const
 
 type
 
+  { TMQTTClientThread }
+
+  TMQTTClientThread = class(TThread)
+    private
+      FClient: TMQTTClient;
+      FConnect: Integer;
+      procedure OnTimer;
+      procedure OnConnectTimer;
+    protected
+      procedure Execute; override;
+  end;
+
   { TMQTTClient }
 
   TMQTTClient = class(TComponent)
@@ -33,10 +45,9 @@ type
       FSendBuffer          : TBuffer;
       FRecvBuffer          : TBuffer;
       // Packet Queues
-      //FPendingTransmission : TMQTTMessageList; // QoS 1 and QoS 2 messages pending transmission to the Client.
-      FWaitingForAck       : TMQTTPacketQueue; // QoS 1 and QoS 2 messages which have been sent to the Client, but have not been completely acknowledged.
-      FPendingReceive      : TMQTTPacketQueue; // QoS 2 messages which have been received from the Client, but have not been completely acknowledged.
-       // Attributes
+      //FPendingTransmission : TMQTTMessageList; // QoS 1 and QoS 2 messages pending transmission to the Server.
+      FWaitingForAck       : TMQTTPacketQueue; // QoS 1 and QoS 2 messages which have been sent to the Server, but have not been completely acknowledged.
+      FPendingReceive      : TMQTTPacketQueue; // QoS 2 messages which have been received from the Server, but have not been completely acknowledged.       // Attributes
       FWillMessage         : TMQTTWillMessage;
       FCleanSession        : Boolean;
       FClientID            : UTF8String;
@@ -46,21 +57,21 @@ type
       FPingInterval        : Word;
       FPingCount           : Byte;
       FPingIntRemaining    : Word;
-      FTimer               : TCustomTimer;
+      FThread              : TMQTTClientThread;
       // State Fields
       FInsufficientData    : Byte;
       //
-      FOnInitSession       : TNotifyEvent;
-      FOnConnected         : TNotifyEvent;
-      FOnDisconnect        : TNotifyEvent;
-      FOnDisconnected      : TNotifyEvent;
-      FOnError             : TMQTTClientErrorEvent;
-      FOnSendData          : TMQTTClientSendDataEvent;
-      FOnReceiveMessage    : TMQTTClientReceiveMessageEvent;
+      FOnInitSession          : TNotifyEvent;
+      FOnConnected            : TNotifyEvent;
+      FOnDisconnect           : TNotifyEvent;
+      FOnDisconnected         : TNotifyEvent;
+      FOnError                : TMQTTClientErrorEvent;
+      FOnSendData             : TMQTTClientSendDataEvent;
+      FOnReceiveMessage       : TMQTTClientReceiveMessageEvent;
       FOnSubscriptionsChanged : TNotifyEvent;
       // Timer Methods
-      procedure HandleConnectTimer(Sender: TObject);
-      procedure HandleTimer(Sender: TObject);
+      procedure HandleTimer;
+      procedure HandleConnectTimer;
       procedure MergeSubscriptions(Subscriptions: TMQTTSubscriptionList; ReturnCodes: TBuffer);
       procedure ProcessPingIntervals;
       procedure ProcessAckQueueIntervals;
@@ -135,6 +146,39 @@ type
 
 implementation
 
+{ TMQTTClientThread }
+
+procedure TMQTTClientThread.OnTimer;
+begin
+  FClient.HandleTimer;
+end;
+
+procedure TMQTTClientThread.OnConnectTimer;
+begin
+  FClient.HandleConnectTimer;
+end;
+
+procedure TMQTTClientThread.Execute;
+begin
+  while not Terminated do
+    begin
+      Sleep(1000);
+      if Assigned(FClient) then
+        if FClient.State = csConnecting then
+          begin
+            inc(FConnect);
+            if (FConnect >= 2) then
+              begin
+                Synchronize(@OnConnectTimer);
+                FConnect := 0;
+              end;
+          end
+        else
+          if FClient.State = csConnected then
+            Synchronize(@OnTimer);
+    end;
+end;
+
 { TMQTTClient }
 
 constructor TMQTTClient.Create(AOwner: TComponent);
@@ -153,16 +197,15 @@ begin
   FPingInterval        := MQTT_DEFAULT_PING_INTERVAL;
   FPingIntRemaining    := FPingInterval;
   FCleanSession        := True;
-  FTimer               := TCustomTimer.Create(nil);
-  FTimer.OnTimer       := @HandleTimer;
-  FTimer.Enabled       := False;
+  FThread                 := TMQTTClientThread.Create(False);
+  FThread.FreeOnTerminate := True;
+  FThread.FClient         := Self;
 end;
 
 destructor TMQTTClient.Destroy;
 begin
-  FTimer.OnTimer := nil;
-  FTimer.Enabled := False;
-  FTimer.Free;
+  FThread.FClient := nil;
+  FThread.Terminate;
   FWillMessage.Free;
   FWaitingForAck.Free;
   //FPendingTransmission.Free;
@@ -190,16 +233,26 @@ begin
   FCleanSession := False;
   FPingIntRemaining := FPingInterval;
   FPingCount := 0;
-  FTimer.Enabled := False;
   Log.Send(mtInfo,'Client has been reset');
 end;
 
-procedure TMQTTClient.HandleTimer(Sender: TObject);
+procedure TMQTTClient.HandleTimer;
 begin
   if (State = csConnected) then
     begin
       ProcessPingIntervals;
       ProcessAckQueueIntervals;
+    end;
+end;
+
+procedure TMQTTClient.HandleConnectTimer;
+begin
+  if (State = csConnecting) then
+    begin
+      Reset;
+      FThread.FConnect := 0;
+      if Assigned(FOnError) then
+        FOnError(Self,MQTT_ERROR_CONNECT_TIMEOUT,GetMQTTErrorMessage(MQTT_ERROR_CONNECT_TIMEOUT));
     end;
 end;
 
@@ -248,8 +301,7 @@ begin
   Assert(State = csNew);
   if (State = csNew) then
     begin
-      FTimer.OnTimer := @HandleConnectTimer;
-      FTimer.Enabled := True;
+      FThread.FConnect := 0;  // Reset connect timer counter
       // Check preconditions
       if ((FUsername > '') and (FPassword = '')) then
         begin
@@ -296,19 +348,6 @@ begin
     end;
 end;
 
-procedure TMQTTClient.HandleConnectTimer(Sender: TObject);
-begin
-  Assert(State = csConnecting);
-  if State = csConnecting then
-    begin
-      Reset;
-      FTimer.Enabled := False;
-      FTimer.OnTimer := @HandleTimer;
-      if Assigned(FOnError) then
-        FOnError(Self,MQTT_ERROR_CONNECT_TIMEOUT,GetMQTTErrorMessage(MQTT_ERROR_CONNECT_TIMEOUT));
-    end;
-end;
-
 procedure TMQTTClient.HandleCONNACKPacket(APacket: TMQTTCONNACKPacket);
 begin
   Assert(Assigned(APacket));
@@ -319,8 +358,7 @@ begin
         begin
           // Start the ping interval timer
           FPingIntRemaining := FPingInterval;
-          FTimer.OnTimer := @HandleTimer;
-          FTimer.Enabled := FPingInterval > 0;
+          FThread.FConnect := 0;
           if not APacket.SessionPresent then
             InitSession;
           Connected;
@@ -391,7 +429,6 @@ begin
       Log.Send(mtInfo,'The server terminated the connection');
       FState := csDisconnected;
       FPingIntRemaining := FPingInterval;
-      FTimer.Enabled := False;
       if Assigned(FOnDisconnected) then
         FOnDisconnected(Self);
     end;
@@ -405,7 +442,6 @@ begin
   Log.Send(mtError,'Bail: '+Msg);
   FState := csDisconnecting;
   FPingIntRemaining := FPingInterval;
-  FTimer.Enabled := False;
   if Assigned(FOnDisconnect) then
     FOnDisconnect(Self);
   FState := csDisconnected;
@@ -505,7 +541,6 @@ begin
   Log.Send(mtInfo,'Ping interval changed from %d to %d',[FPingInterval,AValue]);
   FPingInterval:=AValue;
   FPingIntRemaining := FPingInterval;
-  FTimer.Enabled := FPingInterval > 0;
 end;
 
 procedure TMQTTClient.Ping;

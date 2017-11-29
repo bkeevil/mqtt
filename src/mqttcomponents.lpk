@@ -82,13 +82,10 @@
       </Item9>
     </Files>
     <LazDoc Paths="/home/bkeevil/lazarus/mqtt/doc/fpdoc"/>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="1">
       <Item1>
         <PackageName Value="bkutils"/>
       </Item1>
-      <Item2>
-        <PackageName Value="LCLBase"/>
-      </Item2>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

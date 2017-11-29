@@ -166,6 +166,7 @@ begin
   if Assigned(Stream) then
     begin
       FFilter := LoadStringFromStream(Stream);
+      B := 0; // To clear hint
       Stream.Read(B,1);
       FQOS := TMQTTQOSType(B);
       FPersistent := True;
@@ -206,6 +207,7 @@ var
   X,C: Integer;
   O: TMQTTSubscription;
 begin
+  C := 0; // To clear hint
   Stream.Read(C,SizeOf(C));
   for X := 1 to C do
     begin

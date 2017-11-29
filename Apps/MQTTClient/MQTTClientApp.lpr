@@ -3,9 +3,9 @@ program MQTTClientApp;
 {$mode objfpc}{$H+}
 
 uses
-  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  {$IFDEF UNIX}
   cthreads,
-  {$ENDIF}{$ENDIF}
+  {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, lnetvisual, clientfm, connectfm, publishfm, subscribefm;
 
