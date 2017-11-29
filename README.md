@@ -13,7 +13,7 @@ There is a GUI client application and server application as well as a server com
 
 ## Project Status
  * Currently all parts of the component set and application are coded and working but require further testing and verification. 
- * There are FPDocs available in the Docs directory but they are a bit behind the code.  This needs to be converted into a wiki or something
+ * There are FPDocs available in the Docs directory but they are a bit behind the code.  
 
 ## Installation
 
