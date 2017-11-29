@@ -103,8 +103,8 @@ type
       destructor Destroy; override;
       //
       procedure Clear;
-      procedure Add(ASession: TMQTTServerConnection);
-      procedure Remove(ASession: TMQTTServerConnection);
+      procedure Add(AConnection: TMQTTServerConnection);
+      procedure Remove(AConnection: TMQTTServerConnection);
       procedure Delete(Index: Integer);
       //function Find(ClientID: UTF8String): TMQTTServerConnection;
       //
@@ -335,7 +335,6 @@ begin
       DispatchMessage(nil,'System/Time/Day',IntToStr(FLastTime.Day),qtAT_MOST_ONCE,true);
       DispatchMessage(nil,'System/Time/Hour',IntToStr(FLastTime.Hour),qtAT_MOST_ONCE,true);
       DispatchMessage(nil,'System/Time/Minute',IntToStr(FLastTime.Minute),qtAT_MOST_ONCE,true);
-//      DispatchMessage(nil,'System/Time/Second',IntToStr(FLastTime.Second),qtAT_MOST_ONCE,true);
       DispatchMessage(nil,'System/Time/DOW',IntToStr(FLastTime.DayOfWeek),qtAT_MOST_ONCE,true);
     end;
 end;
@@ -1233,16 +1232,17 @@ var
 begin
   for I := Count - 1 downto 0 do
     Items[I].Free;
+  Clear;
 end;
 
-procedure TMQTTServerConnectionList.Add(ASession: TMQTTServerConnection);
+procedure TMQTTServerConnectionList.Add(AConnection: TMQTTServerConnection);
 begin
-  FList.Add(ASession);
+  FList.Add(AConnection);
 end;
 
-procedure TMQTTServerConnectionList.Remove(ASession: TMQTTServerConnection);
+procedure TMQTTServerConnectionList.Remove(AConnection: TMQTTServerConnection);
 begin
-  FList.Remove(ASession);
+  FList.Remove(AConnection);
 end;
 
 procedure TMQTTServerConnectionList.Delete(Index: Integer);
