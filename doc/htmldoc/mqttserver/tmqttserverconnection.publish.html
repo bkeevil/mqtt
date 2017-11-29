@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>TMQTTServerConnection.Publish</title>
+<link rel="stylesheet" href="../fpdoc.css" type="text/css">
+
+</head>
+<body>
+<table class="bar" width="100%" border="0" cellpadding="4" cellspacing="0">
+<tr>
+<td><b>[<a href="../mqttserver/index.html">Overview</a>][<a href="../mqttserver/index-2.html">Constants</a>][<a href="../mqttserver/index-3.html">Types</a>][<a href="../mqttserver/index-4.html">Classes</a>][<a href="../mqttserver/index-8.html">Index</a>]</b></td>
+<td align="right"><span class="bartitle">Reference for unit 'mqttserver' (<a href="../index.html">#mqttcomponents</a>)</span></td>
+</tr>
+</table>
+<h1>TMQTTServerConnection.Publish</h1>
+<p>Sends an MQTT PUBLISH message to the client</p>
+<h2>Declaration</h2>
+<p>Source position: mqttserver.pas line 78</p>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td><p><tt><span class="code"> <span class="kw">public</span> <span class="kw">procedure</span> <a href="../mqttserver/tmqttserverconnection.html">TMQTTServerConnection</a><span class="sym">.</span>Publish<span class="sym">(</span></span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code">&nbsp;&nbsp;Topic<span class="sym">: </span>UTF8String<span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code">&nbsp;&nbsp;Data<span class="sym">: </span>string<span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code">&nbsp;&nbsp;QOS<span class="sym">: </span><a href="../mqttconsts/tmqttqostype.html">TMQTTQOSType</a> <span class="sym">=</span> qtAT_MOST_ONCE<span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code">&nbsp;&nbsp;Retain<span class="sym">: </span>Boolean <span class="sym">=</span> False<span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code">&nbsp;&nbsp;Duplicate<span class="sym">: </span>Boolean <span class="sym">=</span> False</span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"><span class="sym">)</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+</table>
+<h2>Description</h2>
+<p>Topic: The topic string Data: The message payload QoS: The QoS to use while sending the message Retain: The status of the retain flag in the message Duplicate: The status of the duplicate flag in the message  When sending a PUBLISH Packet to a Client the Server MUST set the RETAIN flag to 1 if a message is sent as a result of a new subscription being made by a Client [MQTT-3.3.1-8].   It MUST set the RETAIN flag to 0 when a PUBLISH Packet is sent to a Client because it matches an established subscription regardless of how the flag was set in the message it received [MQTT-3.3.1-9].</p>
+</body>
+</html>

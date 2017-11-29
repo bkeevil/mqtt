@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>TMQTTSubscription.Persistent</title>
+<link rel="stylesheet" href="../fpdoc.css" type="text/css">
+
+</head>
+<body>
+<table class="bar" width="100%" border="0" cellpadding="4" cellspacing="0">
+<tr>
+<td><b>[<a href="../mqttsubscriptions/index.html">Overview</a>][<a href="../mqttsubscriptions/index-4.html">Classes</a>][<a href="../mqttsubscriptions/index-8.html">Index</a>]</b></td>
+<td align="right"><span class="bartitle">Reference for unit 'mqttsubscriptions' (<a href="../index.html">#mqttcomponents</a>)</span></td>
+</tr>
+</table>
+<h1>TMQTTSubscription.Persistent</h1>
+<p>Persistent means the subscription should be stored to a stream and persist between server instantiations</p>
+<h2>Declaration</h2>
+<p>Source position: mqttsubscriptions.pas line 38</p>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td><p><tt><span class="code"> <span class="kw">public</span> <span class="kw">property </span><a href="../mqttsubscriptions/tmqttsubscription.html">TMQTTSubscription</a><span class="sym">.</span>Persistent<span class="sym"> : </span>Boolean<br>&nbsp;&nbsp;<span class="kw">read </span>FPersistent<br>&nbsp;&nbsp;<span class="kw">write </span>FPersistent<span class="sym">;</span></span></tt></p></td>
+</tr>
+</table>
+<h2>Description</h2>
+<p>Marking a subscription as persistent does two things: 1) It prevents a subscription from ever timing out and getting deleted due to non-use 2) It indicates that the subscription should be stored to a stream and persist between server instantiations  Currently there is no way to set this property from test applications.</p>
+</body>
+</html>

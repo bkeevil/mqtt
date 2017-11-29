@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <fpdoc-descriptions>
   <package name="mqttcomponents">
     <module name="mqttpackets">
@@ -58,7 +58,8 @@ procedure Remove(PacketType: TMQTTPacketType; PacketID: Word); overload; </descr
       <element name="TMQTTPacketQueue.Items">
         <short>An indexed array of packets in the list</short>
       </element>
-      <element link="The number of packets in the list" name="TMQTTPacketQueue.Count"/>
+      <element name="TMQTTPacketQueue.Count"><short>The number of packets in the list</short>
+      </element>
       <element name="TMQTTPacketIDManager">
         <short>The packet ID manager maintains a list of allocated packet IDs and generates unique packet ids on request</short>
       </element>
@@ -93,12 +94,15 @@ procedure Remove(PacketType: TMQTTPacketType; PacketID: Word); overload; </descr
         <short>Reads the remaining length of an MQTT packet from a buffer, which is stored in a special multi-byte format</short>
       </element>
       <element name="WriteRemainingLengthToBuffer">
-        <short>RWrites the remaining length of an MQTT packet to a buffer, which is stored in a special multi-byte format</short>
+        <short>Writes the remaining length of an MQTT packet to a buffer, which is stored in a special multi-byte format</short>
       </element>
       <element name="ReadMQTTPacketFromBuffer">
         <short>Reads the packet type, flags and remaining length of a packet from a buffer.  Performs validation and returns an error code.  Creates the appropriate packet class and calls that packet class to finish reading the packet from the buffer.</short>
       </element>
       <short>MQTT packet and packet queues</short>
+    <element name="TMQTTPacketIDManager.Count"><short>The number of packet IDs in the list</short>
+      </element><element name="TMQTTPacketIDManager.Items"><short>An array of packet ids that have been allocated</short>
+      </element>
     </module>
     <short>MQTT client and server components</short>
   </package>
