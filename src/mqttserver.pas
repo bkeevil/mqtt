@@ -5,8 +5,7 @@ unit mqttserver;
 interface
 
 uses
-  Classes, SysUtils, Buffers, Logging, PasswordMan,
-  MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions,
+  Classes, SysUtils, Buffers, Logging, MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions,
   MQTTMessages;
 
 // TODO: Test Send Willmessage on disconnect
@@ -20,6 +19,7 @@ type
   TMQTTConnectionNotifyEvent = procedure (AConnection: TMQTTServerConnection) of object;
   TMQTTValidateSubscriptionEvent = procedure (AConnection: TMQTTServerConnection; ASubscription: TMQTTSubscription; var QOS: TMQTTQOSType; var Allow: Boolean) of object;
   TMQTTValidateClientIDEvent = procedure (AServer: TMQTTServer; AClientID: UTF8String; var Allow: Boolean) of object;
+  TMQTTValidatePasswordEvent = procedure (AServer: TMQTTServer; AUsername, APassword: UTF8String; var Allow: Boolean) of object;
   TMQTTConnectionErrorEvent = procedure (AConnection: TMQTTServerConnection; ErrCode: Word; ErrMsg: String) of object;
   TMQTTConnectionSendDataEvent = procedure (AConnection: TMQTTServerConnection) of object;
   TMQTTConnectionDestroyEvent = procedure (AConnection: TMQTTServerConnection) of object;
@@ -39,7 +39,7 @@ type
       FServer              : TMQTTServer;
       FSession             : TMQTTSession;
       FSocket              : TObject;
-      FUser                : TPasswordManagerAccount;
+      FUsername            : UTF8String;
       FState               : TMQTTServerConnectionState;
       FInsufficientData    : Byte;
       FKeepAlive           : Word;
@@ -86,7 +86,7 @@ type
       property WillMessage : TMQTTWillMessage read FWillMessage write FWillMessage;
       property Server      : TMQTTServer read FServer;
       property Session     : TMQTTSession read FSession;
-      property User        : TPasswordManagerAccount read FUser;
+      property Username    : UTF8String read FUsername;
       property ClientIDGenerated : Boolean read FClientIDGenerated write FClientIDGenerated;
   end;
 
@@ -128,7 +128,6 @@ type
     private
       FConnections                : TMQTTServerConnectionList;
       FSessions                   : TMQTTSessionList;
-      FPasswords                  : TPasswordManager;
       FRetainedMessages           : TMQTTMessageList;
       FEnabled                    : Boolean;
       FRequireAuthentication      : Boolean;
@@ -137,7 +136,6 @@ type
       FMaximumQOS                 : TMQTTQOSType;
       //
       FThread                     : TMQTTServerThread;
-      //FTimer                      : TFPTimer;
       FTimerTicks                 : Byte;                    // Accumulator
       //
       FSystemClock                : Boolean;
@@ -153,6 +151,7 @@ type
       FOnSendData                 : TMQTTConnectionSendDataEvent;
       FOnValidateSubscription     : TMQTTValidateSubscriptionEvent;
       FOnValidateClientID         : TMQTTValidateClientIDEvent;
+      FOnValidatePassword         : TMQTTValidatePasswordEvent;
       FOnSubscriptionsChanged     : TNotifyEvent;
       FOnSessionsChanged          : TNotifyEvent;
       FOnRetainedMessagesChanged  : TNotifyEvent;
@@ -180,6 +179,7 @@ type
       //procedure SendRetainedMessages(Session: TMQTTSession); overload;
       procedure SendRetainedMessages(Session: TMQTTSession; Subscription: TMQTTSubscription);
       function ValidateClientID(AClientID: UTF8String): Boolean; virtual;
+      function ValidatePassword(AUsername, APassword: UTF8String): Boolean; virtual;
     public
       Log: TLogDispatcher;
       constructor Create(AOwner: TComponent); override;
@@ -187,7 +187,6 @@ type
       function StartConnection: TMQTTServerConnection; virtual;
       property Connections: TMQTTServerConnectionList read FConnections;
       property Sessions: TMQTTSessionList read FSessions;
-      property Passwords: TPasswordManager read FPasswords;
       property RetainedMessages: TMQTTMessageList read FRetainedMessages;
     published
       property Enabled: Boolean read FEnabled write FEnabled default true;
@@ -206,6 +205,7 @@ type
       property OnConnectionDestroy        : TMQTTConnectionDestroyEvent read FOnConnectionDestroy write FOnConnectionDestroy;
       property OnValidateSubscription     : TMQTTValidateSubscriptionEvent read FOnValidateSubscription write FOnValidateSubscription;
       property OnValidateClientID         : TMQTTValidateClientIDEvent read FOnValidateClientID write FOnValidateClientID;
+      property OnValidatePassword         : TMQTTValidatePasswordEvent read FOnValidatePassword write FOnValidatePassword;
       property OnSubscriptionsChanged     : TNotifyEvent read FOnSubscriptionsChanged write FOnSubscriptionsChanged;
       property OnSessionsChanged          : TNotifyEvent read FOnSessionsChanged write FOnSessionsChanged;
       property OnRetainedMessagesChanged  : TNotifyEvent read FOnRetainedMessagesChanged write FOnRetainedMessagesChanged;
@@ -306,29 +306,20 @@ begin
   FRequireAuthentication := True;
   FSystemClock           := True;
   FRetainedMessages      := TMQTTMessageList.Create;
-  FPasswords             := TPasswordManager.Create;
   FConnections           := TMQTTServerConnectionList.Create;
   FSessions              := TMQTTSessionList.Create(Self);
   //
   FThread                 := TMQTTServerThread.Create(False);
   FThread.FreeOnTerminate := True;
   FThread.FServer         := Self;
-  //FTimer                 := TFPTimer.Create(nil);
-  //FTimer.Interval        := 1000;
-  //FTimer.OnTimer         := @HandleTimer;
-  //FTimer.Enabled         := True;
 end;
 
 destructor TMQTTServer.Destroy;
 begin
   FThread.FServer := nil;
   FThread.Terminate;
-  //FTimer.OnTimer := nil;
-  //FTimer.Enabled := False;
-  //FTimer.Free;
   FSessions.Free;
   FConnections.Free;
-  FPasswords.Free;
   FRetainedMessages.Free;
   Log.Free;
   inherited Destroy;
@@ -487,6 +478,13 @@ begin
   Result := True;
   if Assigned(FOnValidateClientID) then
     FOnValidateClientID(Self,AClientID,Result);
+end;
+
+function TMQTTServer.ValidatePassword(AUsername, APassword: UTF8String): Boolean;
+begin
+  Result := False;
+  if Assigned(FOnValidatePassword) then
+    FOnValidatePassword(Self,AUsername,APassword,Result);
 end;
 
 function TMQTTServer.StartConnection: TMQTTServerConnection;
@@ -866,8 +864,8 @@ begin
   // Authenticate the user and assign the user variable
   if APacket.UsernameFlag then
     begin
-      FUser := Server.Passwords.Find(APacket.Username);
-      if (not Assigned(FUser)) or (FUser.Password <> APacket.Password) then
+      FUsername := APacket.Username;
+      if not Server.ValidatePassword(FUsername,APacket.Password) then
         begin
           Result := MQTT_CONNACK_NOT_AUTHORIZED;
           Exit;
@@ -875,7 +873,7 @@ begin
     end
   else
     begin
-      FUser := nil;
+      FUsername := '';
       if Server.RequireAuthentication then
         begin
           Result := MQTT_CONNACK_NOT_AUTHORIZED;

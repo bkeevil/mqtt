@@ -231,9 +231,6 @@ begin
     if I > 65535 then
       I := 65535;
     TCP.Port := I;
-    S := Ini.ReadString('Server','Passwords','');
-    if S > '' then
-      Server.Passwords.AsBase64 := S;
   finally
     Ini.Free;
   end;
@@ -255,10 +252,7 @@ var
 begin
   if AConnection.Socket is TLSocket then
     begin
-      if Assigned(AConnection.User) then
-        Username := AConnection.User.Username
-      else
-        Username := '(N/A)';
+      Username := AConnection.Username;
       LogDispatcher.Send(mtInfo,'MQTT session started client=%s user=%s',[AConnection.Session.ClientID,Username]);
     end;
 end;

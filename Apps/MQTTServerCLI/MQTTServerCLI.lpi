@@ -36,6 +36,7 @@
             </SyntaxOptions>
           </Parsing>
           <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
             <Checks>
               <IOChecks Value="True"/>
               <RangeChecks Value="True"/>
@@ -47,9 +48,7 @@
           <Linking>
             <Debugging>
               <DebugInfoType Value="dsDwarf2Set"/>
-              <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
-              <UseValgrind Value="True"/>
               <UseExternalDbgSyms Value="True"/>
             </Debugging>
           </Linking>
@@ -92,22 +91,16 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="crytopkg"/>
+        <PackageName Value="bkutils"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCLBase"/>
+        <PackageName Value="lnetbase"/>
       </Item2>
       <Item3>
-        <PackageName Value="lnetbase"/>
-      </Item3>
-      <Item4>
-        <PackageName Value="bkutils"/>
-      </Item4>
-      <Item5>
         <PackageName Value="mqttcomponents"/>
-      </Item5>
+      </Item3>
     </RequiredPackages>
     <Units Count="1">
       <Unit0>

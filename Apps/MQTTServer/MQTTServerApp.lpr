@@ -3,11 +3,11 @@ program MQTTServerApp;
 {$mode objfpc}{$H+}
 
 uses
-  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  {$IFDEF UNIX}
   cthreads,
-  {$ENDIF}{$ENDIF}
+  {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, serverfm, ServerPropertiesFM, passwordmanfm,
+  Forms, serverfm, ServerPropertiesFM,
   mqttregister, lnetvisual, helpfm;
 
 {$R *.res}
@@ -17,7 +17,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TServerForm, ServerForm);
   Application.CreateForm(TServerPropertiesForm, ServerPropertiesForm);
-  Application.CreateForm(TPassManForm, PassManForm);
   Application.CreateForm(THelpForm, HelpForm);
   Application.Run;
 end.

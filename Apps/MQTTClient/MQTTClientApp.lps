@@ -4,12 +4,11 @@
     <PathDelim Value="\"/>
     <Version Value="10"/>
     <BuildModes Active="Default"/>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="MQTTClientApp.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos X="57" Y="20"/>
+        <CursorPos X="30" Y="23"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -19,7 +18,7 @@
         <ComponentName Value="ClientForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="95"/>
         <CursorPos X="3" Y="10"/>
         <UsageCount Value="20"/>
@@ -30,7 +29,7 @@
         <Filename Value="..\..\Forms\connectfm.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -38,7 +37,7 @@
         <Filename Value="..\..\Forms\publishfm.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit3>
@@ -46,7 +45,7 @@
         <Filename Value="..\..\Forms\subscribefm.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit4>
@@ -86,8 +85,17 @@
         <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="..\..\src\mqttserver.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="855"/>
+        <CursorPos X="22" Y="876"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit9>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
         <Filename Value="..\..\Forms\clientfm.pas"/>
       </Position1>
@@ -99,6 +107,22 @@
         <Filename Value="..\..\Forms\clientfm.pas"/>
         <Caret Line="10" Column="3"/>
       </Position3>
+      <Position4>
+        <Filename Value="..\..\src\mqttserver.pas"/>
+        <Caret Line="403" Column="34" TopLine="403"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\src\mqttserver.pas"/>
+        <Caret Line="419" Column="51" TopLine="374"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\src\mqttserver.pas"/>
+        <Caret Line="42" Column="40" TopLine="25"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\src\mqttserver.pas"/>
+        <Caret Line="624" Column="3" TopLine="606"/>
+      </Position7>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>
