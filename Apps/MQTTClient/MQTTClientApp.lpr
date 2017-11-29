@@ -15,6 +15,9 @@ begin
   RequireDerivedFormResource:=True;
   Application.Initialize;
   Application.CreateForm(TClientForm, ClientForm);
+  Application.CreateForm(TConnectDlg, ConnectDlg);
+  Application.CreateForm(TPublishForm, PublishForm);
+  Application.CreateForm(TSubscribeForm, SubscribeForm);
   Application.Run;
 end.
 

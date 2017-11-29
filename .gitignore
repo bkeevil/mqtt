@@ -9,6 +9,8 @@
 lib
 Makefile
 backup
-
+Apps/MQTTClient/MQTTClient
+Apps/MQTTServer/MQTTServer
+Apps/MQTTServerCLI/MQTTServerCLI
 /src/Makefile.fpc
 /src/fpmake.pp
