@@ -6,9 +6,9 @@ program MQTTServerCLI;
 {$DEFINE UseCThreads}
 
 uses
-  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  {$IFDEF UNIX}
   cthreads,
-  {$ENDIF}{$ENDIF}
+  {$ENDIF}
   Classes, SysUtils, CustApp, CRT, Logging, inifiles, lnetbase, lnet,
   mqttconsts, mqttserver;
 
