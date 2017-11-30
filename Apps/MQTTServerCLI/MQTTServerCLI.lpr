@@ -18,7 +18,9 @@ type
 
   TMQTTServerCLI = class(TCustomApplication)
     private
+      procedure SetupLogging;
       procedure LoadCommandLineOptions;
+      procedure ValidateCommandLineOptions;
       procedure LoadConfiguration(Filename: String); overload;
       procedure LoadConfiguration; overload;
       procedure ServerAccepted(AConnection: TMQTTServerConnection);
@@ -32,11 +34,10 @@ type
       procedure TCPDisconnect(aSocket: TLSocket);
       procedure TCPError(const msg: string; aSocket: TLSocket);
       procedure TCPReceive(aSocket: TLSocket);
-      procedure ValidateCommandLineOptions;
     protected
       procedure DoRun; override;
     public
-      Listener       : TLogCRTListener;
+      Listener       : TLogListener;
       LogDispatcher  : TLogDispatcher;
       ConfigFilename : String;
       TCP            : TLTCP;
@@ -52,7 +53,7 @@ procedure TMQTTServerCLI.DoRun;
 begin
   repeat
     TCP.Callaction; // eventize the lNet
-    if Keypressed and (readKey = #27) then
+    if Keypressed and (readKey = #3) then
       Terminate;
 //    CheckSynchronize;
     Sleep(100);
@@ -64,10 +65,9 @@ constructor TMQTTServerCLI.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
   StopOnException := False;
-  Listener := TLogCRTListener.Create;
-  LogDispatcher := TLogDispatcher.Create('Application');
+  SetupLogging;
   TCP := TLTCP.Create(nil);
-  TCP.Port := 1883;
+  TCP.Port := MQTT_DEFAULT_PORT;
   TCP.ReuseAddress := True;
   TCP.Timeout := 100;
   TCP.OnAccept := @TCPAccept;
@@ -108,7 +108,7 @@ var
   ErrorMsg: String;
 begin
   // If the command line options are invalid then show the help page
-  ErrorMsg := CheckOptions('i:p:vanshc:','interface: port: verbose authenticate null-clientid strict-clientid help config:');
+  ErrorMsg := CheckOptions('i:p:vanshc:l:d','interface: port: verbose authenticate null-clientid strict-clientid help config: log: debug');
   if ErrorMsg > '' then
     begin
       LogDispatcher.Send(mtError,ErrorMsg);
@@ -155,9 +155,7 @@ procedure TMQTTServerCLI.WriteHelp;
 begin
   writeln('mqttserver Version 1.0 Useage:');
   writeln;
-  writeln('  mqttserver --config <filename>');
-  writeln('  mqttserver -i <interface> -p port');
-  writeln('  mqttserver --authenticate --strict-clientid');
+  writeln('  mqttserver -c <filename> -i <interface> -p <port> -a -s -l <filename>');
   writeln;
   writeln('  -c --config          Sets the default configuration file.  Default is');
   writeln('                       /etc/mqtt/mqttserver.ini or mqttserver.ini in the');
@@ -172,7 +170,35 @@ begin
   writeln('                       unique one automatically.  Default rejects connection.');
   writeln('  -s --strict-clientid Validate Client IDs to ensure they contain only');
   writeln('                       letters and numbers.  Default accepts any character.');
+  writeln('  -l --log             Sets a log filename.  Default logs to stdout.');
+  writeln('  -d --debug           Outputs more detailed info to the log.');
   writeln('  -h --help            Displays this help message');
+end;
+
+procedure TMQTTServerCLI.SetupLogging;
+var
+  LogFilename: String;
+begin
+  if HasOption('l','log') then
+    begin
+      LogFilename := GetOptionValue('l','log');
+      try
+        Listener := TLogFileListener.Create(LogFilename);
+      except
+        Listener := nil;
+      end;
+      if not FileExists(LogFilename) then
+        begin
+          if Assigned(Listener) then
+            Listener.Free;
+          Listener := nil;
+        end;
+    end;
+  if not Assigned(Listener) then
+    Listener := TLogCRTListener.Create;
+  if HasOption('d','debug') then
+    Listener.TypeFilter := ALL_LOG_MESSAGE_TYPES;
+  LogDispatcher := TLogDispatcher.Create('Application');
 end;
 
 procedure TMQTTServerCLI.LoadCommandLineOptions;
@@ -210,7 +236,6 @@ procedure TMQTTServerCLI.LoadConfiguration(Filename: String);
 var
   Ini: TInifile;
   I: Integer;
-  S: String;
 begin
   Ini := TInifile.Create(Filename,[ifoStripComments,ifoStripInvalid,ifoFormatSettingsActive]);
   try
@@ -329,8 +354,7 @@ begin
   TCPCanSend(AConnection.Socket as TLSocket);
 end;
 
-procedure TMQTTServerCLI.ServerConnectionDestroy(
-  AConnection: TMQTTServerConnection);
+procedure TMQTTServerCLI.ServerConnectionDestroy(AConnection: TMQTTServerConnection);
 begin
   if (AConnection.Socket is TLSocket) then
     begin
@@ -359,13 +383,16 @@ begin
       end;
     end;
 end;
-{var
+
+{procedure TMQTTServerCLI.TCPCanSend(aSocket: TLSocket);
+var
   Conn: TMQTTServerConnection;
   Data: Pointer;
   Size,Sent: Integer;
 begin
   Conn := TMQTTServerConnection(aSocket.UserData);
-  if Conn.SendBuffer.Size > 0 then
+
+  if Assigned(Conn) and (Conn.SendBuffer.Size > 0) then
     begin
       GetMem(Data,32);
       try
@@ -382,7 +409,7 @@ begin
         FreeMem(Data,32);
       end;
     end;
-end;}
+end; }
 
 var
   Application: TMQTTServerCLI;

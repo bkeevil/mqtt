@@ -17,6 +17,7 @@ const
   MQTT_MAX_PACKET_RESEND_TRIES  =    3;
   MQTT_MAX_SUBSCRIPTION_AGE     = 1080; // Minutes. 1080=18 hours
   MQTT_MAX_SESSION_AGE          = 1080; // Minutes. 1080=18 hours
+  MQTT_DEFAULT_PORT             = 1883;
 
 var
   MQTTStrictClientIDValidationChars: set of char = ['0'..'9','a'..'z','A'..'Z'];

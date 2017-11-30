@@ -8,7 +8,6 @@ uses
   Classes, SysUtils, Buffers, Logging, MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions,
   MQTTMessages;
 
-// TODO: Test Send Willmessage on disconnect
 type
   TMQTTServer               = class;
   TMQTTServerConnection     = class;
@@ -616,7 +615,7 @@ end;
 procedure TMQTTServerConnection.Accepted;
 begin
   Assert(State = ssConnecting);
-  Log.Send(mtInfo,'New connection accepted');
+  Log.Send(mtDebug,'New connection accepted');
   FState := ssConnected;
   Server.ConnectionsChanged;
   Server.Accepted(Self);
@@ -667,7 +666,7 @@ begin
   else
   if (State = ssConnecting) then
     begin
-      Log.Send(mtInfo,'Connection failed');
+      Log.Send(mtError,'Connection failed');
       FState := ssDisconnecting;
       //Server.Disconnect(Self);
       //CheckTerminateSession;
@@ -730,7 +729,7 @@ begin
         Session.FWaitingForAck.Add(Packet);
       end;
     Packet.WriteToBuffer(SendBuffer);
-    Log.Send(mtInfo,'Sending PUBLISH (%d)',[Packet.PacketID]);
+    Log.Send(mtDebug,'Sending PUBLISH (%d)',[Packet.PacketID]);
     Server.SendData(Self);
   finally
     if QOS = qtAT_MOST_ONCE then
@@ -914,7 +913,7 @@ end;
 
 procedure TMQTTServerConnection.HandleDISCONNECTPacket;
 begin
-  Log.Send(mtInfo,'Received DISCONNECT');
+  Log.Send(mtDebug,'Received DISCONNECT');
   Disconnect;
 end;
 
@@ -933,14 +932,14 @@ begin
   else
     SessionPresent := InitSessionState(APacket);
 
-  Log.Send(mtInfo,'Received CONNECT. ClientID=%s Username=%s SessionPresent=%s KeepAlive=%d',[APacket.ClientID,APacket.Username,BoolToStr(SessionPresent),APacket.KeepAlive]);
+  Log.Send(mtDebug,'Received CONNECT. ClientID=%s Username=%s SessionPresent=%s KeepAlive=%d',[APacket.ClientID,APacket.Username,BoolToStr(SessionPresent),APacket.KeepAlive]);
 
   Reply := TMQTTCONNACKPACKET.Create;
   try
     Reply.ReturnCode := ReturnCode;
     Reply.SessionPresent := SessionPresent;
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtInfo,'Sending CONNACK.  ReturnCode=%d',[ReturnCode]);
+    Log.Send(mtDebug,'Sending CONNACK.  ReturnCode=%d',[ReturnCode]);
     Server.SendData(Self);
     if ReturnCode = MQTT_CONNACK_SUCCESS then
       Accepted
@@ -955,12 +954,12 @@ procedure TMQTTServerConnection.HandlePINGREQPacket;
 var
   Reply: TMQTTPINGRESPPacket;
 begin
-  //Log.Send(mtInfo,'Received PINGREQ');
+  //Log.Send(mtDebug,'Received PINGREQ');
   Reply := TMQTTPINGRESPPacket.Create;
   try
     // KeepAlive is reset in DataAvailable() in response to all packets
     Reply.WriteToBuffer(SendBuffer);
-    //Log.Send(mtInfo,'Sending PINGRESP');
+    //Log.Send(mtDebug,'Sending PINGRESP');
     Server.SendData(Self);
   finally
     Reply.Free;
@@ -1038,7 +1037,7 @@ procedure TMQTTServerConnection.HandleSUBSCRIBEPacket(APacket: TMQTTSUBSCRIBEPac
 var
   Reply: TMQTTSUBACKPacket;
 begin
-  Log.Send(mtInfo,'Received SUBSCRIBE (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received SUBSCRIBE (%d)',[APacket.PacketID]);
   Reply := TMQTTSUBACKPacket.Create;
   try
     Reply.PacketID := APacket.PacketID;
@@ -1046,7 +1045,7 @@ begin
     Session.Subscriptions.MergeList(APacket.Subscriptions);
     // Send the data
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtInfo,'Sending SUBACK (%d)',[Reply.PacketID]);
+    Log.Send(mtDebug,'Sending SUBACK (%d)',[Reply.PacketID]);
     Server.SendData(Self);
     Server.SubscriptionsChanged;
     Session.SendRetainedMessages(APacket.Subscriptions);
@@ -1059,7 +1058,7 @@ procedure TMQTTServerConnection.HandleUNSUBSCRIBEPacket(APacket: TMQTTUNSUBSCRIB
 var
   Reply: TMQTTUNSUBACKPacket;
 begin
-  Log.Send(mtInfo,'Received UNSUBSCRIBE (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received UNSUBSCRIBE (%d)',[APacket.PacketID]);
   Reply := TMQTTUNSUBACKPacket.Create;
   try
     Reply.PacketID := APacket.PacketID;
@@ -1068,7 +1067,7 @@ begin
     Session.Subscriptions.DeleteList(APacket.Subscriptions);
     // Send the data
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtInfo,'Sending UNSUBACK (%d)',[Reply.PacketID]);
+    Log.Send(mtDebug,'Sending UNSUBACK (%d)',[Reply.PacketID]);
     Server.SendData(Self);
     Server.SubscriptionsChanged;
   finally
@@ -1078,7 +1077,7 @@ end;
 
 procedure TMQTTServerConnection.HandlePUBACKPacket(APacket: TMQTTPUBACKPacket);
 begin
-  Log.Send(mtInfo,'Received PUBACK (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received PUBACK (%d)',[APacket.PacketID]);
   Session.FPacketIDManager.ReleaseID(APacket.PacketID);
   Session.FWaitingForAck.Remove(ptPUBLISH,APacket.PacketID);
   // Disconnects the connection after the willmessage has been sent
@@ -1090,14 +1089,14 @@ procedure TMQTTServerConnection.HandlePUBRECPacket(APacket: TMQTTPUBRECPacket);
 var
   Reply: TMQTTPUBRELPacket;
 begin
-  Log.Send(mtInfo,'Received PUBREC (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received PUBREC (%d)',[APacket.PacketID]);
   Session.FWaitingForAck.Remove(ptPublish,APacket.PacketID);
 
   Reply := TMQTTPUBRELPacket.Create;
   Reply.PacketID := APacket.PacketID;
   Session.FWaitingForAck.Add(Reply);
   Reply.WriteToBuffer(SendBuffer);
-  Log.Send(mtInfo,'Sending PUBREL (%d)',[Reply.PacketID]);
+  Log.Send(mtDebug,'Sending PUBREL (%d)',[Reply.PacketID]);
   Server.SendData(Self);
 end;
 
@@ -1106,7 +1105,7 @@ var
   Pkt: TMQTTPUBLISHPacket;
   Reply: TMQTTPUBCOMPPacket;
 begin
-  Log.Send(mtInfo,'Received PUBREL (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received PUBREL (%d)',[APacket.PacketID]);
   Session.FWaitingForAck.Remove(ptPUBREC,APacket.PacketID);
   Pkt := Session.FPendingDispatch.Find(ptPUBLISH,APacket.PacketID) as TMQTTPUBLISHPacket;
   if Assigned(Pkt) then
@@ -1119,7 +1118,7 @@ begin
   try
     Reply.PacketID := APacket.PacketID;
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtInfo,'Sending PUBCOMP (%d)',[Reply.PacketID]);
+    Log.Send(mtDebug,'Sending PUBCOMP (%d)',[Reply.PacketID]);
     Server.SendData(Self);
     Server.SendPendingMessages;
   finally
@@ -1129,7 +1128,7 @@ end;
 
 procedure TMQTTServerConnection.HandlePUBCOMPPacket(APacket: TMQTTPUBCOMPPacket);
 begin
-  Log.Send(mtInfo,'Received PUBCOMP (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received PUBCOMP (%d)',[APacket.PacketID]);
   Session.FPacketIDManager.ReleaseID(APacket.PacketID);
   Session.FWaitingForAck.Remove(ptPUBREL,APacket.PacketID);
   // Disconnects the connection after the willmessage has been sent
@@ -1145,7 +1144,7 @@ begin
   try
     Reply.PacketID := APacket.PacketID;
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtInfo,'Sending PUBACK (%d)',[Reply.PacketID]);
+    Log.Send(mtDebug,'Sending PUBACK (%d)',[Reply.PacketID]);
     Server.SendData(Self);
     Server.DispatchMessage(Session,APacket.Topic,APacket.Data,APacket.QOS,APacket.Retain);
     Server.SendPendingMessages;
@@ -1174,13 +1173,13 @@ begin
   Reply.PacketID := Pkt.PacketID;
   Session.FWaitingForAck.Add(Reply);
   Reply.WriteToBuffer(SendBuffer);
-  Log.Send(mtInfo,'Sending PUBREC (%d)',[Reply.PacketID]);
+  Log.Send(mtDebug,'Sending PUBREC (%d)',[Reply.PacketID]);
   Server.SendData(Self);
 end;
 
 procedure TMQTTServerConnection.HandlePUBLISHPacket(APacket: TMQTTPUBLISHPacket);
 begin
-  Log.Send(mtInfo,'Received PUBLISH (PacketID=%d,QOS=%s,Retain=%s)',[APacket.PacketID,MQTTQOSTypeNames[APacket.QOS],BoolToStr(APacket.Retain,'True','False')]);
+  Log.Send(mtDebug,'Received PUBLISH (PacketID=%d,QOS=%s,Retain=%s)',[APacket.PacketID,MQTTQOSTypeNames[APacket.QOS],BoolToStr(APacket.Retain,'True','False')]);
   case APacket.QOS of
     qtAT_MOST_ONCE  : Server.DispatchMessage(Session,APacket.Topic,APacket.Data,APacket.QOS,APacket.Retain);
     qtAT_LEAST_ONCE : HandlePUBLISHPacket1(APacket);
@@ -1232,7 +1231,7 @@ var
 begin
   for I := Count - 1 downto 0 do
     Items[I].Free;
-  Clear;
+  FList.Clear;
 end;
 
 procedure TMQTTServerConnectionList.Add(AConnection: TMQTTServerConnection);
@@ -1413,7 +1412,7 @@ begin
   C := FPendingTransmission.Count;
   if C > 0 then
     begin
-      Log.Send(mtInfo,'Sending %d pending messages',[C]);
+      Log.Send(mtDebug,'Sending %d pending messages',[C]);
       for I := 0 to C - 1 do
         begin
           M := FPendingTransmission[I];
