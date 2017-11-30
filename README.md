@@ -1,11 +1,12 @@
 # mqtt
+
 MQTT Client/Server in FPC/Lazarus
 
 The goal of this project is to create a Lazarus/FPC component package that 
 
-1. implements the MQTT protocol completely and accurately
-2. that is not dependent on a specific networking component.  
-3. has good documentation
+1. Implements the MQTT protocol completely and accurately
+2. Is not dependent on a specific networking component.  
+3. Has good documentation
 
 For the client and server demo applications I have been using the LNet components because that component seems to run well on both Windows and Linux.
 
