@@ -13,7 +13,7 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
-    Label1: TLabel;
+    ClockLabel: TLabel;
     Client: TMQTTClient;
     Memo1: TMemo;
     TCP: TLTCPComponent;
@@ -34,7 +34,7 @@ type
     LogDispatcher: TLogDispatcher;
     Listener: TLogListener;
   public
-
+    TheTime: TSystemTime;
   end;
 
 var
@@ -52,6 +52,7 @@ begin
   Listener.OnMessage := @LogMessage;
   LogDispatcher := TLogDispatcher.Create('Application');
   TCP.Connect;
+  DateTimeToSystemTime(Now(),TheTime);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -136,8 +137,26 @@ begin
 end;
 
 procedure TForm1.ClientReceiveMessage(AClient: TMQTTClient; Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean);
+var
+  DT: TDateTime;
 begin
   LogDispatcher.Send(mtInfo,'Received Message %s=%s',[Topic,Data]);
+  if Topic = 'Clock/Year' then
+    TheTime.Year := StrToInt(Data);
+  if Topic = 'Clock/Month' then
+    TheTime.Month := StrToInt(Data);
+  if Topic = 'Clock/DayOfWeek' then
+    TheTime.DayOfWeek := StrToInt(Data);
+  if Topic = 'Clock/Day' then
+    TheTime.Day := StrToInt(Data);
+  if Topic = 'Clock/Hour' then
+    TheTime.Hour := StrToInt(Data);
+  if Topic = 'Clock/Minute' then
+    TheTime.Minute := StrToInt(Data);
+  if Topic = 'Clock/Active' then
+    ClockLabel.Visible := Data = '1';
+  DT := SystemTimeToDateTime(TheTime);
+  ClockLabel.Caption := FormatDateTime('dddd mmmm d, h:nnampm',DT);
 end;
 
 procedure TForm1.ClientSendData(AClient: TMQTTClient);

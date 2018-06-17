@@ -1,12 +1,10 @@
 *.bak
-
 *.dbg
-
 *.compiled
-
 *.exe
 *.ini
 lib
+core
 Makefile
 backup
 Apps/MQTTClock/MQTTClock
