@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="10"/>
+    <BuildModes Active="Release"/>
+    <Units Count="14">
+      <Unit0>
+        <Filename Value="MQTTClock.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="72"/>
+        <CursorPos Y="96"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="227"/>
+        <CursorPos X="25" Y="242"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../../../components/mqtt/Forms/clientfm.pas"/>
+        <ComponentName Value="ClientForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="164"/>
+        <CursorPos X="30" Y="193"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../../../../.lazarus/onlinepackagemanager/packages/lnet/lazaruspackage/lnetcomponents.pas"/>
+        <UnitName Value="lNetComponents"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="24"/>
+        <CursorPos X="3" Y="39"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../MQTTServerCLI/MQTTServerCLI.lpr"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="45"/>
+        <CursorPos Y="54"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../../components/mqtt/src/mqttpacketdefs.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="13"/>
+        <CursorPos X="16" Y="28"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../../components/mqtt/src/mqttconsts.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="128"/>
+        <CursorPos X="5" Y="51"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="/usr/share/fpcsrc/3.0.4/rtl/objpas/sysutils/datih.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="108"/>
+        <CursorPos X="11" Y="123"/>
+        <UsageCount Value="9"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="/usr/share/fpcsrc/3.0.4/rtl/objpas/sysutils/dati.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="220"/>
+        <CursorPos X="3" Y="222"/>
+        <UsageCount Value="9"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../../components/mqtt/Forms/publishfm.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="9"/>
+        <CursorPos X="3" Y="38"/>
+        <UsageCount Value="9"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="/usr/share/fpcsrc/3.0.4/packages/fcl-base/src/custapp.pp"/>
+        <UnitName Value="CustApp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="71"/>
+        <CursorPos X="15" Y="86"/>
+        <UsageCount Value="10"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="/usr/share/lazarus/1.8.2/lcl/include/lclintf.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="17"/>
+        <CursorPos Y="32"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../../../.lazarus/onlinepackagemanager/packages/lnet/lib/lnet.pp"/>
+        <UnitName Value="lNet"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1388"/>
+        <CursorPos Y="1397"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../../../.lazarus/onlinepackagemanager/packages/lnet/lazaruspackage/lnetbase.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="8" Y="15"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <Caret Line="116" Column="17" TopLine="102"/>
+      </Position1>
+      <Position2>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="166" Column="15" TopLine="151"/>
+      </Position2>
+      <Position3>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="249" Column="10" TopLine="220"/>
+      </Position3>
+      <Position4>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="230" TopLine="220"/>
+      </Position4>
+      <Position5>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="231" TopLine="220"/>
+      </Position5>
+      <Position6>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="232" TopLine="220"/>
+      </Position6>
+      <Position7>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="233" TopLine="220"/>
+      </Position7>
+      <Position8>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="234" TopLine="220"/>
+      </Position8>
+      <Position9>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="235" TopLine="220"/>
+      </Position9>
+      <Position10>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="236" TopLine="220"/>
+      </Position10>
+      <Position11>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="237" TopLine="220"/>
+      </Position11>
+      <Position12>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="238" TopLine="220"/>
+      </Position12>
+      <Position13>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="236" Column="83" TopLine="220"/>
+      </Position13>
+      <Position14>
+        <Filename Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <Caret Line="315" TopLine="301"/>
+      </Position14>
+      <Position15>
+        <Filename Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <Caret Line="365" TopLine="350"/>
+      </Position15>
+      <Position16>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="126" Column="31" TopLine="111"/>
+      </Position16>
+      <Position17>
+        <Filename Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <Caret Line="434" Column="23" TopLine="415"/>
+      </Position17>
+      <Position18>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="111" Column="26" TopLine="99"/>
+      </Position18>
+      <Position19>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="22" Column="22" TopLine="7"/>
+      </Position19>
+      <Position20>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="90" Column="10" TopLine="66"/>
+      </Position20>
+      <Position21>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="119" TopLine="94"/>
+      </Position21>
+      <Position22>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="21" Column="25" TopLine="6"/>
+      </Position22>
+      <Position23>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="91" Column="13" TopLine="67"/>
+      </Position23>
+      <Position24>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="119" Column="31" TopLine="100"/>
+      </Position24>
+      <Position25>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="90" Column="27" TopLine="84"/>
+      </Position25>
+      <Position26>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="96" TopLine="72"/>
+      </Position26>
+      <Position27>
+        <Filename Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <Caret Line="109" Column="19" TopLine="95"/>
+      </Position27>
+      <Position28>
+        <Filename Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <Caret Line="192" Column="25" TopLine="188"/>
+      </Position28>
+      <Position29>
+        <Filename Value="MQTTClock.lpr"/>
+        <Caret Line="96" TopLine="72"/>
+      </Position29>
+      <Position30>
+        <Filename Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <Caret Line="242" Column="25" TopLine="227"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="4">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <Line Value="309"/>
+      </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <Line Value="316"/>
+      </Item2>
+      <Item3>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <Line Value="323"/>
+      </Item3>
+      <Item4>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Expression Value="State &lt;> csNew"/>
+        <Source Value="../../../components/mqtt/src/mqttclient.pas"/>
+        <Line Value="303"/>
+      </Item4>
+    </BreakPoints>
+  </Debugging>
+</CONFIG>
