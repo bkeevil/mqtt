@@ -9,6 +9,8 @@
 lib
 Makefile
 backup
+Apps/MQTTClock/MQTTClock
+Apps/MQTTClockReceiver/MQTTClockReceiver
 Apps/MQTTClient/MQTTClientApp
 Apps/MQTTServer/MQTTServerApp
 Apps/MQTTServerCLI/MQTTServerCLI
