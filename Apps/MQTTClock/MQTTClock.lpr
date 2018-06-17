@@ -18,18 +18,21 @@ type
     procedure ClientInitSession(Sender: TObject);
     procedure ClientReceiveMessage(AClient: TMQTTClient; Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean);
     procedure ClientSendData(AClient: TMQTTClient);
+    procedure LoadCommandLineOptions;
     procedure TCPCanSend(aSocket: TLSocket);
     procedure TCPConnect(aSocket: TLSocket);
     procedure TCPDisconnect(aSocket: TLSocket);
     procedure TCPError(const msg: string; aSocket: TLSocket);
     procedure TCPReceive(aSocket: TLSocket);
+    procedure SetupLogging;
+    procedure ValidateCommandLineOptions;
+    procedure WriteHelp;
   protected
     Listener       : TLogListener;
     LogDispatcher  : TLogDispatcher;
     TCP            : TLTCP;
     Client         : TMQTTClient;
     LastTime       : TSystemTime;
-    Restart        : Boolean;
     procedure DoRun; override;
   public
     constructor Create(TheOwner: TComponent); override;
@@ -44,6 +47,8 @@ var
   CurrentTime: TSystemTime;
 begin
   I := 0;
+  ValidateCommandLineOptions;
+  if Terminated then Exit;
   repeat
     if Keypressed and (readKey = #3) then
       Terminate;
@@ -77,16 +82,97 @@ begin
   until Terminated; // until user quit
 end;
 
+procedure TMQTTClockApplication.ValidateCommandLineOptions;
+var
+  ErrorMsg: String;
+begin
+  // If the command line options are invalid then show the help page
+  ErrorMsg := CheckOptions('s:p:l:dh','server: port: log: debug help');
+  if ErrorMsg > '' then
+    begin
+      LogDispatcher.Send(mtError,ErrorMsg);
+      WriteHelp;
+      Terminate;
+      Exit;
+    end;
+end;
+
+procedure TMQTTClockApplication.WriteHelp;
+begin
+  writeln('MQTTClock Version 1.0 Useage:');
+  writeln;
+  writeln('  MQTTClock -s <server> -p <port> -l <filename>');
+  writeln;
+  writeln('  -s --server          The server hostname or IP address. Default localhost');
+  writeln('  -p --port            The server port to connect to. Default 1883');
+  writeln('  -l --log             Sets a log filename.  Default is stdout.');
+  writeln('  -d --debug           Outputs more detailed info to the log.');
+  writeln('  -h --help            Displays this help message');
+end;
+
+procedure TMQTTClockApplication.LoadCommandLineOptions;
+var
+  S: String;
+  I: Integer;
+begin
+  if HasOption('s','server') then
+    TCP.Host := GetOptionValue('s','server');
+  if HasOption('help') then
+    begin
+      WriteHelp;
+      Terminate;
+      Exit;
+    end;
+  if HasOption('p','port') then
+    begin
+      S := GetOptionValue('p','port');
+      if TryStrToInt(S,I) and (I > 80) and (I < 65535) then
+        TCP.Port := I;
+    end;
+  if HasOption('d','debug') then
+    begin
+      LogDispatcher.Filter := ALL_LOG_MESSAGE_TYPES;
+      Listener.TypeFilter := ALL_LOG_MESSAGE_TYPES;
+
+    end
+  else
+    LogDispatcher.Filter := DEFAULT_LOG_MESSAGE_TYPES;
+end;
+
+procedure TMQTTClockApplication.SetupLogging;
+var
+  LogFilename: String;
+begin
+  if HasOption('l','log') then
+    begin
+      LogFilename := GetOptionValue('l','log');
+      try
+        Listener := TLogFileListener.Create(LogFilename);
+      except
+        Listener := nil;
+      end;
+      if not FileExists(LogFilename) then
+        begin
+          if Assigned(Listener) then
+            Listener.Free;
+          Listener := nil;
+        end;
+    end;
+  if not Assigned(Listener) then
+    Listener := TLogCRTListener.Create;
+  if HasOption('d','debug') then
+    Listener.TypeFilter := ALL_LOG_MESSAGE_TYPES;
+  LogDispatcher := TLogDispatcher.Create('Application');
+end;
+
 constructor TMQTTClockApplication.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
   StopOnException:=False;
-  Restart := False;
-  LogDispatcher := TLogDispatcher.Create('MQTTClock');
-  Listener := TLogCRTListener.Create;
+  SetupLogging;
   DateTimeToSystemTime(Now,LastTime);
   TCP := TLTCP.Create(Self);
-  TCP.Host := '192.168.1.2';
+  TCP.Host := '127.0.0.1';
   TCP.Port := 1883;
   TCP.OnCanSend := @TCPCanSend;
   TCP.OnConnect := @TCPConnect;
@@ -107,6 +193,7 @@ begin
   Client.OnSendData := @ClientSendData;
   Client.OnInitSession := @ClientInitSession;
   Client.OnError := @ClientError;
+  LoadCommandLineOptions;
 end;
 
 destructor TMQTTClockApplication.Destroy;
