@@ -215,6 +215,7 @@ begin
   FSendBuffer.Free;
   FRecvBuffer.Free;
   Log.Free;
+  FThread.Free;
   inherited Destroy;
 end;
 
@@ -238,7 +239,7 @@ end;
 
 procedure TMQTTClient.HandleTimer;
 begin
-  if (State = csConnected) then
+  if Assigned(Self) and (State = csConnected) then
     begin
       ProcessPingIntervals;
       ProcessAckQueueIntervals;
@@ -310,13 +311,13 @@ begin
             OnError(Self,MQTT_ERROR_BAD_USERNAME_PASSWORD,GetMQTTErrorMessage(MQTT_ERROR_BAD_USERNAME_PASSWORD));
           Exit;
         end;
-{      if (FClientID = '') then
+      if (FClientID = '') then
         begin
           Result := False;
           if Assigned(OnError) then
             OnError(Self,MQTT_ERROR_NO_CLIENTID,GetMQTTErrorMessage(MQTT_ERROR_NO_CLIENTID));
           Exit;
-        end;}
+        end;
       if (FWillMessage.Enabled) and ((FWillMessage.Topic = '') or (FWillMessage.Message = '')) then
         begin
           Result := False;
@@ -359,9 +360,9 @@ begin
           // Start the ping interval timer
           FPingIntRemaining := FPingInterval;
           FThread.FConnect := 0;
+          Connected;
           if not APacket.SessionPresent then
             InitSession;
-          Connected;
         end
       else
         case APacket.ReturnCode of
@@ -431,6 +432,7 @@ begin
       FPingIntRemaining := FPingInterval;
       if Assigned(FOnDisconnected) then
         FOnDisconnected(Self);
+      FState := csNew;
     end;
 end;
 
