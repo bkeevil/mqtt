@@ -9,17 +9,17 @@ object ConnectDlg: TConnectDlg
   ClientHeight = 374
   ClientWidth = 369
   Position = poMainFormCenter
-  LCLVersion = '1.6.4.0'
+  LCLVersion = '1.8.2.0'
   object edUsername: TEdit
     Left = 16
-    Height = 27
+    Height = 29
     Top = 140
     Width = 152
     TabOrder = 3
   end
   object edPassword: TEdit
     Left = 16
-    Height = 27
+    Height = 29
     Top = 198
     Width = 152
     EchoMode = emPassword
@@ -37,7 +37,7 @@ object ConnectDlg: TConnectDlg
   end
   object edClientID: TEdit
     Left = 16
-    Height = 27
+    Height = 29
     Top = 83
     Width = 152
     TabOrder = 2
@@ -45,21 +45,21 @@ object ConnectDlg: TConnectDlg
   end
   object cbClean: TCheckBox
     Left = 16
-    Height = 22
+    Height = 23
     Top = 240
-    Width = 102
+    Width = 104
     Caption = 'C&lean Session'
     TabOrder = 5
   end
   object edKeepAlive: TSpinEdit
     Left = 16
-    Height = 27
+    Height = 29
     Top = 291
     Width = 99
     Increment = 10
     MaxValue = 65535
     TabOrder = 6
-    Value = 60
+    Value = 30
   end
   object lbKeepAlive: TLabel
     Left = 16
@@ -90,7 +90,7 @@ object ConnectDlg: TConnectDlg
     end
     object edTopic: TEdit
       Left = 16
-      Height = 27
+      Height = 29
       Top = 58
       Width = 152
       TabOrder = 1
@@ -106,7 +106,7 @@ object ConnectDlg: TConnectDlg
     end
     object edMessage: TEdit
       Left = 16
-      Height = 27
+      Height = 29
       Top = 117
       Width = 152
       TabOrder = 2
@@ -117,7 +117,7 @@ object ConnectDlg: TConnectDlg
       Top = 172
       Width = 152
       ItemHeight = 0
-      ItemIndex = 2
+      ItemIndex = 0
       Items.Strings = (
         'At most once'
         'At least once'
@@ -125,7 +125,7 @@ object ConnectDlg: TConnectDlg
       )
       Style = csDropDownList
       TabOrder = 3
-      Text = 'Exactly once'
+      Text = 'At most once'
     end
     object lbQOS: TLabel
       Left = 16
@@ -138,17 +138,17 @@ object ConnectDlg: TConnectDlg
     end
     object cbRetain: TCheckBox
       Left = 16
-      Height = 22
+      Height = 23
       Top = 214
-      Width = 113
+      Width = 115
       Caption = '&Retain Message'
       TabOrder = 4
     end
     object cbEnabled: TCheckBox
       Left = 16
-      Height = 22
+      Height = 23
       Top = 6
-      Width = 69
+      Width = 71
       Caption = '&Enabled'
       TabOrder = 0
     end
@@ -202,7 +202,7 @@ object ConnectDlg: TConnectDlg
   end
   object edIPAddress: TEdit
     Left = 16
-    Height = 27
+    Height = 29
     Top = 27
     Width = 264
     TabOrder = 0
@@ -210,7 +210,7 @@ object ConnectDlg: TConnectDlg
   end
   object sePort: TSpinEdit
     Left = 289
-    Height = 27
+    Height = 29
     Top = 27
     Width = 65
     MaxValue = 65535

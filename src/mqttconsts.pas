@@ -11,8 +11,8 @@ const
   LISTEN_RETRY_DELAY            = 15000;
   MQTT_DEFAULT_CONFIG_FILENAME1 = '/etc/mqtt/mqtt.ini';
   MQTT_DEFAULT_CONFIG_FILENAME2 = 'mqttserver.ini';
-  MQTT_DEFAULT_KEEPALIVE        =   60; // Seconds.  0 to 65535
-  MQTT_DEFAULT_PING_INTERVAL    =   45; // Seconds
+  MQTT_DEFAULT_KEEPALIVE        =   30; // Seconds.  0 to 65535
+  MQTT_DEFAULT_PING_INTERVAL    =   15; // Seconds
   MQTT_RESEND_PACKET_TIMEOUT    =    2; // Seconds
   MQTT_MAX_PACKET_RESEND_TRIES  =    3;
   MQTT_MAX_SUBSCRIPTION_AGE     = 1080; // Minutes. 1080=18 hours

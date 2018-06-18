@@ -90,6 +90,7 @@ type
       procedure HandlePUBCOMPPacket(APacket: TMQTTPUBCOMPPacket);
       procedure ProcessReturnCodes(AList: TMQTTSubscriptionList; ReturnCodes: TBuffer);
       procedure SetClientID(AValue: UTF8String);
+      procedure SetKeepAlive(AValue: Word);
       // Property access methods
       procedure SetPingInterval(AValue: Word);
       // Methods to send packets
@@ -131,7 +132,7 @@ type
       property Password: AnsiString read FPassword write FPassword;
       property WillMessage: TMQTTWillMessage read FWillMessage write SetWillMessage;
       property CleanSession: Boolean read FCleanSession write FCleanSession default True;
-      property KeepAlive: Word read FKeepAlive write FKeepAlive default MQTT_DEFAULT_KEEPALIVE;
+      property KeepAlive: Word read FKeepAlive write SetKeepAlive default MQTT_DEFAULT_KEEPALIVE;
       property PingInterval: Word read FPingInterval write SetPingInterval default MQTT_DEFAULT_PING_INTERVAL;
       // Events
       property OnConnected: TNotifyEvent read FOnConnected write FOnConnected;
@@ -539,6 +540,8 @@ end;
 
 procedure TMQTTClient.SetPingInterval(AValue: Word);
 begin
+  if (AValue >= FKeepAlive) and (FKeepAlive > 2) then
+    AValue := FKeepAlive - 2;
   if FPingInterval=AValue then Exit;
   Log.Send(mtDebug,'Ping interval changed from %d to %d',[FPingInterval,AValue]);
   FPingInterval:=AValue;
@@ -659,6 +662,14 @@ begin
     Log.Name := 'Client'
   else
     Log.Name := AValue;
+end;
+
+procedure TMQTTClient.SetKeepAlive(AValue: Word);
+begin
+  if FKeepAlive=AValue then Exit;
+  FKeepAlive:=AValue;
+  if (FPingInterval >= FKeepAlive) and (FKeepAlive > 2) then
+    FPingInterval := FKeepAlive - 2;
 end;
 
 procedure TMQTTClient.MergeSubscriptions(Subscriptions: TMQTTSubscriptionList; ReturnCodes: TBuffer);
