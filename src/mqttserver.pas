@@ -345,7 +345,7 @@ begin
       DispatchMessage(nil,'System/Time/Hour',IntToStr(FLastTime.Hour),qtAT_MOST_ONCE,true);
       DispatchMessage(nil,'System/Time/Minute',IntToStr(FLastTime.Minute),qtAT_MOST_ONCE,true);
 //      DispatchMessage(nil,'System/Time/Second',IntToStr(FLastTime.Second),qtAT_MOST_ONCE,true);
-      DispatchMessage(nil,'System/Time/DOW',IntToStr(FLastTime.DayOfWeek),qtAT_MOST_ONCE,true);
+      //DispatchMessage(nil,'System/Time/DOW',IntToStr(FLastTime.DayOfWeek),qtAT_MOST_ONCE,true);
     end;
 end;
 
@@ -362,8 +362,8 @@ begin
     DispatchMessage(nil,'System/Time/Day',IntToStr(LNow.Day),qtAT_MOST_ONCE,true);
   if (LNow.Hour <> FLastTime.Hour) then
     DispatchMessage(nil,'System/Time/Hour',IntToStr(LNow.Hour),qtAT_MOST_ONCE,true);
-  if (LNow.DayOfWeek <> FLastTime.DayOfWeek) then
-    DispatchMessage(nil,'System/Time/DOW',IntToStr(LNow.DayOfWeek),qtAT_MOST_ONCE,true);
+  //if (LNow.DayOfWeek <> FLastTime.DayOfWeek) then
+  //  DispatchMessage(nil,'System/Time/DOW',IntToStr(LNow.DayOfWeek),qtAT_MOST_ONCE,true);
   if (LNow.Minute <> FLastTime.Minute) then
     begin
       DispatchMessage(nil,'System/Time/Minute',IntToStr(LNow.Minute),qtAT_MOST_ONCE,true);
