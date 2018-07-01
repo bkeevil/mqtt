@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>Reference for unit 'mqttpackets': Procedures and functions</title>
+<link rel="stylesheet" href="../fpdoc.css" type="text/css">
+
+</head>
+<body>
+<table class="bar" width="100%" border="0" cellpadding="4" cellspacing="0">
+<tr>
+<td><b>[<a href="../mqttpackets/index.html">Overview</a>][<a href="../mqttpackets/index-4.html">Classes</a>][Procedures and functions][<a href="../mqttpackets/index-8.html">Index</a>]</b></td>
+<td align="right"><span class="bartitle">Reference for unit 'mqttpackets' (<a href="../index.html">#mqttcomponents</a>)</span></td>
+</tr>
+</table>
+<h1>Reference for unit 'mqttpackets': Procedures and functions</h1>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td valign="top"><p><tt><span class="code"><a href="../mqttpackets/readbinarydatafrombuffer.html">ReadBinaryDataFromBuffer</a></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Reads binary data from a buffer in MQTT protocol format.  Used to store password</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code"><a href="../mqttpackets/readmqttpacketfrombuffer.html">ReadMQTTPacketFromBuffer</a></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Reads the packet type, flags and remaining length of a packet from a buffer.  Performs validation and returns an error code.  Creates the appropriate packet class and calls that packet class to finish reading the packet from the buffer.</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code"><a href="../mqttpackets/readremaininglengthfrombuffer.html">ReadRemainingLengthFromBuffer</a></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Reads the remaining length of an MQTT packet from a buffer, which is stored in a special multi-byte format</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code"><a href="../mqttpackets/readutf8stringfrombuffer.html">ReadUTF8StringFromBuffer</a></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Reads a UTF8 String from a buffer in MQTT protocol format</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code"><a href="../mqttpackets/readwordfrombuffer.html">ReadWordFromBuffer</a></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Reads a word from buffer in network byte order</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code"><a href="../mqttpackets/writebinarydatatobuffer.html">WriteBinaryDataToBuffer</a></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Writes binary data to a buffer in MQTT protocol format.  Used to store password</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code"><a href="../mqttpackets/writeremaininglengthtobuffer.html">WriteRemainingLengthToBuffer</a></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Writes the remaining length of an MQTT packet to a buffer, which is stored in a special multi-byte format</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code"><a href="../mqttpackets/writeutf8stringtobuffer.html">WriteUTF8StringToBuffer</a></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Writes a UTF8 string to a buffer in MQTT protocol format</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code"><a href="../mqttpackets/writewordtobuffer.html">WriteWordToBuffer</a></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Writes a word to a buffer in network byte order</p></td>
+</tr>
+</table>
+</body>
+</html>

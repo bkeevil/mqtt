@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <fpdoc-descriptions>
   <package name="mqttcomponents">
     <module name="mqttconsts">
@@ -20,6 +20,8 @@ ptPINGRESP,       PING Response
 ptDISCONNECT,    Client is Disconnecting</descr>
       </element>
       <short>Error messages and configuration parameters</short>
+    <element name="GetMQTTErrorMessage"><short>Returns a text error message for an MQTT error code</short>
+      </element>
     </module>
     <short>MQTT client and server components</short>
   </package>

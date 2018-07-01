@@ -11,12 +11,12 @@
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
-          <IncludeAssertionCode Value="True"/>
           <AllowLabel Value="False"/>
           <UseAnsiStrings Value="False"/>
         </SyntaxOptions>
       </Parsing>
       <CodeGeneration>
+        <SmartLinkUnit Value="True"/>
         <Checks>
           <IOChecks Value="True"/>
           <RangeChecks Value="True"/>
@@ -28,7 +28,6 @@
       <Linking>
         <Debugging>
           <UseHeaptrc Value="True"/>
-          <UseValgrind Value="True"/>
           <UseExternalDbgSyms Value="True"/>
         </Debugging>
       </Linking>
@@ -83,22 +82,13 @@
       </Item9>
     </Files>
     <LazDoc Paths="/home/bkeevil/lazarus/mqtt/doc/fpdoc"/>
-    <RequiredPkgs Count="5">
+    <RequiredPkgs Count="2">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="LazUtils"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCLBase"/>
-      </Item2>
-      <Item3>
-        <PackageName Value="LazUtils"/>
-      </Item3>
-      <Item4>
         <PackageName Value="bkutils"/>
-      </Item4>
-      <Item5>
-        <PackageName Value="FCL"/>
-      </Item5>
+      </Item2>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

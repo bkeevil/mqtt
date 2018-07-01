@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>TMQTTServer</title>
+<link rel="stylesheet" href="../fpdoc.css" type="text/css">
+
+</head>
+<body>
+<table class="bar" width="100%" border="0" cellpadding="4" cellspacing="0">
+<tr>
+<td><b>[<a href="../mqttserver/index.html">Overview</a>][<a href="../mqttserver/index-2.html">Constants</a>][<a href="../mqttserver/index-3.html">Types</a>][<a href="../mqttserver/index-4.html">Classes</a>][<a href="../mqttserver/index-8.html">Index</a>]</b></td>
+<td align="right"><span class="bartitle">Reference for unit 'mqttserver' (<a href="../index.html">#mqttcomponents</a>)</span></td>
+</tr>
+</table>
+<h1>TMQTTServer</h1>
+<p>[<a href="../mqttserver/tmqttserver-1.html" onClick="window.open('../mqttserver/tmqttserver-1.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Properties</a> (<a href="../mqttserver/tmqttserver-2.html" onClick="window.open('../mqttserver/tmqttserver-2.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttserver/tmqttserver-3.html" onClick="window.open('../mqttserver/tmqttserver-3.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Methods</a> (<a href="../mqttserver/tmqttserver-4.html" onClick="window.open('../mqttserver/tmqttserver-4.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttserver/tmqttserver-5.html" onClick="window.open('../mqttserver/tmqttserver-5.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Events</a> (<a href="../mqttserver/tmqttserver-6.html" onClick="window.open('../mqttserver/tmqttserver-6.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] </p>
+<p></p>
+<h2>Declaration</h2>
+<p>Source position: mqttserver.pas line 127</p>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td><p><tt><span class="code"><span class="kw">type</span> TMQTTServer <span class="sym">=</span> <span class="kw">class</span><span class="sym">(</span>TComponent<span class="sym">)</span> <span class="kw">end</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"><span class="kw">protected</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.accepted.html">Accepted</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.disconnected.html">Disconnected</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.disconnect.html">Disconnect</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.senddata.html">SendData</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.destroyconnection.html">DestroyConnection</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.connectionschanged.html">ConnectionsChanged</a><span class="sym">;</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.subscriptionschanged.html">SubscriptionsChanged</a><span class="sym">;</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.sessionschanged.html">SessionsChanged</a><span class="sym">;</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.retainedmessageschanged.html">RetainedMessagesChanged</a><span class="sym">;</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.loaded.html">Loaded</a><span class="sym">;</span><span class="kw"> override</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.dispatchmessage.html">DispatchMessage</a><span class="sym">();</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.sendpendingmessages.html">SendPendingMessages</a><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.sendretainedmessages.html">SendRetainedMessages</a><span class="sym">();</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttserver/tmqttserver.validateclientid.html">ValidateClientID</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttserver/tmqttserver.validatepassword.html">ValidatePassword</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"><span class="kw">public</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<a href="../mqttserver/tmqttserver.log.html">Log</a><span class="sym">: </span>TLogDispatcher<span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">constructor </span><a href="../mqttserver/tmqttserver.create.html">Create</a><span class="sym">();</span><span class="kw"> override</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">destructor </span><a href="../mqttserver/tmqttserver.destroy.html">Destroy</a><span class="sym">;</span><span class="kw"> override</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttserver/tmqttserver.startconnection.html">StartConnection</a><span class="sym">;</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.connections.html">Connections</a><span class="sym">: </span><a href="../mqttserver/tmqttserverconnectionlist.html">TMQTTServerConnectionList</a><span class="sym">;</span>  [r]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.sessions.html">Sessions</a><span class="sym">: </span><a href="../mqttserver/tmqttsessionlist.html">TMQTTSessionList</a><span class="sym">;</span>  [r]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.retainedmessages.html">RetainedMessages</a><span class="sym">: </span><a href="../mqttmessages/tmqttmessagelist.html">TMQTTMessageList</a><span class="sym">;</span>  [r]</span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"><span class="kw">published</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.enabled.html">Enabled</a><span class="sym">: </span>Boolean<span class="sym">;</span>  [rw]</span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Setting Enabled to false will prevent the server from accepting new connections</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.systemclock.html">SystemClock</a><span class="sym">: </span>Boolean<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.maximumqos.html">MaximumQOS</a><span class="sym">: </span><a href="../mqttconsts/tmqttqostype.html">TMQTTQOSType</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Force the server to downgrade the QoS of all messages published</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.requireauthentication.html">RequireAuthentication</a><span class="sym">: </span>Boolean<span class="sym">;</span>  [rw]</span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Require clients to provide a valid username and password to connect</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.allownullclientids.html">AllowNullClientIDs</a><span class="sym">: </span>Boolean<span class="sym">;</span>  [rw]</span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Allow clients who connect with null ClientIDs to be assigned random ClientIDs</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.strictclientidvalidation.html">StrictClientIDValidation</a><span class="sym">: </span>Boolean<span class="sym">;</span>  [rw]</span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">If True, ClientIDs may only contain letters and numbers</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onaccepted.html">OnAccepted</a><span class="sym">: </span><a href="../mqttserver/tmqttconnectionnotifyevent.html">TMQTTConnectionNotifyEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Event occurs when a connection is accepted by the server</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.ondisconnect.html">OnDisconnect</a><span class="sym">: </span><a href="../mqttserver/tmqttconnectionnotifyevent.html">TMQTTConnectionNotifyEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.ondisconnected.html">OnDisconnected</a><span class="sym">: </span><a href="../mqttserver/tmqttconnectionnotifyevent.html">TMQTTConnectionNotifyEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Event fires when a connection is disconnected by the client</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onsenddata.html">OnSendData</a><span class="sym">: </span><a href="../mqttserver/tmqttconnectionsenddataevent.html">TMQTTConnectionSendDataEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onerror.html">OnError</a><span class="sym">: </span><a href="../mqttserver/tmqttconnectionerrorevent.html">TMQTTConnectionErrorEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onconnectionschanged.html">OnConnectionsChanged</a><span class="sym">: </span>TNotifyEvent<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onconnectiondestroy.html">OnConnectionDestroy</a><span class="sym">: </span><a href="../mqttserver/tmqttconnectiondestroyevent.html">TMQTTConnectionDestroyEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onvalidatesubscription.html">OnValidateSubscription</a><span class="sym">: </span><a href="../mqttserver/tmqttvalidatesubscriptionevent.html">TMQTTValidateSubscriptionEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onvalidateclientid.html">OnValidateClientID</a><span class="sym">: </span><a href="../mqttserver/tmqttvalidateclientidevent.html">TMQTTValidateClientIDEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onvalidatepassword.html">OnValidatePassword</a><span class="sym">: </span><a href="../mqttserver/tmqttvalidatepasswordevent.html">TMQTTValidatePasswordEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onsubscriptionschanged.html">OnSubscriptionsChanged</a><span class="sym">: </span>TNotifyEvent<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onsessionschanged.html">OnSessionsChanged</a><span class="sym">: </span>TNotifyEvent<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onretainedmessageschanged.html">OnRetainedMessagesChanged</a><span class="sym">: </span>TNotifyEvent<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"></span></tt></p></td>
+</tr>
+</table>
+<h2>Inheritance</h2>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td align="center" valign="top"><p><tt><span class="code"><a href="../mqttserver/tmqttserver.html">TMQTTServer</a></span></tt></p></td>
+</tr>
+<tr>
+<td align="center">|</td>
+</tr>
+<tr>
+<td align="center"><p><tt><span class="code">TComponent</span></tt></p></td>
+</tr>
+<tr>
+<td align="center">?</td>
+</tr>
+<tr>
+<td align="center"><p><tt><span class="code">TObject</span></tt></p></td>
+</tr>
+</table>
+</body>
+</html>

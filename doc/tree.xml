@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TObject unit="System">
+  <TComponent>
+    <TMQTTClient unit="mqttclient"/>
+    <TMQTTServer unit="mqttserver"/>
+  </TComponent>
+  <TThread>
+    <TMQTTClientThread unit="mqttclient"/>
+    <TMQTTServerThread unit="mqttserver"/>
+  </TThread>
+  <TMQTTMessage unit="mqttmessages"/>
+  <TMQTTMessageList unit="mqttmessages"/>
+  <TMQTTPacket unit="mqttpackets">
+    <TMQTTCONNACKPacket unit="mqttpacketdefs"/>
+    <TMQTTCONNECTPacket unit="mqttpacketdefs"/>
+    <TMQTTDISCONNECTPacket unit="mqttpacketdefs"/>
+    <TMQTTPINGREQPacket unit="mqttpacketdefs"/>
+    <TMQTTPINGRESPPacket unit="mqttpacketdefs"/>
+    <TMQTTPacketIDPacket unit="mqttpackets">
+      <TMQTTPUBACKPacket unit="mqttpacketdefs"/>
+      <TMQTTPUBCOMPPacket unit="mqttpacketdefs"/>
+      <TMQTTQueuedPacket unit="mqttpackets">
+        <TMQTTPUBLISHPacket unit="mqttpacketdefs"/>
+        <TMQTTPUBRECPacket unit="mqttpacketdefs"/>
+        <TMQTTPUBRELPacket unit="mqttpacketdefs"/>
+        <TMQTTSUBSCRIBEPacket unit="mqttpacketdefs"/>
+        <TMQTTUNSUBSCRIBEPacket unit="mqttpacketdefs"/>
+      </TMQTTQueuedPacket>
+      <TMQTTSUBACKPacket unit="mqttpacketdefs"/>
+      <TMQTTUNSUBACKPacket unit="mqttpacketdefs"/>
+    </TMQTTPacketIDPacket>
+  </TMQTTPacket>
+  <TPersistent>
+    <TMQTTWillMessage unit="mqttpacketdefs"/>
+  </TPersistent>
+  <TMQTTPacketIDManager unit="mqttpackets"/>
+  <TMQTTPacketQueue unit="mqttpackets"/>
+  <Exception>
+    <EMQTTConnectionError unit="mqttserver"/>
+  </Exception>
+  <TLogObject>
+    <TMQTTServerConnection unit="mqttserver"/>
+    <TMQTTSession unit="mqttserver"/>
+  </TLogObject>
+  <TMQTTServerConnectionList unit="mqttserver"/>
+  <TMQTTSessionList unit="mqttserver"/>
+  <TMQTTSubscription unit="mqttsubscriptions"/>
+  <TMQTTSubscriptionList unit="mqttsubscriptions"/>
+  <TMQTTToken unit="mqtttokenizer"/>
+  <TMQTTTokenizer unit="mqtttokenizer"/>
+</TObject>

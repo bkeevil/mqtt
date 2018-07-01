@@ -5,8 +5,8 @@ unit mqttclient;
 interface
 
 uses
-  Classes, SysUtils, fptimer, Buffers, Logging,
-  MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTMessages, MQTTSubscriptions;
+  Classes, SysUtils, Buffers, Logging,
+  MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions;
 
 type
   TMQTTClient = class;
@@ -22,6 +22,18 @@ const
 
 type
 
+  { TMQTTClientThread }
+
+  TMQTTClientThread = class(TThread)
+    private
+      FClient: TMQTTClient;
+      FConnect: Integer;
+      procedure OnTimer;
+      procedure OnConnectTimer;
+    protected
+      procedure Execute; override;
+  end;
+
   { TMQTTClient }
 
   TMQTTClient = class(TComponent)
@@ -33,10 +45,9 @@ type
       FSendBuffer          : TBuffer;
       FRecvBuffer          : TBuffer;
       // Packet Queues
-      //FPendingTransmission : TMQTTMessageList; // QoS 1 and QoS 2 messages pending transmission to the Client.
-      FWaitingForAck       : TMQTTPacketQueue; // QoS 1 and QoS 2 messages which have been sent to the Client, but have not been completely acknowledged.
-      FPendingReceive      : TMQTTPacketQueue; // QoS 2 messages which have been received from the Client, but have not been completely acknowledged.
-       // Attributes
+      //FPendingTransmission : TMQTTMessageList; // QoS 1 and QoS 2 messages pending transmission to the Server.
+      FWaitingForAck       : TMQTTPacketQueue; // QoS 1 and QoS 2 messages which have been sent to the Server, but have not been completely acknowledged.
+      FPendingReceive      : TMQTTPacketQueue; // QoS 2 messages which have been received from the Server, but have not been completely acknowledged.       // Attributes
       FWillMessage         : TMQTTWillMessage;
       FCleanSession        : Boolean;
       FClientID            : UTF8String;
@@ -46,21 +57,21 @@ type
       FPingInterval        : Word;
       FPingCount           : Byte;
       FPingIntRemaining    : Word;
-      FTimer               : TFPTimer;
+      FThread              : TMQTTClientThread;
       // State Fields
       FInsufficientData    : Byte;
       //
-      FOnInitSession       : TNotifyEvent;
-      FOnConnected         : TNotifyEvent;
-      FOnDisconnect        : TNotifyEvent;
-      FOnDisconnected      : TNotifyEvent;
-      FOnError             : TMQTTClientErrorEvent;
-      FOnSendData          : TMQTTClientSendDataEvent;
-      FOnReceiveMessage    : TMQTTClientReceiveMessageEvent;
+      FOnInitSession          : TNotifyEvent;
+      FOnConnected            : TNotifyEvent;
+      FOnDisconnect           : TNotifyEvent;
+      FOnDisconnected         : TNotifyEvent;
+      FOnError                : TMQTTClientErrorEvent;
+      FOnSendData             : TMQTTClientSendDataEvent;
+      FOnReceiveMessage       : TMQTTClientReceiveMessageEvent;
       FOnSubscriptionsChanged : TNotifyEvent;
       // Timer Methods
-      procedure HandleConnectTimer(Sender: TObject);
-      procedure HandleTimer(Sender: TObject);
+      procedure HandleTimer;
+      procedure HandleConnectTimer;
       procedure MergeSubscriptions(Subscriptions: TMQTTSubscriptionList; ReturnCodes: TBuffer);
       procedure ProcessPingIntervals;
       procedure ProcessAckQueueIntervals;
@@ -79,6 +90,7 @@ type
       procedure HandlePUBCOMPPacket(APacket: TMQTTPUBCOMPPacket);
       procedure ProcessReturnCodes(AList: TMQTTSubscriptionList; ReturnCodes: TBuffer);
       procedure SetClientID(AValue: UTF8String);
+      procedure SetKeepAlive(AValue: Word);
       // Property access methods
       procedure SetPingInterval(AValue: Word);
       // Methods to send packets
@@ -120,7 +132,7 @@ type
       property Password: AnsiString read FPassword write FPassword;
       property WillMessage: TMQTTWillMessage read FWillMessage write SetWillMessage;
       property CleanSession: Boolean read FCleanSession write FCleanSession default True;
-      property KeepAlive: Word read FKeepAlive write FKeepAlive default MQTT_DEFAULT_KEEPALIVE;
+      property KeepAlive: Word read FKeepAlive write SetKeepAlive default MQTT_DEFAULT_KEEPALIVE;
       property PingInterval: Word read FPingInterval write SetPingInterval default MQTT_DEFAULT_PING_INTERVAL;
       // Events
       property OnConnected: TNotifyEvent read FOnConnected write FOnConnected;
@@ -134,6 +146,39 @@ type
   end;
 
 implementation
+
+{ TMQTTClientThread }
+
+procedure TMQTTClientThread.OnTimer;
+begin
+  FClient.HandleTimer;
+end;
+
+procedure TMQTTClientThread.OnConnectTimer;
+begin
+  FClient.HandleConnectTimer;
+end;
+
+procedure TMQTTClientThread.Execute;
+begin
+  while not Terminated do
+    begin
+      Sleep(1000);
+      if Assigned(FClient) then
+        if FClient.State = csConnecting then
+          begin
+            inc(FConnect);
+            if (FConnect >= 2) then
+              begin
+                Synchronize(@OnConnectTimer);
+                FConnect := 0;
+              end;
+          end
+        else
+          if FClient.State = csConnected then
+            Synchronize(@OnTimer);
+    end;
+end;
 
 { TMQTTClient }
 
@@ -153,16 +198,15 @@ begin
   FPingInterval        := MQTT_DEFAULT_PING_INTERVAL;
   FPingIntRemaining    := FPingInterval;
   FCleanSession        := True;
-  FTimer               := TFPTimer.Create(nil);
-  FTimer.OnTimer       := @HandleTimer;
-  FTimer.Enabled       := False;
+  FThread                 := TMQTTClientThread.Create(False);
+  FThread.FreeOnTerminate := True;
+  FThread.FClient         := Self;
 end;
 
 destructor TMQTTClient.Destroy;
 begin
-  FTimer.OnTimer := nil;
-  FTimer.Enabled := False;
-  FTimer.Free;
+  FThread.FClient := nil;
+  FThread.Terminate;
   FWillMessage.Free;
   FWaitingForAck.Free;
   //FPendingTransmission.Free;
@@ -172,6 +216,7 @@ begin
   FSendBuffer.Free;
   FRecvBuffer.Free;
   Log.Free;
+  FThread.Free;
   inherited Destroy;
 end;
 
@@ -190,16 +235,26 @@ begin
   FCleanSession := False;
   FPingIntRemaining := FPingInterval;
   FPingCount := 0;
-  FTimer.Enabled := False;
   Log.Send(mtInfo,'Client has been reset');
 end;
 
-procedure TMQTTClient.HandleTimer(Sender: TObject);
+procedure TMQTTClient.HandleTimer;
 begin
-  if (State = csConnected) then
+  if Assigned(Self) and (State = csConnected) then
     begin
       ProcessPingIntervals;
       ProcessAckQueueIntervals;
+    end;
+end;
+
+procedure TMQTTClient.HandleConnectTimer;
+begin
+  if (State = csConnecting) then
+    begin
+      Reset;
+      FThread.FConnect := 0;
+      if Assigned(FOnError) then
+        FOnError(Self,MQTT_ERROR_CONNECT_TIMEOUT,GetMQTTErrorMessage(MQTT_ERROR_CONNECT_TIMEOUT));
     end;
 end;
 
@@ -248,8 +303,7 @@ begin
   Assert(State = csNew);
   if (State = csNew) then
     begin
-      FTimer.OnTimer := @HandleConnectTimer;
-      FTimer.Enabled := True;
+      FThread.FConnect := 0;  // Reset connect timer counter
       // Check preconditions
       if ((FUsername > '') and (FPassword = '')) then
         begin
@@ -258,13 +312,13 @@ begin
             OnError(Self,MQTT_ERROR_BAD_USERNAME_PASSWORD,GetMQTTErrorMessage(MQTT_ERROR_BAD_USERNAME_PASSWORD));
           Exit;
         end;
-{      if (FClientID = '') then
+      if (FClientID = '') then
         begin
           Result := False;
           if Assigned(OnError) then
             OnError(Self,MQTT_ERROR_NO_CLIENTID,GetMQTTErrorMessage(MQTT_ERROR_NO_CLIENTID));
           Exit;
-        end;}
+        end;
       if (FWillMessage.Enabled) and ((FWillMessage.Topic = '') or (FWillMessage.Message = '')) then
         begin
           Result := False;
@@ -288,24 +342,11 @@ begin
         // Use the CONNECT object to write packet data to a buffer and send the buffer
         Packet.WriteToBuffer(SendBuffer);
         FState := csConnecting;
-        Log.Send(mtInfo,'Sending CONNECT');
+        Log.Send(mtDebug,'Sending CONNECT');
         SendData;
       finally
         Packet.Destroy;
       end;
-    end;
-end;
-
-procedure TMQTTClient.HandleConnectTimer(Sender: TObject);
-begin
-  Assert(State = csConnecting);
-  if State = csConnecting then
-    begin
-      Reset;
-      FTimer.Enabled := False;
-      FTimer.OnTimer := @HandleTimer;
-      if Assigned(FOnError) then
-        FOnError(Self,MQTT_ERROR_CONNECT_TIMEOUT,GetMQTTErrorMessage(MQTT_ERROR_CONNECT_TIMEOUT));
     end;
 end;
 
@@ -314,16 +355,15 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtInfo,'Received CONNACK ('+IntToStr(APacket.ReturnCode)+')');
+      Log.Send(mtDebug,'Received CONNACK ('+IntToStr(APacket.ReturnCode)+')');
       if APacket.ReturnCode = MQTT_CONNACK_SUCCESS then
         begin
           // Start the ping interval timer
           FPingIntRemaining := FPingInterval;
-          FTimer.OnTimer := @HandleTimer;
-          FTimer.Enabled := FPingInterval > 0;
+          FThread.FConnect := 0;
+          Connected;
           if not APacket.SessionPresent then
             InitSession;
-          Connected;
         end
       else
         case APacket.ReturnCode of
@@ -374,7 +414,7 @@ begin
       Packet := TMQTTDISCONNECTPacket.Create;
       try
         Packet.WriteToBuffer(SendBuffer);
-        Log.Send(mtInfo,'Sending DISCONNECT');
+        Log.Send(mtDebug,'Sending DISCONNECT');
         SendData;
         FState := csDisconnecting;
       finally
@@ -391,9 +431,9 @@ begin
       Log.Send(mtInfo,'The server terminated the connection');
       FState := csDisconnected;
       FPingIntRemaining := FPingInterval;
-      FTimer.Enabled := False;
       if Assigned(FOnDisconnected) then
         FOnDisconnected(Self);
+      FState := csNew;
     end;
 end;
 
@@ -405,7 +445,6 @@ begin
   Log.Send(mtError,'Bail: '+Msg);
   FState := csDisconnecting;
   FPingIntRemaining := FPingInterval;
-  FTimer.Enabled := False;
   if Assigned(FOnDisconnect) then
     FOnDisconnect(Self);
   FState := csDisconnected;
@@ -501,11 +540,12 @@ end;
 
 procedure TMQTTClient.SetPingInterval(AValue: Word);
 begin
+  if (AValue >= FKeepAlive) and (FKeepAlive > 2) then
+    AValue := FKeepAlive - 2;
   if FPingInterval=AValue then Exit;
-  Log.Send(mtInfo,'Ping interval changed from %d to %d',[FPingInterval,AValue]);
+  Log.Send(mtDebug,'Ping interval changed from %d to %d',[FPingInterval,AValue]);
   FPingInterval:=AValue;
   FPingIntRemaining := FPingInterval;
-  FTimer.Enabled := FPingInterval > 0;
 end;
 
 procedure TMQTTClient.Ping;
@@ -518,7 +558,7 @@ begin
       Packet := TMQTTPINGREQPacket.Create;
       try
         Packet.WriteToBuffer(SendBuffer);
-        Log.Send(mtInfo,'Sending PINGREQ');
+        Log.Send(mtDebug,'Sending PINGREQ');
         SendData;
       finally
         Packet.Free;
@@ -528,7 +568,7 @@ end;
 
 procedure TMQTTClient.HandlePINGRESPPacket;
 begin
-  Log.Send(mtInfo,'Received PINGRESP');
+  Log.Send(mtDebug,'Received PINGRESP');
   FPingCount := 0;
   FPingIntRemaining := FPingInterval;
 end;
@@ -547,7 +587,7 @@ begin
       Packet.PacketID := PacketIDManager.GenerateID;
       FWaitingForAck.Add(Packet);
       Packet.WriteToBuffer(SendBuffer);
-      Log.Send(mtInfo,'Sending SUBSCRIBE');
+      Log.Send(mtDebug,'Sending SUBSCRIBE');
       SendData;
     end;
 end;
@@ -560,7 +600,7 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtInfo,'Received SUBACK (PacketID='+IntToStr(APacket.PacketID)+')');
+      Log.Send(mtDebug,'Received SUBACK (PacketID='+IntToStr(APacket.PacketID)+')');
       // Remove from Ack Queue
       for I := FWaitingForAck.Count - 1 downto 0 do
         begin
@@ -607,7 +647,7 @@ begin
               if ord(Q) < ord(S.QOS) then
                 begin
                   S.QOS := Q;
-                  Log.Send(mtInfo,'Downgrade QoS of subscription "%s"',[S.Filter]);
+                  Log.Send(mtDebug,'Downgrade QoS of subscription "%s"',[S.Filter]);
                 end;
             end;
         end;
@@ -622,6 +662,14 @@ begin
     Log.Name := 'Client'
   else
     Log.Name := AValue;
+end;
+
+procedure TMQTTClient.SetKeepAlive(AValue: Word);
+begin
+  if FKeepAlive=AValue then Exit;
+  FKeepAlive:=AValue;
+  if (FPingInterval >= FKeepAlive) and (FKeepAlive > 2) then
+    FPingInterval := FKeepAlive - 2;
 end;
 
 procedure TMQTTClient.MergeSubscriptions(Subscriptions: TMQTTSubscriptionList; ReturnCodes: TBuffer);
@@ -663,7 +711,7 @@ begin
       Packet.PacketID := PacketIDManager.GenerateID;
       FWaitingForAck.Add(Packet);
       Packet.WriteToBuffer(SendBuffer);
-      Log.Send(mtInfo,'Sending UNSUBSCRIBE');
+      Log.Send(mtDebug,'Sending UNSUBSCRIBE');
       SendData;
     end;
 end;
@@ -676,7 +724,7 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtInfo,'Received UNSUBACK ('+IntToStr(APacket.PacketID)+')');
+      Log.Send(mtDebug,'Received UNSUBACK ('+IntToStr(APacket.PacketID)+')');
       // Remove from Ack Queue
       for I := FWaitingForAck.Count - 1 downto 0 do
         begin
@@ -734,7 +782,7 @@ begin
             FWaitingForAck.Add(Packet);
           end;
           Packet.WriteToBuffer(SendBuffer);
-          Log.Send(mtInfo,'Sending PUBLISH (%d)',[Packet.PacketID]);
+          Log.Send(mtDebug,'Sending PUBLISH (%d)',[Packet.PacketID]);
           SendData;
       finally
         if QOS = qtAT_MOST_ONCE then
@@ -748,7 +796,7 @@ begin
   Assert(Assigned(APacket) and (State = csConnected));
   if Assigned(APacket) and (State = csConnected) then
     begin
-      Log.Send(mtInfo,'Received PUBLISH (PacketID=%d,QOS=%s)',[APacket.PacketID,MQTTQOSTypeNames[APacket.QOS]]);
+      Log.Send(mtDebug,'Received PUBLISH (PacketID=%d,QOS=%s)',[APacket.PacketID,MQTTQOSTypeNames[APacket.QOS]]);
       case APacket.QOS of
         qtAT_MOST_ONCE  : ReceiveMessage(APacket.Topic,APacket.Data,APacket.QOS,APacket.Retain);
         qtAT_LEAST_ONCE : HandlePUBLISHPacket1(APacket);
@@ -767,7 +815,7 @@ begin
   try
     Reply.PacketID := APacket.PacketID;
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtInfo,'Sending PUBACK (%d)',[Reply.PacketID]);
+    Log.Send(mtDebug,'Sending PUBACK (%d)',[Reply.PacketID]);
     SendData;
     ReceiveMessage(APacket.Topic,APacket.Data,APacket.QOS,APacket.Retain);
   finally
@@ -795,7 +843,7 @@ begin
   Reply.PacketID := Pkt.PacketID;
   FWaitingForAck.Add(Reply);
   Reply.WriteToBuffer(SendBuffer);
-  Log.Send(mtInfo,'Sending PUBREC (%d)',[Reply.PacketID]);
+  Log.Send(mtDebug,'Sending PUBREC (%d)',[Reply.PacketID]);
   SendData;
 end;
 
@@ -804,7 +852,7 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtInfo,'Received PUBACK (%d)',[APacket.PacketID]);
+      Log.Send(mtDebug,'Received PUBACK (%d)',[APacket.PacketID]);
       FPacketIDManager.ReleaseID(APacket.PacketID);
       FWaitingForAck.Remove(ptPUBLISH,APacket.PacketID);
     end;
@@ -817,13 +865,13 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtInfo,'Received PUBREC (%d)',[APacket.PacketID]);
+      Log.Send(mtDebug,'Received PUBREC (%d)',[APacket.PacketID]);
       FWaitingForAck.Remove(ptPublish,APacket.PacketID);
       Reply := TMQTTPUBRELPacket.Create;
       Reply.PacketID := APacket.PacketID;
       FWaitingForAck.Add(Reply);
       Reply.WriteToBuffer(SendBuffer);
-      Log.Send(mtInfo,'Sending PUBREL (%d)',[Reply.PacketID]);
+      Log.Send(mtDebug,'Sending PUBREL (%d)',[Reply.PacketID]);
       SendData;
     end;
 end;
@@ -836,7 +884,7 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtInfo,'Received PUBREL (%d)',[APacket.PacketID]);
+      Log.Send(mtDebug,'Received PUBREL (%d)',[APacket.PacketID]);
       FWaitingForAck.Remove(ptPUBREC,APacket.PacketID);
       Pkt := FPendingReceive.Find(ptPUBLISH,APacket.PacketID) as TMQTTPUBLISHPacket;
       ReceiveMessage(Pkt.Topic,Pkt.Data,Pkt.QOS,Pkt.Retain);
@@ -844,7 +892,7 @@ begin
       try
         Reply.PacketID := APacket.PacketID;
         Reply.WriteToBuffer(SendBuffer);
-        Log.Send(mtInfo,'Sending PUBCOMP (%d)',[Reply.PacketID]);
+        Log.Send(mtDebug,'Sending PUBCOMP (%d)',[Reply.PacketID]);
         SendData;
       finally
         Reply.Free;
@@ -857,7 +905,7 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtInfo,'Received PUBCOMP (PacketID='+IntToStr(APacket.PacketID)+')');
+      Log.Send(mtDebug,'Received PUBCOMP (PacketID='+IntToStr(APacket.PacketID)+')');
       FPacketIDManager.ReleaseID(APacket.PacketID);
       FWaitingForAck.Remove(ptPUBREL,APacket.PacketID);
     end;

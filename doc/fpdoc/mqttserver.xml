@@ -60,6 +60,15 @@ It MUST set the RETAIN flag to 0 when a PUBLISH Packet is sent to a Client becau
       </element><element name="TMQTTSession.MaximumQOS"><short>The maximum QOS at which the session can publish messages</short><descr>This property forces a QoS downgrade for particular clients that can't handle all QoS levels</descr>
       </element><element name="TMQTTServer.MaximumQOS"><short>Force the server to downgrade the QoS of all messages published</short><descr>The server can still recieve messages at any QoS level but will limit the QoS of any messages it sends.</descr>
       </element>
+    <element name="TMQTTServerThread"><short>TMQTTServerThread calls TMQTTServer.HandleTimer every second</short>
+      </element><element name="TMQTTServerConnectionList"><short>Maintains a list of TMQTTServerConnection objects</short>
+      </element><element name="TMQTTServerConnectionList.Clear"><short>Frees all the connections in the list and clears the list</short>
+      </element><element name="TMQTTServerConnectionList.Destroy"/><element name="TMQTTServerConnectionList.Create"><short>Creates a server connection list</short>
+      </element><element name="TMQTTServerConnectionList.Add"><short>Adds a connection to  the list</short>
+      </element><element name="TMQTTServerConnectionList.Remove"><short>Removes a connection from the list.  Does not close or free the connection</short>
+      </element><element name="TMQTTServerConnectionList.Delete"><short>Deletes the connection at index'th position in the Items array.  Does not close or free the connection.</short>
+      </element><element name="TMQTTSession"><short>Represents an MQTT Session.  </short><descr>A session may persist between different connections, i.e. a client may reconnect to an existing session.</descr>
+      </element>
     </module>
     <short>MQTT client and server components</short>
   </package>

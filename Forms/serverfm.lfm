@@ -1,7 +1,7 @@
 object ServerForm: TServerForm
-  Left = 505
+  Left = 504
   Height = 371
-  Top = 183
+  Top = 158
   Width = 817
   ActiveControl = PageControl
   Caption = 'MQTT Server'
@@ -46,7 +46,6 @@ object ServerForm: TServerForm
             Width = 120
           end        
           item
-            ButtonStyle = cbsEllipsis
             SizePriority = 0
             Title.Caption = 'User'
             Width = 100
@@ -330,10 +329,6 @@ object ServerForm: TServerForm
       object PropertiesItm: TMenuItem
         Caption = '&Properties...'
         OnClick = PropertiesItmClick
-      end
-      object PasswordManagerItm: TMenuItem
-        Caption = 'Password &Manager'
-        OnClick = PasswordManagerItmClick
       end
       object MenuDividerItem1: TMenuItem
         Caption = '-'

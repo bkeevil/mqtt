@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>TMQTTSession</title>
+<link rel="stylesheet" href="../fpdoc.css" type="text/css">
+
+</head>
+<body>
+<table class="bar" width="100%" border="0" cellpadding="4" cellspacing="0">
+<tr>
+<td><b>[<a href="../mqttserver/index.html">Overview</a>][<a href="../mqttserver/index-2.html">Constants</a>][<a href="../mqttserver/index-3.html">Types</a>][<a href="../mqttserver/index-4.html">Classes</a>][<a href="../mqttserver/index-8.html">Index</a>]</b></td>
+<td align="right"><span class="bartitle">Reference for unit 'mqttserver' (<a href="../index.html">#mqttcomponents</a>)</span></td>
+</tr>
+</table>
+<h1>TMQTTSession</h1>
+<p>[<a href="../mqttserver/tmqttsession-1.html" onClick="window.open('../mqttserver/tmqttsession-1.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Properties</a> (<a href="../mqttserver/tmqttsession-2.html" onClick="window.open('../mqttserver/tmqttsession-2.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttserver/tmqttsession-3.html" onClick="window.open('../mqttserver/tmqttsession-3.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Methods</a> (<a href="../mqttserver/tmqttsession-4.html" onClick="window.open('../mqttserver/tmqttsession-4.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttserver/tmqttsession-5.html" onClick="window.open('../mqttserver/tmqttsession-5.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Events</a> (<a href="../mqttserver/tmqttsession-6.html" onClick="window.open('../mqttserver/tmqttsession-6.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] </p>
+<p>Represents an MQTT Session.  </p>
+<h2>Declaration</h2>
+<p>Source position: mqttserver.pas line 216</p>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td><p><tt><span class="code"><span class="kw">type</span> TMQTTSession <span class="sym">=</span> <span class="kw">class</span><span class="sym">(</span>TLogObject<span class="sym">)</span> <span class="kw">end</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"><span class="kw">public</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">constructor </span><a href="../mqttserver/tmqttsession.create.html">Create</a><span class="sym">();</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">destructor </span><a href="../mqttserver/tmqttsession.destroy.html">Destroy</a><span class="sym">;</span><span class="kw"> override</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttsession.clean.html">Clean</a><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttsession.subscriptions.html">Subscriptions</a><span class="sym">: </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.html">TMQTTSubscriptionList</a><span class="sym">;</span>  [r]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttsession.server.html">Server</a><span class="sym">: </span><a href="../mqttserver/tmqttserver.html">TMQTTServer</a><span class="sym">;</span>  [r]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttsession.connection.html">Connection</a><span class="sym">: </span><a href="../mqttserver/tmqttserverconnection.html">TMQTTServerConnection</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttsession.clientid.html">ClientID</a><span class="sym">: </span>UTF8String<span class="sym">;</span>  [r]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttsession.description.html">Description</a><span class="sym">: </span>string<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttsession.maximumqos.html">MaximumQOS</a><span class="sym">: </span><a href="../mqttconsts/tmqttqostype.html">TMQTTQOSType</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">The maximum QOS at which the session can publish messages</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttsession.age.html">Age</a><span class="sym">: </span>Integer<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"></span></tt></p></td>
+</tr>
+</table>
+<h2>Inheritance</h2>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td align="center" valign="top"><p><tt><span class="code"><a href="../mqttserver/tmqttsession.html">TMQTTSession</a></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Represents an MQTT Session.  </p></td>
+</tr>
+<tr>
+<td align="center">|</td>
+</tr>
+<tr>
+<td align="center"><p><tt><span class="code">TLogObject</span></tt></p></td>
+</tr>
+<tr>
+<td align="center">?</td>
+</tr>
+<tr>
+<td align="center"><p><tt><span class="code">TObject</span></tt></p></td>
+</tr>
+</table>
+<h2>Description</h2>
+<p>A session may persist between different connections, i.e. a client may reconnect to an existing session.</p>
+</body>
+</html>

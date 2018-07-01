@@ -31,7 +31,6 @@ type
     FilterText: TEdit;
     LogGrid: TStringGrid;
     LogToolbarPanel: TPanel;
-    PasswordManagerItm: TMenuItem;
     RefreshRetainedMessagesItm: TMenuItem;
     RetainedMessagesGridMenu: TPopupMenu;
     RetainedMessagesGrid: TStringGrid;
@@ -71,7 +70,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure ListenTimerTimer(Sender: TObject);
     procedure LoadConfigurationItmClick(Sender: TObject);
-    procedure PasswordManagerItmClick(Sender: TObject);
     procedure PropertiesItmClick(Sender: TObject);
     procedure RefreshConnectionsItmClick(Sender: TObject);
     procedure RefreshRetainedMessagesItmClick(Sender: TObject);
@@ -117,7 +115,7 @@ implementation
 {$R *.lfm}
 
 uses
-  IniFiles, HelpFM, PasswordManFM, ServerPropertiesFM;
+  IniFiles, HelpFM, ServerPropertiesFM;
 
 { TServerForm }
 
@@ -315,7 +313,6 @@ procedure TServerForm.LoadConfiguration(Filename: String);
 var
   Ini: TInifile;
   I: Integer;
-  S: String;
 begin
   Ini := TInifile.Create(Filename,[ifoStripComments,ifoStripInvalid,ifoFormatSettingsActive]);
   try
@@ -338,9 +335,6 @@ begin
     if I > 65535 then
       I := 65535;
     TCP.Port := I;
-    S := Ini.ReadString('Server','Passwords','');
-    if S > '' then
-      Server.Passwords.AsBase64 := S;
   finally
     Ini.Free;
   end;
@@ -362,18 +356,9 @@ begin
     Ini.WriteInteger('Server','MaximumQOS',I);
     Ini.WriteString('Server','Host',TCP.Host);
     Ini.WriteInteger('Server','Port',TCP.Port);
-    Ini.WriteString('Server','Passwords',Server.Passwords.AsBase64);
   finally
     Ini.Free;
   end;
-end;
-
-procedure TServerForm.PasswordManagerItmClick(Sender: TObject);
-begin
-  PassManForm.PassMan := Server.Passwords;
-  PassManForm.PassmanToGrid;
-  if PassManForm.ShowModal = mrOK then
-    PassManForm.GridToPassman;
 end;
 
 procedure TServerForm.TCPAccept(aSocket: TLSocket);
@@ -392,10 +377,7 @@ var
 begin
   if AConnection.Socket is TLSocket then
     begin
-      if Assigned(AConnection.User) then
-        Username := AConnection.User.Username
-      else
-        Username := '(N/A)';
+      Username := AConnection.Username;
       Log.Send(mtInfo,'MQTT session started client=%s user=%s',[AConnection.Session.ClientID,Username]);
     end;
 end;
@@ -549,17 +531,8 @@ begin
         ConnectionsGrid.Cells[1,I+1] := (S.Socket as TLSocket).PeerAddress
       else
         ConnectionsGrid.Cells[1,I+1] := '(N/A)';
-      if Assigned(S.User) then
-        begin
-          ConnectionsGrid.Cells[2,I+1]   := S.User.Username;
-          ConnectionsGrid.Objects[2,I+1] := S.User;
-        end
-      else
-        begin
-          ConnectionsGrid.Cells[2,I+1] := '(N/A)';
-          ConnectionsGrid.Objects[2,I+1] := nil;
-        end;
-      ConnectionsGrid.Cells[3,I+1] := S.WillMessage.DisplayText;
+      ConnectionsGrid.Cells[2,I+1]   := S.Username;
+      ConnectionsGrid.Cells[3,I+1]   := S.WillMessage.DisplayText;
       ConnectionsGrid.Objects[3,I+1] := S.WillMessage;
     end;
 end;

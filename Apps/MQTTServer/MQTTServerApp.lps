@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="71">
+      <Unit0>
+        <Filename Value="MQTTServerApp.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="8"/>
+        <CursorPos X="39" Y="10"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../../Forms/serverfm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ServerForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="7"/>
+        <CursorPos X="79" Y="309"/>
+        <UsageCount Value="175"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../../Forms/serverpropertiesfm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ServerPropertiesForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ServerPropertiesFM"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="23"/>
+        <CursorPos X="99" Y="64"/>
+        <UsageCount Value="173"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../../Forms/helpfm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="HelpForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="31"/>
+        <UsageCount Value="82"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../Forms/passwordmanfm.pas"/>
+        <ComponentName Value="PassManForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="32"/>
+        <CursorPos X="11" Y="41"/>
+        <UsageCount Value="92"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../../units/forms/debuglogfm.pas"/>
+        <ComponentName Value="DebugLogForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="DebugLogFM"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="136"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../Forms/connectfm.pas"/>
+        <ComponentName Value="ConnectDlg"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="23"/>
+        <CursorPos X="59" Y="27"/>
+        <UsageCount Value="131"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../../Forms/clientfm.pas"/>
+        <ComponentName Value="ClientForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="199"/>
+        <CursorPos Y="225"/>
+        <UsageCount Value="96"/>
+        <Bookmarks Count="1">
+          <Item0 X="17" Y="180"/>
+        </Bookmarks>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../../Forms/publishfm.pas"/>
+        <ComponentName Value="PublishForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="68" Y="13"/>
+        <UsageCount Value="43"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../Forms/subscribefm.pas"/>
+        <ComponentName Value="SubscribeForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="71"/>
+        <CursorPos X="38" Y="96"/>
+        <UsageCount Value="27"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../ClientServerNoNet/mainfm.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="MainFM"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="56"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../../src/mqttnetwork.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="5"/>
+        <CursorPos X="7" Y="27"/>
+        <UsageCount Value="11"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../src/mqttclient.pas"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="626"/>
+        <CursorPos X="41" Y="626"/>
+        <UsageCount Value="93"/>
+        <Bookmarks Count="1">
+          <Item0 Y="664" ID="1"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../src/mqttconsts.pas"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="112"/>
+        <CursorPos X="79" Y="157"/>
+        <UsageCount Value="90"/>
+        <Loaded Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <CursorPos X="52"/>
+        <UsageCount Value="100"/>
+        <Loaded Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="../../src/mqttmessages.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="163"/>
+        <CursorPos X="3" Y="185"/>
+        <UsageCount Value="66"/>
+        <Loaded Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../../src/mqttpacketdefs.pas"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="518"/>
+        <CursorPos X="21" Y="548"/>
+        <UsageCount Value="88"/>
+        <Loaded Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../../../units/buffers.pas"/>
+        <UnitName Value="Buffers"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2"/>
+        <CursorPos X="60" Y="33"/>
+        <UsageCount Value="16"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../../src/mqttpackets.pas"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="387"/>
+        <CursorPos Y="395"/>
+        <UsageCount Value="68"/>
+        <Loaded Value="True"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="/usr/share/lazarus/1.6.4/lcl/extctrls.pp"/>
+        <UnitName Value="ExtCtrls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="159"/>
+        <CursorPos X="3" Y="182"/>
+        <UsageCount Value="13"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="../../../units/logging.pas"/>
+        <UnitName Value="Logging"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="50" Y="9"/>
+        <UsageCount Value="14"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="/usr/share/lazarus/1.6.4/lcl/include/customform.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="937"/>
+        <CursorPos Y="950"/>
+        <UsageCount Value="8"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="../../src/mqtttopics.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="37" Y="42"/>
+        <UsageCount Value="15"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="../../src/mqttsubscriptions.pas"/>
+        <EditorIndex Value="10"/>
+        <CursorPos X="17" Y="37"/>
+        <UsageCount Value="75"/>
+        <Loaded Value="True"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../../src/mqtttokenizer.pas"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="150"/>
+        <UsageCount Value="27"/>
+        <Loaded Value="True"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="/usr/share/lazarus/1.6.4/lcl/interfaces/gtk2/gtk2memostrings.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="117"/>
+        <CursorPos Y="142"/>
+        <UsageCount Value="2"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="/usr/share/lazarus/1.6.4/lcl/include/control.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2723"/>
+        <CursorPos Y="2740"/>
+        <UsageCount Value="3"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="/usr/share/lazarus/1.6.4/lcl/include/buttoncontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="6"/>
+        <CursorPos Y="21"/>
+        <UsageCount Value="3"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="/usr/share/lazarus/1.6.4/lcl/include/buttons.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="154"/>
+        <CursorPos Y="170"/>
+        <UsageCount Value="4"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="../../../units/passwordman.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="189"/>
+        <CursorPos X="9" Y="204"/>
+        <UsageCount Value="9"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/packages/fcl-base/src/inifiles.pp"/>
+        <UnitName Value="IniFiles"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="128"/>
+        <CursorPos X="3" Y="143"/>
+        <UsageCount Value="4"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="/usr/share/lazarus/1.6.4/lcl/grids.pas"/>
+        <UnitName Value="Grids"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="9271"/>
+        <CursorPos Y="9287"/>
+        <UsageCount Value="4"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../../src/mqttsessions.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="11"/>
+        <UsageCount Value="17"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../../../units/rbtree.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="117"/>
+        <CursorPos Y="128"/>
+        <UsageCount Value="12"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/inc/objpash.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="170"/>
+        <CursorPos X="23" Y="193"/>
+        <UsageCount Value="10"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="/usr/share/lazarus/1.6.4/components/sparta/dockedformeditor/source/sparta_reg_dockedformeditor.pas"/>
+        <UnitName Value="sparta_reg_DockedFormEditor"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="4"/>
+        <CursorPos X="49" Y="20"/>
+        <UsageCount Value="5"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="../../FPDoc/mqttclientid.xml"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7"/>
+        <CursorPos X="49" Y="29"/>
+        <UsageCount Value="6"/>
+        <DefaultSyntaxHighlighter Value="XML"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/inc/objpas.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="275"/>
+        <CursorPos X="9" Y="277"/>
+        <UsageCount Value="10"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/objpas/classes/classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="996"/>
+        <CursorPos X="14" Y="1020"/>
+        <UsageCount Value="9"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/objpas/classes/lists.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="173"/>
+        <CursorPos X="3" Y="179"/>
+        <UsageCount Value="6"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="../../src/mqtttopics-original.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="51"/>
+        <CursorPos X="63" Y="74"/>
+        <UsageCount Value="6"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="../../src/mqttregister.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="13"/>
+        <UsageCount Value="8"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="../../../src/lazarus/lcl/grids.pas"/>
+        <UnitName Value="Grids"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="9608"/>
+        <CursorPos Y="9618"/>
+        <UsageCount Value="9"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/objpas/sysutils/sysstrh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="199"/>
+        <CursorPos X="26" Y="217"/>
+        <UsageCount Value="7"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="../../../lnet/trunk/lib/lnet.pp"/>
+        <UnitName Value="lNet"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1527"/>
+        <CursorPos Y="1556"/>
+        <UsageCount Value="31"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="../../../lnet/trunk/lib/levents.pp"/>
+        <UnitName Value="lEvents"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="198"/>
+        <CursorPos X="5" Y="75"/>
+        <UsageCount Value="8"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="../../../lnet/trunk/lazaruspackage/lclgtkeventer.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="39"/>
+        <CursorPos Y="63"/>
+        <UsageCount Value="25"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="../../../lnet/trunk/lib/lcommon.pp"/>
+        <UnitName Value="lCommon"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="65"/>
+        <CursorPos X="15" Y="79"/>
+        <UsageCount Value="8"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/objpas/sysutils/filutilh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="107"/>
+        <CursorPos X="3" Y="117"/>
+        <UsageCount Value="8"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/unix/sysutils.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="440"/>
+        <CursorPos X="70" Y="454"/>
+        <UsageCount Value="8"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/unix/bunxovlh.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="11" Y="32"/>
+        <UsageCount Value="7"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/unix/bunxovl.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="30" Y="267"/>
+        <UsageCount Value="7"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="../../../units/streamutils.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="121"/>
+        <CursorPos Y="166"/>
+        <UsageCount Value="14"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="../../../units/base32.pas"/>
+        <UnitName Value="Base32"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="8"/>
+        <CursorPos X="22" Y="21"/>
+        <UsageCount Value="8"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/objpas/classes/streams.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="872"/>
+        <CursorPos X="3" Y="875"/>
+        <UsageCount Value="8"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/inc/systemh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1118"/>
+        <CursorPos X="11" Y="1132"/>
+        <UsageCount Value="8"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/unix/sysdir.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="36"/>
+        <CursorPos X="11" Y="36"/>
+        <UsageCount Value="7"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="../../../units/files.pas"/>
+        <UnitName Value="Files"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="106"/>
+        <CursorPos X="3" Y="142"/>
+        <UsageCount Value="9"/>
+      </Unit57>
+      <Unit58>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/packages/fcl-base/src/custapp.pp"/>
+        <UnitName Value="CustApp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="87"/>
+        <CursorPos Y="114"/>
+        <UsageCount Value="10"/>
+      </Unit58>
+      <Unit59>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/objpas/sysutils/sysstr.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1888"/>
+        <CursorPos X="3" Y="1890"/>
+        <UsageCount Value="7"/>
+      </Unit59>
+      <Unit60>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/objpas/sysutils/finah.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="11"/>
+        <CursorPos X="10" Y="29"/>
+        <UsageCount Value="7"/>
+      </Unit60>
+      <Unit61>
+        <Filename Value="/usr/share/fpcsrc/3.0.2/rtl/objpas/sysutils/fina.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="158"/>
+        <CursorPos X="2" Y="163"/>
+        <UsageCount Value="7"/>
+      </Unit61>
+      <Unit62>
+        <Filename Value="/lazarus/lcl/forms.pp"/>
+        <UnitName Value="Forms"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1747"/>
+        <CursorPos X="3" Y="1763"/>
+        <UsageCount Value="8"/>
+      </Unit62>
+      <Unit63>
+        <Filename Value="../../../units/errormsg.pas"/>
+        <UnitName Value="ErrorMsg"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="7"/>
+      </Unit63>
+      <Unit64>
+        <Filename Value="../../FPDoc/mqttpackets.xml"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="7"/>
+        <DefaultSyntaxHighlighter Value="XML"/>
+      </Unit64>
+      <Unit65>
+        <Filename Value="../../../crypto/diffiehellman.pas"/>
+        <UnitName Value="DiffieHellman"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="370"/>
+        <CursorPos X="59" Y="406"/>
+        <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit65>
+      <Unit66>
+        <Filename Value="../../../units/btreefile.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="116"/>
+        <CursorPos X="35" Y="116"/>
+        <UsageCount Value="8"/>
+      </Unit66>
+      <Unit67>
+        <Filename Value="../../../units/tests/test_btree.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="19" Y="4"/>
+        <UsageCount Value="7"/>
+      </Unit67>
+      <Unit68>
+        <Filename Value="../../../units/btree.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="575"/>
+        <CursorPos Y="611"/>
+        <UsageCount Value="7"/>
+      </Unit68>
+      <Unit69>
+        <Filename Value="/usr/share/lazarus/1.6.4/lcl/customtimer.pas"/>
+        <UnitName Value="CustomTimer"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="6"/>
+        <CursorPos X="3" Y="29"/>
+        <UsageCount Value="13"/>
+      </Unit69>
+      <Unit70>
+        <Filename Value="../../../bkutils/buffers.pas"/>
+        <UnitName Value="Buffers"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit70>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="313" Column="11" TopLine="290"/>
+      </Position1>
+      <Position2>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="283" Column="42" TopLine="263"/>
+      </Position2>
+      <Position3>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="427" Column="74" TopLine="407"/>
+      </Position3>
+      <Position4>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="276" Column="23" TopLine="262"/>
+      </Position4>
+      <Position5>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="435" TopLine="407"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="8" Column="30"/>
+      </Position6>
+      <Position7>
+        <Filename Value="../../Forms/serverfm.pas"/>
+        <Caret Line="407" TopLine="31"/>
+      </Position7>
+      <Position8>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="8" Column="22"/>
+      </Position8>
+      <Position9>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="129" Column="38" TopLine="106"/>
+      </Position9>
+      <Position10>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="8" Column="33"/>
+      </Position10>
+      <Position11>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="129" Column="44" TopLine="106"/>
+      </Position11>
+      <Position12>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="364" TopLine="341"/>
+      </Position12>
+      <Position13>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="331" Column="7" TopLine="294"/>
+      </Position13>
+      <Position14>
+        <Filename Value="../../Forms/serverfm.pas"/>
+        <Caret Line="407" TopLine="31"/>
+      </Position14>
+      <Position15>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="327" Column="52" TopLine="304"/>
+      </Position15>
+      <Position16>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1033" Column="11" TopLine="988"/>
+      </Position16>
+      <Position17>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1481" Column="3" TopLine="1442"/>
+      </Position17>
+      <Position18>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="544" Column="11" TopLine="532"/>
+      </Position18>
+      <Position19>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="549" Column="24" TopLine="504"/>
+      </Position19>
+      <Position20>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1379" Column="3" TopLine="1368"/>
+      </Position20>
+      <Position21>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="523" Column="55" TopLine="50"/>
+      </Position21>
+      <Position22>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="122" Column="39" TopLine="77"/>
+      </Position22>
+      <Position23>
+        <Filename Value="../../Forms/serverfm.pas"/>
+        <Caret Line="442" Column="25" TopLine="437"/>
+      </Position23>
+      <Position24>
+        <Filename Value="../../Forms/serverfm.pas"/>
+        <Caret Line="120" Column="21" TopLine="95"/>
+      </Position24>
+      <Position25>
+        <Filename Value="../../Forms/serverfm.pas"/>
+        <Caret Line="369" Column="3" TopLine="367"/>
+      </Position25>
+      <Position26>
+        <Filename Value="../../Forms/serverfm.pas"/>
+        <Caret Line="368" Column="3" TopLine="366"/>
+      </Position26>
+      <Position27>
+        <Filename Value="../../Forms/serverfm.pas"/>
+        <Caret Line="73" TopLine="48"/>
+      </Position27>
+      <Position28>
+        <Filename Value="../../Forms/serverfm.pas"/>
+        <Caret Line="382" TopLine="359"/>
+      </Position28>
+      <Position29>
+        <Filename Value="../../Forms/serverfm.pas"/>
+        <Caret Line="538" TopLine="512"/>
+      </Position29>
+      <Position30>
+        <Filename Value="../../Forms/serverfm.pas"/>
+        <Caret Line="536" Column="38" TopLine="513"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+  <Debugging>
+    <Watches Count="1">
+      <Item1>
+        <Expression Value="Self"/>
+      </Item1>
+    </Watches>
+  </Debugging>
+</CONFIG>

@@ -88,7 +88,9 @@
         <short>Persistent means the subscription should be stored to a stream and persist between server instantiations</short>
       <descr>Marking a subscription as persistent does two things:
 1) It prevents a subscription from ever timing out and getting deleted due to non-use
-2) It indicates that the subscription should be stored to a stream and persist between server instantiations</descr>
+2) It indicates that the subscription should be stored to a stream and persist between server instantiations
+
+Currently there is no way to set this property from test applications.</descr>
       </element>
       <element name="TMQTTSubscriptionList.ClientID">
         <short>The ClientID of this subscription list</short>
@@ -100,6 +102,9 @@
         <short>An indexed array[0..Count-1] of subscriptions</short>
       </element>
       <short>Manages a list of MQTT subscriptions</short>
+    <element name="TMQTTSubscription"><short>Represents a subscription to a topic</short>
+      </element><element name="TMQTTSubscriptionList"><short>A list of subscriptions</short>
+      </element>
     </module>
     <short>MQTT client and server components</short>
   </package>

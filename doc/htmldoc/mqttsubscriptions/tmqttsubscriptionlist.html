@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>TMQTTSubscriptionList</title>
+<link rel="stylesheet" href="../fpdoc.css" type="text/css">
+
+</head>
+<body>
+<table class="bar" width="100%" border="0" cellpadding="4" cellspacing="0">
+<tr>
+<td><b>[<a href="../mqttsubscriptions/index.html">Overview</a>][<a href="../mqttsubscriptions/index-4.html">Classes</a>][<a href="../mqttsubscriptions/index-8.html">Index</a>]</b></td>
+<td align="right"><span class="bartitle">Reference for unit 'mqttsubscriptions' (<a href="../index.html">#mqttcomponents</a>)</span></td>
+</tr>
+</table>
+<h1>TMQTTSubscriptionList</h1>
+<p>[<a href="../mqttsubscriptions/tmqttsubscriptionlist-1.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-1.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Properties</a> (<a href="../mqttsubscriptions/tmqttsubscriptionlist-2.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-2.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttsubscriptions/tmqttsubscriptionlist-3.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-3.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Methods</a> (<a href="../mqttsubscriptions/tmqttsubscriptionlist-4.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-4.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttsubscriptions/tmqttsubscriptionlist-5.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-5.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Events</a> (<a href="../mqttsubscriptions/tmqttsubscriptionlist-6.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-6.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] </p>
+<p>A list of subscriptions</p>
+<h2>Declaration</h2>
+<p>Source position: mqttsubscriptions.pas line 43</p>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td><p><tt><span class="code"><span class="kw">type</span> TMQTTSubscriptionList <span class="sym">=</span> <span class="kw">class</span><span class="sym">(</span>TObject<span class="sym">)</span> <span class="kw">end</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"><span class="kw">public</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">constructor </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.create.html">Create</a><span class="sym">;</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Creates a new subscription list</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">destructor </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.destroy.html">Destroy</a><span class="sym">;</span><span class="kw"> override</span><span class="sym">;</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Destroys the subscription list and all subscriptions it contains</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.loadfromstream.html">LoadFromStream</a><span class="sym">();</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Loads subscriptions from Stream and adds them to the list.</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.savetostream.html">SaveToStream</a><span class="sym">();</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Saves subscriptions marked persistent to the stream</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.assign.html">Assign</a><span class="sym">();</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Clears the subscription list and replaces it with the contents of ASource</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.clear.html">Clear</a><span class="sym">;</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Clears the subscription list, destroying all objects it contains</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.new.html">New</a><span class="sym">();</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Creates a new subscription and returns the result.  If a subscription with the same filter already exists it is updated and returned instead.</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.update.html">Update</a><span class="sym">();</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Adds or updates a subscription.  If a subscription with a matching filter already exists, it is updated.</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.find.html">Find</a><span class="sym">();</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Finds a subscription by Filter.  Returns nil if no match was found.</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.remove.html">Remove</a><span class="sym">();</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Removes a subscription from the list and destroys it</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.delete.html">Delete</a><span class="sym">();</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Deletes the index'th subscription and frees the subscription</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.mergelist.html">MergeList</a><span class="sym">();</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Merges a list of subscriptions into this subscription list.  Any duplicates subscriptions are updated with the new subscriptions.</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.deletelist.html">DeleteList</a><span class="sym">();</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Deletes a list of subscriptions from this list</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.removeinvalidsubscriptions.html">RemoveInvalidSubscriptions</a><span class="sym">;</span></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">Deletes and frees any subscriptions with invalid tokens.  Returns the number of subscriptions removed.</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.count.html">Count</a><span class="sym">: </span>Integer<span class="sym">;</span>  [r]</span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">The number of subscriptions in the list</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.items.html">Items</a> []<span class="sym">: </span><a href="../mqttsubscriptions/tmqttsubscription.html">TMQTTSubscription</a><span class="sym">;</span><span class="kw"> default</span><span class="sym">;</span>  [r]</span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">An indexed array[0..Count-1] of subscriptions</p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"></span></tt></p></td>
+</tr>
+</table>
+<h2>Inheritance</h2>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td align="center" valign="top"><p><tt><span class="code"><a href="../mqttsubscriptions/tmqttsubscriptionlist.html">TMQTTSubscriptionList</a></span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">A list of subscriptions</p></td>
+</tr>
+<tr>
+<td align="center">|</td>
+</tr>
+<tr>
+<td align="center"><p><tt><span class="code">TObject</span></tt></p></td>
+</tr>
+</table>
+</body>
+</html>
