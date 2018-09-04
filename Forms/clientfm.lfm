@@ -1,7 +1,7 @@
 object ClientForm: TClientForm
-  Left = 534
+  Left = 546
   Height = 381
-  Top = 81
+  Top = 169
   Width = 695
   Caption = 'MQTT Client'
   ClientHeight = 381
@@ -11,7 +11,7 @@ object ClientForm: TClientForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poScreenCenter
-  LCLVersion = '1.6.4.0'
+  LCLVersion = '1.8.2.0'
   object SubscribeBtn: TButton
     Left = 207
     Height = 27
@@ -44,7 +44,6 @@ object ClientForm: TClientForm
     Height = 27
     Top = 8
     Width = 89
-    Anchors = [akLeft, akBottom]
     Caption = '&Disconnect'
     OnClick = DisconnectBtnClick
     TabOrder = 3
@@ -60,8 +59,8 @@ object ClientForm: TClientForm
     TabOrder = 4
     object SubscriptionsTab: TTabSheet
       Caption = 'Subscriptions'
-      ClientHeight = 261
-      ClientWidth = 658
+      ClientHeight = 265
+      ClientWidth = 654
       object SubscriptionsGrid: TStringGrid
         Left = 0
         Height = 261
@@ -87,6 +86,7 @@ object ClientForm: TClientForm
             SizePriority = 0
             Title.Alignment = taRightJustify
             Title.Caption = 'Age'
+            Width = 64
           end        
           item
             ButtonStyle = cbsCheckboxColumn
@@ -111,8 +111,8 @@ object ClientForm: TClientForm
     end
     object MessagesTab: TTabSheet
       Caption = 'Messages'
-      ClientHeight = 261
-      ClientWidth = 658
+      ClientHeight = 265
+      ClientWidth = 654
       object MessagesGrid: TStringGrid
         Left = 0
         Height = 165
@@ -160,21 +160,21 @@ object ClientForm: TClientForm
     end
     object LogTab: TTabSheet
       Caption = 'Log'
-      ClientHeight = 261
-      ClientWidth = 658
+      ClientHeight = 265
+      ClientWidth = 654
       object LogToolbarPanel: TPanel
         Left = 0
         Height = 50
         Top = 0
-        Width = 658
+        Width = 654
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 50
-        ClientWidth = 658
+        ClientWidth = 654
         TabOrder = 0
         object FilterText: TEdit
           Left = 8
-          Height = 27
+          Height = 29
           Top = 9
           Width = 144
           OnExit = FilterTextExit
@@ -182,18 +182,18 @@ object ClientForm: TClientForm
         end
         object CBFiltered: TCheckBox
           Left = 160
-          Height = 22
+          Height = 23
           Top = 12
-          Width = 66
+          Width = 68
           Caption = 'Filtered'
           OnChange = CBFilteredChange
           TabOrder = 1
         end
         object CBEnabled: TCheckBox
           Left = 231
-          Height = 22
+          Height = 23
           Top = 12
-          Width = 69
+          Width = 71
           Caption = 'Enabled'
           Checked = True
           OnChange = CBEnabledChange
@@ -201,7 +201,7 @@ object ClientForm: TClientForm
           TabOrder = 2
         end
         object ClearBtn: TButton
-          Left = 312
+          Left = 308
           Height = 25
           Top = 9
           Width = 75
@@ -210,12 +210,21 @@ object ClientForm: TClientForm
           OnClick = ClearBtnClick
           TabOrder = 3
         end
+        object cbShowDebugMessages: TCheckBox
+          Left = 392
+          Height = 23
+          Top = 12
+          Width = 156
+          Caption = 'Show Debug Messages'
+          OnChange = cbShowDebugMessagesChange
+          TabOrder = 4
+        end
       end
       object LogGrid: TStringGrid
         Left = 0
-        Height = 211
+        Height = 215
         Top = 50
-        Width = 658
+        Width = 654
         Align = alClient
         AutoAdvance = aaNone
         AutoEdit = False
@@ -237,7 +246,7 @@ object ClientForm: TClientForm
           item
             ReadOnly = True
             Title.Caption = 'Message'
-            Width = 456
+            Width = 452
           end>
         DefaultRowHeight = 18
         ExtendedSelect = False
@@ -248,7 +257,7 @@ object ClientForm: TClientForm
         ColWidths = (
           80
           120
-          456
+          452
         )
       end
     end
@@ -258,15 +267,14 @@ object ClientForm: TClientForm
     Height = 27
     Top = 8
     Width = 89
-    Anchors = [akLeft, akBottom]
     Caption = '&Connect'
     OnClick = ConnectBtnClick
     TabOrder = 5
   end
   object StatusBar: TStatusBar
     Left = 0
-    Height = 25
-    Top = 356
+    Height = 19
+    Top = 362
     Width = 695
     Panels = <>
   end

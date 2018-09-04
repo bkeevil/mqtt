@@ -22,6 +22,7 @@ type
   TClientForm = class(TForm)
     CBEnabled: TCheckBox;
     CBFiltered: TCheckBox;
+    cbShowDebugMessages: TCheckBox;
     ClearBtn: TButton;
     DisconnectBtn: TButton;
     Client: TMQTTClient;
@@ -44,6 +45,7 @@ type
     UnsubscribeBtn: TButton;
     procedure CBEnabledChange(Sender: TObject);
     procedure CBFilteredChange(Sender: TObject);
+    procedure cbShowDebugMessagesChange(Sender: TObject);
     procedure ClearBtnClick(Sender: TObject);
     procedure ClientDisconnected(Sender: TObject);
     procedure ClientReceiveMessage(AClient: TMQTTClient; Topic: UTF8String;
@@ -443,6 +445,21 @@ begin
   else
     Filter('');
 end;
+
+procedure TClientForm.cbShowDebugMessagesChange(Sender: TObject);
+begin
+  if cbShowDebugMessages.Checked then
+    begin
+      FListener.TypeFilter := ALL_LOG_MESSAGE_TYPES;
+      Client.Log.Filter := ALL_LOG_MESSAGE_TYPES;
+    end
+  else
+    begin
+      FListener.TypeFilter := DEFAULT_LOG_MESSAGE_TYPES;
+      Client.Log.Filter := DEFAULT_LOG_MESSAGE_TYPES;
+    end;
+end;
+
 
 procedure TClientForm.CBEnabledChange(Sender: TObject);
 begin
