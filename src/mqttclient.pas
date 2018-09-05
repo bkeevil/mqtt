@@ -473,8 +473,6 @@ begin
     if ErrCode = MQTT_ERROR_NONE then
       begin
         FInsufficientData := 0;
-        FPingCount := 0;
-        FPingIntRemaining := FPingInterval;
         if State = csConnected then
           begin
             case Packet.PacketType of
