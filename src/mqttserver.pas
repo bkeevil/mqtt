@@ -769,8 +769,8 @@ begin
             else
               Bail(MQTT_ERROR_UNHANDLED_PACKETTYPE);
             end;
-            if Packet.PacketType = ptPUBLISH then
-              DestroyPacket := (Packet as TMQTTPUBLISHPacket).QOS = qtAT_MOST_ONCE;
+            if (Packet.PacketType = ptPUBLISH) and ((Packet as TMQTTPUBLISHPacket).QOS = qtEXACTLY_ONCE) then
+              DestroyPacket := False;
           end
         else
           if State = ssDisconnecting then
