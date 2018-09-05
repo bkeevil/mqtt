@@ -25,6 +25,8 @@ type
   { TServerForm }
 
   TServerForm = class(TForm)
+    PacketListMemo: TMemo;
+    RefreshPacketListBtn: TButton;
     CBEnabled: TCheckBox;
     CBFiltered: TCheckBox;
     ClearBtn: TButton;
@@ -36,6 +38,7 @@ type
     RetainedMessagesGrid: TStringGrid;
     RetainedMessagesTab: TTabSheet;
     TabSheet1: TTabSheet;
+    PacketsInMemTab: TTabSheet;
     TCP: TLTCPComponent;
     SessionsGrid: TStringGrid;
     MainMenu: TMainMenu;
@@ -72,6 +75,7 @@ type
     procedure LoadConfigurationItmClick(Sender: TObject);
     procedure PropertiesItmClick(Sender: TObject);
     procedure RefreshConnectionsItmClick(Sender: TObject);
+    procedure RefreshPacketListBtnClick(Sender: TObject);
     procedure RefreshRetainedMessagesItmClick(Sender: TObject);
     procedure RefreshSessionsItmClick(Sender: TObject);
     procedure RefreshSubscriptionsItmClick(Sender: TObject);
@@ -115,7 +119,7 @@ implementation
 {$R *.lfm}
 
 uses
-  IniFiles, HelpFM, ServerPropertiesFM;
+  MQTTPackets, MQTTPacketDefs, IniFiles, HelpFM, ServerPropertiesFM;
 
 { TServerForm }
 
@@ -535,6 +539,12 @@ begin
       ConnectionsGrid.Cells[3,I+1]   := S.WillMessage.DisplayText;
       ConnectionsGrid.Objects[3,I+1] := S.WillMessage;
     end;
+end;
+
+procedure TServerForm.RefreshPacketListBtnClick(Sender: TObject);
+begin
+  PacketListMemo.Clear;
+  PacketList.Dump(PacketListMemo.Lines);
 end;
 
 procedure TServerForm.RefreshSessionsItmClick(Sender: TObject);

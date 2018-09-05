@@ -20,7 +20,9 @@ type
       function ReadFromBuffer(ABuffer: TBuffer): Word; virtual; abstract;
       function GetPacketType: TMQTTPacketType; virtual; abstract;
     public
+      constructor Create;
       destructor Destroy; override;
+      function AsString: String; virtual; // For debugging purposes
       procedure WriteToBuffer(ABuffer: TBuffer); virtual; abstract;
       //
       property PacketType: TMQTTPacketType read GetPacketType;
@@ -28,10 +30,13 @@ type
       property RemainingLength: DWORD read FRemainingLength write FRemainingLength;
   end;
 
+  { TMQTTPacketIDPacket }
+
   TMQTTPacketIDPacket = class(TMQTTPacket)
     protected
       FPacketID: Word;
     public
+      function AsString: String; override;
       property PacketID: Word read FPacketID write FPacketID;
   end;
 
@@ -88,6 +93,25 @@ type
       property Items[Index: Integer]: Word read GetItem;
   end;
 
+  { TMQTTPacketList }
+
+  TMQTTPacketList = class(TObject) // A list of all constructed packets. Created to debug memory leaks.
+    private
+      FList: TList;
+      function GetCount: Integer;
+      function GetItem(Index: Integer): TMQTTPacket;
+    public
+      constructor Create;
+      destructor Destroy; override;
+      //
+      procedure Add(APacket: TMQTTPacket);
+      procedure Remove(APacket: TMQTTPacket);
+      procedure Dump(Strings: TStrings);
+      //
+      property Count: Integer read GetCount;
+      property Items[Index: Integer]: TMQTTPacket read GetItem; default;
+  end;
+
 function ReadWordFromBuffer(ABuffer: TBuffer; out Value: Word): Boolean;
 procedure WriteWordToBuffer(ABuffer: TBuffer; const Value: Word);
 function ReadUTF8StringFromBuffer(ABuffer: TBuffer; out Str: UTF8String): Boolean;
@@ -98,10 +122,74 @@ function ReadRemainingLengthFromBuffer(ABuffer: TBuffer; out Value: DWORD): Bool
 procedure WriteRemainingLengthToBuffer(ABuffer: TBuffer; const Value: DWORD);
 function ReadMQTTPacketFromBuffer(ABuffer: TBuffer; out Packet: TMQTTPacket; Connected: Boolean = True): Word;
 
+var
+  PacketList: TMQTTPacketList;
+
 implementation
 
 uses
   Sockets, LazUTF8, MQTTPacketDefs;
+
+{ TMQTTPacketIDPacket }
+
+function TMQTTPacketIDPacket.AsString: String;
+begin
+  Result := inherited AsString + ' PacketID: ' + IntToStr(PacketID);
+end;
+
+{ TMQTTPacketList }
+
+constructor TMQTTPacketList.Create;
+begin
+  inherited Create;
+  FList := TList.Create;
+end;
+
+destructor TMQTTPacketList.Destroy;
+begin
+  FList.Free;
+  inherited Destroy;
+end;
+
+function TMQTTPacketList.GetCount: Integer;
+begin
+  Result := FList.Count;
+end;
+
+function TMQTTPacketList.GetItem(Index: Integer): TMQTTPacket;
+begin
+  Result := TMQTTPacket(FList[Index]);
+end;
+
+procedure TMQTTPacketList.Add(APacket: TMQTTPacket);
+begin
+  FList.Remove(APacket);
+  FList.Add(APacket);
+end;
+
+procedure TMQTTPacketList.Remove(APacket: TMQTTPacket);
+begin
+  FList.Remove(APacket);
+end;
+
+procedure TMQTTPacketList.Dump(Strings: TStrings);
+var
+  X: Integer;
+  P: TMQTTPacket;
+begin
+  if Assigned(Strings) then
+    begin
+      Strings.Clear;
+      for X := 0 to FList.Count - 1 do
+        begin
+          P := Items[X];
+          if Assigned(P) then
+            begin
+              Strings.Add(P.AsString);
+            end;
+        end;
+    end;
+end;
 
 { TMQTTPacketQueue }
 
@@ -193,9 +281,21 @@ begin
   Result := not (PacketType in [ptBROKERCONNECT,ptReserved15]);
 end;
 
+constructor TMQTTPacket.Create;
+begin
+  inherited Create;
+  PacketList.Add(Self);
+end;
+
 destructor TMQTTPacket.Destroy;
 begin
+  PacketList.Remove(Self);
   inherited Destroy;
+end;
+
+function TMQTTPacket.AsString: String;
+begin
+  Result := 'Name: ' + GetPacketTypeName;
 end;
 
 { TMQTTPacketIDManager }
@@ -535,4 +635,8 @@ begin
   end;
 end;
 
+initialization
+  PacketList := TMQTTPacketList.Create;
+finalization
+  PacketList.Free;
 end.

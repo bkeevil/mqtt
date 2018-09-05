@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Grids, ComCtrls, Menus, ExtCtrls, Buffers, Logging, lNetComponents,
-  MQTTConsts, MQTTClient, MQTTSubscriptions, lNet;
+  MQTTConsts, MQTTClient, MQTTSubscriptions, lNet, Types;
 
 type
   TDebugMessage = record
@@ -20,6 +20,7 @@ type
   { TClientForm }
 
   TClientForm = class(TForm)
+    RefreshPacketsBtn: TButton;
     CBEnabled: TCheckBox;
     CBFiltered: TCheckBox;
     cbShowDebugMessages: TCheckBox;
@@ -30,8 +31,10 @@ type
     FilterText: TEdit;
     LogGrid: TStringGrid;
     LogToolbarPanel: TPanel;
+    PacketsMemo: TMemo;
     StatusBar: TStatusBar;
     LogTab: TTabSheet;
+    PacketsInMemTab: TTabSheet;
     TCP: TLTCPComponent;
     RefreshSubscriptionsItm: TMenuItem;
     PageControl: TPageControl;
@@ -59,8 +62,11 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure PublishBtnClick(Sender: TObject);
+    procedure RefreshPacketsBtnClick(Sender: TObject);
     procedure RefreshSubscriptionsItmClick(Sender: TObject);
     procedure SubscribeBtnClick(Sender: TObject);
+    procedure PacketsInMemTabContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
     procedure TCPCanSend(aSocket: TLSocket);
     procedure TCPConnect(aSocket: TLSocket);
     procedure TCPDisconnect(aSocket: TLSocket);
@@ -87,7 +93,7 @@ implementation
 {$R *.lfm}
 
 uses
-  ConnectFM, PublishFM, SubscribeFM;
+  MQTTPackets, MQTTPacketDefs, ConnectFM, PublishFM, SubscribeFM;
 
 { TClientForm }
 
@@ -299,6 +305,12 @@ begin
     end;
 end;
 
+procedure TClientForm.PacketsInMemTabContextPopup(Sender: TObject; MousePos: TPoint;
+  var Handled: Boolean);
+begin
+
+end;
+
 procedure TClientForm.UnsubscribeBtnClick(Sender: TObject);
 var
   LSubscriptions: TMQTTSubscriptionList;
@@ -378,6 +390,12 @@ begin
   PublishForm.ActiveControl := PublishForm.edTopic;
   if PublishForm.ShowModal = mrOK then
     Client.Publish(PublishForm.edTopic.Text,PublishForm.edMessage.Text,TMQTTQOSType(PublishForm.cbQOS.ItemIndex),PublishForm.cbRetain.Checked);
+end;
+
+procedure TClientForm.RefreshPacketsBtnClick(Sender: TObject);
+begin
+  PacketsMemo.Clear;
+  PacketList.Dump(PacketsMemo.Lines);
 end;
 
 procedure TClientForm.ClearRecords;

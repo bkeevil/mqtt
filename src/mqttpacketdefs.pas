@@ -56,6 +56,7 @@ type
     public
       constructor Create;
       destructor Destroy; override;
+      function AsString: String; override;
       procedure WriteToBuffer(ABuffer: TBuffer); override;
       property UsernameFlag: Boolean read FUsernameFlag write FUsernameFlag;
       property PasswordFlag: Boolean read FPasswordFlag write FPasswordFlag;
@@ -99,6 +100,7 @@ type
       function GetPacketType: TMQTTPacketType; override;
     public
       destructor Destroy; override;
+      function AsString: String; override;
       procedure WriteToBuffer(ABuffer: TBuffer); override;
       property Duplicate: Boolean read FDuplicate write FDuplicate;
       property Retain: Boolean read FRetain write FRetain;
@@ -828,6 +830,11 @@ begin
   inherited Destroy;
 end;
 
+function TMQTTCONNECTPacket.AsString: String;
+begin
+  Result:=inherited AsString + ' ClientID: ' + FClientID + ' Username: ' + FUsername;
+end;
+
 function TMQTTCONNECTPacket.GetPacketType: TMQTTPacketType;
 begin
   Result := ptCONNECT;
@@ -988,6 +995,11 @@ end;
 destructor TMQTTPUBLISHPacket.Destroy;
 begin
   inherited Destroy;
+end;
+
+function TMQTTPUBLISHPacket.AsString: String;
+begin
+  Result := inherited AsString + ' QOS: ' + MQTTQOSTypeNames[FQOS] + ' Retain: ' + BoolToStr(FRetain,'true','false') + ' Duplicate: ' + BoolToStr(FDuplicate,'true','false') + ' Topic: ' + FTopic + ' Data: ' + FData;
 end;
 
 function TMQTTPUBLISHPacket.ReadFromBuffer(ABuffer: TBuffer): Word;

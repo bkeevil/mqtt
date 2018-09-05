@@ -129,6 +129,7 @@ type
       FSessions                   : TMQTTSessionList;
       FRetainedMessages           : TMQTTMessageList;
       FEnabled                    : Boolean;
+      FShutdown                   : Boolean;
       FRequireAuthentication      : Boolean;
       FAllowNullClientIDs         : Boolean;
       FStrictClientIDValidation   : Boolean;
@@ -315,6 +316,7 @@ end;
 
 destructor TMQTTServer.Destroy;
 begin
+  FShutdown := True;
   FThread.FServer := nil;
   FThread.Terminate;
   FSessions.Free;
@@ -352,7 +354,7 @@ begin
     DispatchMessage(nil,'System/Time/Day',IntToStr(LNow.Day),qtAT_MOST_ONCE,true);
   if (LNow.Hour <> FLastTime.Hour) then
     DispatchMessage(nil,'System/Time/Hour',IntToStr(LNow.Hour),qtAT_MOST_ONCE,true);
-  //if (LNow.DayOfWeek <> FLastTime.DayOfWeek) then
+  //if (LNow.DayOfWeek <> FLastTime.DayOfWeek) then                                        { Doesn't work in Raspberry pi }
   //  DispatchMessage(nil,'System/Time/DOW',IntToStr(LNow.DayOfWeek),qtAT_MOST_ONCE,true);
   if (LNow.Minute <> FLastTime.Minute) then
     begin
@@ -439,7 +441,7 @@ end;
 
 procedure TMQTTServer.ConnectionsChanged;
 begin
-  if Assigned(FOnConnectionsChanged) then
+  if (not FShutdown) and Assigned(FOnConnectionsChanged) then
     FOnConnectionsChanged(Self);
 end;
 
@@ -769,8 +771,8 @@ begin
             else
               Bail(MQTT_ERROR_UNHANDLED_PACKETTYPE);
             end;
-            if Packet.PacketType = ptPUBLISH then
-              DestroyPacket := (Packet as TMQTTPUBLISHPacket).QOS = qtAT_MOST_ONCE;
+            if (Packet.PacketType = ptPUBLISH) and ((Packet as TMQTTPUBLISHPacket).QOS = qtEXACTLY_ONCE) then
+              DestroyPacket := False;
           end
         else
           if State = ssDisconnecting then

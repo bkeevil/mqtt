@@ -1,7 +1,7 @@
 object ClientForm: TClientForm
-  Left = 546
+  Left = 549
   Height = 381
-  Top = 169
+  Top = 191
   Width = 695
   Caption = 'MQTT Client'
   ClientHeight = 381
@@ -53,9 +53,9 @@ object ClientForm: TClientForm
     Height = 296
     Top = 48
     Width = 664
-    ActivePage = LogTab
+    ActivePage = PacketsInMemTab
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 4
     object SubscriptionsTab: TTabSheet
       Caption = 'Subscriptions'
@@ -259,6 +259,31 @@ object ClientForm: TClientForm
           120
           452
         )
+      end
+    end
+    object PacketsInMemTab: TTabSheet
+      Caption = 'PacketsInMem'
+      ClientHeight = 265
+      ClientWidth = 654
+      OnContextPopup = PacketsInMemTabContextPopup
+      object PacketsMemo: TMemo
+        Left = 0
+        Height = 240
+        Top = 25
+        Width = 654
+        Align = alClient
+        ScrollBars = ssVertical
+        TabOrder = 0
+      end
+      object RefreshPacketsBtn: TButton
+        Left = 0
+        Height = 25
+        Top = 0
+        Width = 654
+        Align = alTop
+        Caption = 'Refresh'
+        OnClick = RefreshPacketsBtnClick
+        TabOrder = 1
       end
     end
   end

@@ -487,8 +487,8 @@ begin
             else
               Bail(MQTT_ERROR_UNHANDLED_PACKETTYPE);
             end;
-            if Packet.PacketType = ptPUBLISH then
-              DestroyPacket := (Packet as TMQTTPUBLISHPacket).QOS = qtAT_MOST_ONCE;
+            if (Packet.PacketType = ptPUBLISH) and ((Packet as TMQTTPUBLISHPacket).QOS = qtEXACTLY_ONCE) then
+              DestroyPacket := False;
           end
         else
           if (State = csDisconnecting) then
@@ -885,16 +885,22 @@ begin
       Log.Send(mtDebug,'Received PUBREL (%d)',[APacket.PacketID]);
       FWaitingForAck.Remove(ptPUBREC,APacket.PacketID);
       Pkt := FPendingReceive.Find(ptPUBLISH,APacket.PacketID) as TMQTTPUBLISHPacket;
-      ReceiveMessage(Pkt.Topic,Pkt.Data,Pkt.QOS,Pkt.Retain);
-      Reply := TMQTTPUBCOMPPacket.Create;
-      try
-        Reply.PacketID := APacket.PacketID;
-        Reply.WriteToBuffer(SendBuffer);
-        Log.Send(mtDebug,'Sending PUBCOMP (%d)',[Reply.PacketID]);
-        SendData;
-      finally
-        Reply.Free;
-      end;
+      Assert(Assigned(Pkt));
+      if Assigned(Pkt) then
+        begin
+          ReceiveMessage(Pkt.Topic,Pkt.Data,Pkt.QOS,Pkt.Retain);
+          FPendingReceive.Remove(Pkt);
+          Pkt.Free;
+          Reply := TMQTTPUBCOMPPacket.Create;
+          try
+            Reply.PacketID := APacket.PacketID;
+            Reply.WriteToBuffer(SendBuffer);
+            Log.Send(mtDebug,'Sending PUBCOMP (%d)',[Reply.PacketID]);
+            SendData;
+          finally
+            Reply.Free;
+          end;
+        end;
     end;
 end;
 
