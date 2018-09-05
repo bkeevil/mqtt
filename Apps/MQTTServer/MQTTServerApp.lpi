@@ -25,16 +25,19 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="bkutils"/>
+        <PackageName Value="LCL"/>
       </Item1>
       <Item2>
-        <PackageName Value="lnetvisual"/>
+        <PackageName Value="bkutils"/>
       </Item2>
       <Item3>
-        <PackageName Value="mqttcomponents"/>
+        <PackageName Value="lnetvisual"/>
       </Item3>
+      <Item4>
+        <PackageName Value="mqttcomponents"/>
+      </Item4>
     </RequiredPackages>
     <Units Count="4">
       <Unit0>
@@ -92,6 +95,7 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <UseHeaptrc Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>

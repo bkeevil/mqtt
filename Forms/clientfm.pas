@@ -34,7 +34,7 @@ type
     PacketsMemo: TMemo;
     StatusBar: TStatusBar;
     LogTab: TTabSheet;
-    TabSheet1: TTabSheet;
+    PacketsInMemTab: TTabSheet;
     TCP: TLTCPComponent;
     RefreshSubscriptionsItm: TMenuItem;
     PageControl: TPageControl;
@@ -65,7 +65,7 @@ type
     procedure RefreshPacketsBtnClick(Sender: TObject);
     procedure RefreshSubscriptionsItmClick(Sender: TObject);
     procedure SubscribeBtnClick(Sender: TObject);
-    procedure TabSheet1ContextPopup(Sender: TObject; MousePos: TPoint;
+    procedure PacketsInMemTabContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
     procedure TCPCanSend(aSocket: TLSocket);
     procedure TCPConnect(aSocket: TLSocket);
@@ -305,7 +305,7 @@ begin
     end;
 end;
 
-procedure TClientForm.TabSheet1ContextPopup(Sender: TObject; MousePos: TPoint;
+procedure TClientForm.PacketsInMemTabContextPopup(Sender: TObject; MousePos: TPoint;
   var Handled: Boolean);
 begin
 

@@ -53,9 +53,9 @@ object ClientForm: TClientForm
     Height = 296
     Top = 48
     Width = 664
-    ActivePage = LogTab
+    ActivePage = PacketsInMemTab
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 4
     object SubscriptionsTab: TTabSheet
       Caption = 'Subscriptions'
@@ -261,11 +261,11 @@ object ClientForm: TClientForm
         )
       end
     end
-    object TabSheet1: TTabSheet
+    object PacketsInMemTab: TTabSheet
       Caption = 'PacketsInMem'
       ClientHeight = 265
       ClientWidth = 654
-      OnContextPopup = TabSheet1ContextPopup
+      OnContextPopup = PacketsInMemTabContextPopup
       object PacketsMemo: TMemo
         Left = 0
         Height = 240

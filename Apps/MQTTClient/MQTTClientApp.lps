@@ -18,8 +18,8 @@
         <ComponentName Value="ClientForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="83"/>
         <CursorPos X="49" Y="92"/>
         <UsageCount Value="59"/>
         <Loaded Value="True"/>
@@ -89,7 +89,6 @@
       </Unit8>
       <Unit9>
         <Filename Value="..\..\src\mqttclient.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="6"/>
         <TopLine Value="480"/>
         <CursorPos X="16" Y="488"/>
