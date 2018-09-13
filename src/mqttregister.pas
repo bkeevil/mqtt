@@ -13,7 +13,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('Bond',[TMQTTClient, TMQTTServer]);
+  RegisterComponents('MQTT',[TMQTTClient, TMQTTServer]);
 end;
 
 end.
