@@ -131,9 +131,6 @@ type
       //
       FThread                     : TMQTTServerThread;
       FTimerTicks                 : Byte;                    // Accumulator
-      //
-      FSystemClock                : Boolean;
-      FLastTime                   : TSystemTime;
       // Connection related events
       FOnAccepted                 : TMQTTConnectionNotifyEvent;
       FOnDisconnect               : TMQTTConnectionNotifyEvent;
@@ -150,11 +147,9 @@ type
       FOnSessionsChanged          : TNotifyEvent;
       FOnRetainedMessagesChanged  : TNotifyEvent;
       // Timer routines
-      procedure InitSystemClockMessages;
       procedure ProcessAckQueues;
       procedure ProcessSessionAges;
       procedure HandleTimer;
-      procedure UpdateSystemClockMessages;
     protected
       // Methods that trigger event handlers
       procedure Accepted(Connection: TMQTTServerConnection); virtual;
@@ -184,7 +179,6 @@ type
       property RetainedMessages: TMQTTMessageList read FRetainedMessages;
     published
       property Enabled: Boolean read FEnabled write FEnabled default true;
-      property SystemClock: Boolean read FSystemClock write FSystemClock default true;
       property MaximumQOS: TMQTTQOSType read FMaximumQOS write FMaximumQOS default qtEXACTLY_ONCE;
       property RequireAuthentication: Boolean read FRequireAuthentication write FRequireAuthentication default true;
       property AllowNullClientIDs: Boolean read FAllowNullClientIDs write FAllowNullClientIds default false;
@@ -298,7 +292,6 @@ begin
   FEnabled               := True;
   FAllowNullClientIDs    := False;
   FRequireAuthentication := True;
-  FSystemClock           := True;
   FRetainedMessages      := TMQTTMessageList.Create;
   FConnections           := TMQTTServerConnectionList.Create;
   FSessions              := TMQTTSessionList.Create(Self);
@@ -318,44 +311,6 @@ begin
   FRetainedMessages.Free;
   Log.Free;
   inherited Destroy;
-end;
-
-procedure TMQTTServer.InitSystemClockMessages;
-begin
-  if FSystemClock then
-    begin
-      DateTimeToSystemTime(Now(),FLastTime);
-      DispatchMessage(nil,'System/Time/Year',IntToStr(FLastTime.Year),qtAT_MOST_ONCE,true);
-      DispatchMessage(nil,'System/Time/Month',IntToStr(FLastTime.Month),qtAT_MOST_ONCE,true);
-      DispatchMessage(nil,'System/Time/Day',IntToStr(FLastTime.Day),qtAT_MOST_ONCE,true);
-      DispatchMessage(nil,'System/Time/Hour',IntToStr(FLastTime.Hour),qtAT_MOST_ONCE,true);
-      DispatchMessage(nil,'System/Time/Minute',IntToStr(FLastTime.Minute),qtAT_MOST_ONCE,true);
-      //DispatchMessage(nil,'System/Time/Second',IntToStr(FLastTime.Second),qtAT_MOST_ONCE,true);
-      //DispatchMessage(nil,'System/Time/DOW',IntToStr(FLastTime.DayOfWeek),qtAT_MOST_ONCE,true);
-    end;
-end;
-
-procedure TMQTTServer.UpdateSystemClockMessages;
-var
-  LNow: TSystemTime;
-begin
-  DateTimeToSystemTime(Now(),LNow);
-  if (LNow.Year <> FLastTime.Year) then
-    DispatchMessage(nil,'System/Time/Year',IntToStr(LNow.Year),qtAT_MOST_ONCE,true);
-  if (LNow.Month <> FLastTime.Month) then
-    DispatchMessage(nil,'System/Time/Month',IntToStr(LNow.Month),qtAT_MOST_ONCE,true);
-  if (LNow.Day <> FLastTime.Day) then
-    DispatchMessage(nil,'System/Time/Day',IntToStr(LNow.Day),qtAT_MOST_ONCE,true);
-  if (LNow.Hour <> FLastTime.Hour) then
-    DispatchMessage(nil,'System/Time/Hour',IntToStr(LNow.Hour),qtAT_MOST_ONCE,true);
-  //if (LNow.DayOfWeek <> FLastTime.DayOfWeek) then                                        { Doesn't work in Raspberry pi }
-  //  DispatchMessage(nil,'System/Time/DOW',IntToStr(LNow.DayOfWeek),qtAT_MOST_ONCE,true);
-  if (LNow.Minute <> FLastTime.Minute) then
-    begin
-      DispatchMessage(nil,'System/Time/Minute',IntToStr(LNow.Minute),qtAT_MOST_ONCE,true);
-      RetainedMessagesChanged;
-    end;
-  FLastTime := LNow;
 end;
 
 procedure TMQTTServer.ProcessSessionAges;
@@ -390,8 +345,6 @@ begin
   Connections.CheckTimeouts;
   ProcessAckQueues;
   inc(FTimerTicks);
-  if FSystemClock then
-    UpdateSystemClockMessages;
   if FTimerTicks = 60 then
     begin
       FTimerTicks := 0;
@@ -463,7 +416,6 @@ procedure TMQTTServer.Loaded;
 begin
   inherited Loaded;
   Log.Name := Name;
-  InitSystemClockMessages;
 end;
 
 function TMQTTServer.ValidateClientID(AClientID: UTF8String): Boolean;

@@ -79,7 +79,6 @@ begin
   Server.AllowNullClientIDS := True;
   Server.MaximumQOS := qtEXACTLY_ONCE;
   Server.RequireAuthentication := False;
-  Server.SystemClock := False;
   Server.OnAccepted := @ServerAccepted;
   Server.OnDisconnect := @ServerDisconnect;
   Server.OnDisconnected := @ServerDisconnected;
@@ -293,7 +292,7 @@ begin
         Conn.Socket := nil;
       aSocket.UserData := nil;
       if Assigned(Conn) then
-        if Conn.State <> ssDisconnected then
+        if Conn.State <> csDisconnected then
           Conn.Disconnected;
     end;
 end;

@@ -9,12 +9,12 @@ object ServerPropertiesForm: TServerPropertiesForm
   ClientHeight = 191
   ClientWidth = 374
   Position = poScreenCenter
-  LCLVersion = '1.6.4.0'
+  LCLVersion = '1.8.2.0'
   object cbEnabled: TCheckBox
     Left = 13
-    Height = 22
+    Height = 23
     Top = 67
-    Width = 154
+    Width = 156
     Caption = 'Allow New Connections'
     Checked = True
     State = cbChecked
@@ -22,9 +22,9 @@ object ServerPropertiesForm: TServerPropertiesForm
   end
   object cbAuthentication: TCheckBox
     Left = 13
-    Height = 22
+    Height = 23
     Top = 95
-    Width = 151
+    Width = 153
     Caption = 'Require Authentication'
     TabOrder = 1
   end
@@ -50,7 +50,7 @@ object ServerPropertiesForm: TServerPropertiesForm
   end
   object edAddress: TEdit
     Left = 16
-    Height = 27
+    Height = 29
     Top = 27
     Width = 128
     TabOrder = 4
@@ -74,7 +74,7 @@ object ServerPropertiesForm: TServerPropertiesForm
   end
   object sePort: TSpinEdit
     Left = 153
-    Height = 27
+    Height = 29
     Top = 27
     Width = 64
     MaxValue = 65535
@@ -84,9 +84,9 @@ object ServerPropertiesForm: TServerPropertiesForm
   end
   object cbAllowNullClientIDs: TCheckBox
     Left = 184
-    Height = 22
+    Height = 23
     Top = 67
-    Width = 136
+    Width = 138
     Caption = 'Allow Null Client IDs'
     Checked = True
     State = cbChecked
@@ -116,22 +116,12 @@ object ServerPropertiesForm: TServerPropertiesForm
     TabOrder = 7
     Text = 'Exactly once'
   end
-  object cbSystemClock: TCheckBox
-    Left = 13
-    Height = 22
-    Top = 124
-    Width = 158
-    Caption = 'System Clock Messages'
-    Checked = True
-    State = cbChecked
-    TabOrder = 8
-  end
   object cbStrictClientIDValidation: TCheckBox
     Left = 184
-    Height = 22
+    Height = 23
     Top = 95
-    Width = 162
+    Width = 164
     Caption = 'Strict Client ID Validation'
-    TabOrder = 9
+    TabOrder = 8
   end
 end

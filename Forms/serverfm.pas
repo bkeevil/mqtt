@@ -324,7 +324,6 @@ begin
     Server.RequireAuthentication := Ini.ReadBool('Server','RequireAuthentication',False);
     Server.AllowNullClientIDs := Ini.ReadBool('Server','AllowNullClientIDs',True);
     Server.StrictClientIDValidation := Ini.ReadBool('Server','StrictClientIDValidation',False);
-    Server.SystemClock := Ini.ReadBool('Server','UseSystemClock',True);
 
     I := Ini.ReadInteger('Server','MaximumQOS',2);
     if I < 0 then
@@ -355,7 +354,6 @@ begin
     Ini.WriteBool('Server','RequireAuthentication',Server.RequireAuthentication);
     Ini.WriteBool('Server','AllowNullClientIDs',Server.AllowNullClientIDs);
     Ini.WriteBool('Server','StrictClientIDValidation',Server.StrictClientIDValidation);
-    Ini.WriteBool('Server','UseSystemClock',Server.SystemClock);
     I := ord(Server.MaximumQOS);
     Ini.WriteInteger('Server','MaximumQOS',I);
     Ini.WriteString('Server','Host',TCP.Host);
@@ -398,7 +396,7 @@ begin
         begin
           Conn.Socket := nil;
           if Assigned(Conn) then
-              if Conn.State <> ssDisconnected then
+              if Conn.State <> csDisconnected then
                 Conn.Disconnected;
         end;
     end;
@@ -530,7 +528,7 @@ begin
     begin
       S := Server.Connections[I];
       ConnectionsGrid.Objects[0,I+1] := S;
-      ConnectionsGrid.Cells[0,I+1] := SERVER_CONNECTION_STATE_NAMES[S.State];
+      ConnectionsGrid.Cells[0,I+1] := GetConnectionStateName(S.State);
       if (S.Socket is TLSocket) then
         ConnectionsGrid.Cells[1,I+1] := (S.Socket as TLSocket).PeerAddress
       else
@@ -559,7 +557,7 @@ begin
       SessionsGrid.Objects[0,I+1] := S;
       SessionsGrid.Cells[0,I+1] := S.ClientID;
       SessionsGrid.Cells[1,I+1] := S.Description;
-      SessionsGrid.Cells[2,I+1] := MQTTQOSTypeNames[S.MaximumQOS];
+      SessionsGrid.Cells[2,I+1] := GetQOSTypeName(S.MaximumQOS);
     end;
 end;
 
@@ -582,7 +580,7 @@ begin
                 SubscriptionsGrid.RowCount     := SubscriptionsGrid.RowCount + 1;
               SubscriptionsGrid.Cells[0,J] := C.Session.ClientID;
               SubscriptionsGrid.Cells[1,J] := S.Filter;
-              SubscriptionsGrid.Cells[2,J] := MQTTQOSTypeNames[S.QOS];
+              SubscriptionsGrid.Cells[2,J] := GetQOSTypeName(S.QOS);
               SubscriptionsGrid.Cells[3,J] := IntToStr(S.Age);
               inc(J);
             end;
@@ -604,7 +602,7 @@ begin
       RetainedMessagesGrid.Cells[0,I+1] := M.ClientID;
       RetainedMessagesGrid.Cells[1,I+1] := M.Topic;
       RetainedMessagesGrid.Cells[2,I+1] := M.Data;
-      RetainedMessagesGrid.Cells[3,I+1] := MQTTQOSTypeNames[M.QOS];
+      RetainedMessagesGrid.Cells[3,I+1] := GetQOSTypeName(M.QOS);
     end;
 end;
 

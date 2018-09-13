@@ -16,7 +16,6 @@ type
     cbAllowNullClientIDs: TCheckBox;
     cbStrictClientIDValidation: TCheckBox;
     cbMaximumQoS: TComboBox;
-    cbSystemClock: TCheckBox;
     edAddress: TEdit;
     lbAddress: TLabel;
     lbPort: TLabel;
@@ -47,7 +46,6 @@ begin
   ServerPropertiesForm.cbAuthentication.Checked := AServer.RequireAuthentication;
   ServerPropertiesForm.cbAllowNullClientIDs.Checked := AServer.AllowNullClientIDs;
   ServerPropertiesForm.cbMaximumQOS.ItemIndex := ord(AServer.MaximumQOS);
-  ServerPropertiesForm.cbSystemClock.Checked := AServer.SystemClock;
   ServerPropertiesForm.cbStrictClientIDValidation.Checked := AServer.StrictClientIDValidation;
   ServerPropertiesForm.edAddress.Text := ATCP.Host;
   ServerPropertiesForm.sePort.Value := ATCP.Port;
@@ -58,7 +56,6 @@ begin
     begin
       AServer.MaximumQOS := TMQTTQOSType(ServerPropertiesForm.cbMaximumQOS.ItemIndex);
       AServer.RequireAuthentication := ServerPropertiesForm.cbAuthentication.Checked;
-      AServer.SystemClock := ServerPropertiesForm.cbSystemClock.Checked;
       AServer.Enabled := ServerPropertiesForm.cbEnabled.Checked;
       AServer.AllowNullClientIDs := ServerPropertiesForm.cbAllowNullClientIDs.Checked;
       AServer.StrictClientIDValidation := ServerPropertiesForm.cbStrictClientIDValidation.Checked;
