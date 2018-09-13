@@ -18,12 +18,12 @@
         <ComponentName Value="ClientForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="364"/>
-        <CursorPos X="56" Y="381"/>
+        <TopLine Value="455"/>
+        <CursorPos X="109" Y="463"/>
         <UsageCount Value="61"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\Forms\connectfm.pas"/>
@@ -87,23 +87,24 @@
       </Unit8>
       <Unit9>
         <Filename Value="..\..\src\mqttclient.pas"/>
-        <TopLine Value="776"/>
-        <CursorPos X="2" Y="779"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="258"/>
+        <CursorPos X="35" Y="270"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\..\src\mqttserver.pas"/>
         <EditorIndex Value="8"/>
-        <TopLine Value="1151"/>
-        <CursorPos X="70" Y="1166"/>
+        <TopLine Value="1396"/>
+        <CursorPos X="59" Y="1420"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\..\src\mqttconsts.pas"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="184"/>
+        <TopLine Value="170"/>
         <CursorPos X="13" Y="193"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
@@ -230,123 +231,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\..\src\mqttclient.pas"/>
-        <Caret Line="122" Column="24" TopLine="108"/>
+        <Caret Line="889" Column="9" TopLine="872"/>
       </Position1>
       <Position2>
         <Filename Value="..\..\src\mqttclient.pas"/>
-        <Caret Line="491" Column="15" TopLine="463"/>
+        <Caret Line="888" Column="7" TopLine="872"/>
       </Position2>
       <Position3>
         <Filename Value="..\..\src\mqttclient.pas"/>
-        <Caret Line="887" TopLine="872"/>
+        <Caret Line="892" Column="20" TopLine="872"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\src\mqttserver.pas"/>
-        <Caret Line="773" Column="40" TopLine="757"/>
+        <Filename Value="..\..\src\mqttpackets.pas"/>
+        <Caret Line="66" Column="16" TopLine="51"/>
       </Position4>
       <Position5>
         <Filename Value="..\..\src\mqttserver.pas"/>
-        <Caret Line="59" Column="17" TopLine="46"/>
+        <Caret Line="1112" Column="3" TopLine="1104"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\src\mqttclient.pas"/>
-        <Caret Line="889" Column="9" TopLine="872"/>
+        <Filename Value="..\..\src\mqttserver.pas"/>
+        <Caret Line="79" Column="30" TopLine="65"/>
       </Position6>
       <Position7>
         <Filename Value="..\..\src\mqttclient.pas"/>
-        <Caret Line="888" Column="7" TopLine="872"/>
+        <Caret Line="866" Column="24" TopLine="866"/>
       </Position7>
       <Position8>
         <Filename Value="..\..\src\mqttclient.pas"/>
-        <Caret Line="892" Column="20" TopLine="872"/>
+        <Caret Line="122" Column="30" TopLine="108"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\src\mqttpackets.pas"/>
-        <Caret Line="66" Column="16" TopLine="51"/>
+        <Filename Value="..\..\src\mqttconsts.pas"/>
+        <Caret Line="128" Column="10" TopLine="113"/>
       </Position9>
       <Position10>
         <Filename Value="..\..\src\mqttserver.pas"/>
-        <Caret Line="1112" Column="3" TopLine="1104"/>
+        <Caret Line="78" Column="35" TopLine="58"/>
       </Position10>
       <Position11>
         <Filename Value="..\..\src\mqttserver.pas"/>
-        <Caret Line="79" Column="30" TopLine="65"/>
+        <Caret Line="546" Column="39" TopLine="532"/>
       </Position11>
       <Position12>
-        <Filename Value="..\..\src\mqttclient.pas"/>
-        <Caret Line="866" Column="24" TopLine="866"/>
-      </Position12>
-      <Position13>
-        <Filename Value="..\..\src\mqttclient.pas"/>
-        <Caret Line="122" Column="30" TopLine="108"/>
-      </Position13>
-      <Position14>
-        <Filename Value="..\..\src\mqttconsts.pas"/>
-        <Caret Line="128" Column="10" TopLine="113"/>
-      </Position14>
-      <Position15>
-        <Filename Value="..\..\src\mqttserver.pas"/>
-        <Caret Line="78" Column="35" TopLine="58"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\..\src\mqttserver.pas"/>
-        <Caret Line="546" Column="39" TopLine="532"/>
-      </Position16>
-      <Position17>
         <Filename Value="..\..\src\mqttconsts.pas"/>
         <Caret Line="196" Column="92" TopLine="186"/>
-      </Position17>
-      <Position18>
+      </Position12>
+      <Position13>
         <Filename Value="..\..\src\mqttconsts.pas"/>
         <Caret Line="193" Column="13" TopLine="184"/>
-      </Position18>
-      <Position19>
+      </Position13>
+      <Position14>
         <Filename Value="..\..\src\mqttpacketdefs.pas"/>
         <Caret Line="484" Column="36" TopLine="469"/>
-      </Position19>
-      <Position20>
+      </Position14>
+      <Position15>
         <Filename Value="..\..\src\mqttpacketdefs.pas"/>
         <Caret Line="545" Column="101" TopLine="531"/>
-      </Position20>
-      <Position21>
+      </Position15>
+      <Position16>
         <Filename Value="..\..\src\mqttpacketdefs.pas"/>
         <Caret Line="625" Column="36" TopLine="611"/>
-      </Position21>
-      <Position22>
+      </Position16>
+      <Position17>
         <Filename Value="..\..\src\mqttpacketdefs.pas"/>
         <Caret Line="1076" Column="87" TopLine="1058"/>
-      </Position22>
-      <Position23>
+      </Position17>
+      <Position18>
         <Filename Value="..\..\src\mqttpackets.pas"/>
         <Caret Line="147" TopLine="131"/>
-      </Position23>
-      <Position24>
+      </Position18>
+      <Position19>
         <Filename Value="..\..\src\mqttpackets.pas"/>
         <Caret Line="205" Column="97" TopLine="198"/>
-      </Position24>
-      <Position25>
+      </Position19>
+      <Position20>
         <Filename Value="..\..\src\mqttconsts.pas"/>
         <Caret Line="193" Column="13" TopLine="184"/>
-      </Position25>
-      <Position26>
+      </Position20>
+      <Position21>
         <Filename Value="..\..\src\mqttpackets.pas"/>
         <Caret Line="146" Column="24" TopLine="131"/>
-      </Position26>
-      <Position27>
+      </Position21>
+      <Position22>
         <Filename Value="..\..\src\mqttserver.pas"/>
         <Caret Line="1166" Column="70" TopLine="1151"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\src\mqttclient.pas"/>
+        <Caret Line="779" Column="2" TopLine="776"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="214" Column="69" TopLine="199"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="379" Column="62" TopLine="364"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="381" Column="56" TopLine="364"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="54" Column="36" TopLine="40"/>
       </Position27>
       <Position28>
         <Filename Value="..\..\src\mqttclient.pas"/>
-        <Caret Line="779" Column="2" TopLine="776"/>
+        <Caret Line="125" Column="41" TopLine="121"/>
       </Position28>
       <Position29>
-        <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="214" Column="69" TopLine="199"/>
+        <Filename Value="..\..\src\mqttserver.pas"/>
+        <Caret Line="204" Column="18" TopLine="575"/>
       </Position29>
       <Position30>
-        <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="379" Column="62" TopLine="364"/>
+        <Filename Value="..\..\src\mqttserver.pas"/>
+        <Caret Line="308" Column="21" TopLine="293"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

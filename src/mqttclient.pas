@@ -37,8 +37,8 @@ type
       FSubscriptions       : TMQTTSubscriptionList;
       FSendBuffer          : TBuffer;
       FRecvBuffer          : TBuffer;
-      FResendPacketTimeout: Integer;
-      FMaxPacketResendTries: Integer;
+      FResendPacketTimeout : Word;
+      FMaxResendAttempts   : Byte;
       // Packet Queues
       //FPendingTransmission : TMQTTMessageList; // QoS 1 and QoS 2 messages pending transmission to the Server.
       FWaitingForAck       : TMQTTPacketQueue; // QoS 1 and QoS 2 messages which have been sent to the Server, but have not been completely acknowledged.
@@ -122,8 +122,8 @@ type
       property State: TMQTTConnectionState read FState;
       property Subscriptions: TMQTTSubscriptionList read FSubscriptions;
     published
-      property ResendPacketTimeout: Integer read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
-      property MaxPacketResendTries: Integer read FMaxPacketResendTries write FMaxPacketResendTries default 3;
+      property ResendPacketTimeout: Word read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
+      property MaxResendAttmpts: Byte read FMaxResendAttempts write FMaxResendAttempts default 3;
       property ClientID: UTF8String read FClientID write SetClientID;
       property Username: UTF8String read FUsername write FUsername;
       property Password: AnsiString read FPassword write FPassword;
@@ -184,7 +184,7 @@ begin
   inherited Create(AOwner);
   Log                  := TLogDispatcher.Create('Client');
   FResendPacketTimeout := 2;
-  FMaxPacketResendTries:= 3;
+  FMaxResendAttempts   := 3;
   FSendBuffer          := TBuffer.Create;
   FRecvBuffer          := TBuffer.Create;
   FPacketIDManager     := TMQTTPacketIDManager.Create;
@@ -197,6 +197,7 @@ begin
   FPingInterval        := 15;
   FPingIntRemaining    := FPingInterval;
   FCleanSession        := True;
+
   FThread                 := TMQTTClientThread.Create(False);
   FThread.FreeOnTerminate := True;
   FThread.FClient         := Self;
@@ -266,9 +267,9 @@ begin
     for I := FWaitingForAck.Count - 1 downto 0 do
       begin
         Packet := FWaitingForAck[I];
-        if Packet.SecondsInQueue = FResendPacketTimeout then
+        if Packet.SecondsInQueue >= FResendPacketTimeout then
           begin
-            if Packet.ResendCount < FMaxPacketResendTries then
+            if Packet.ResendCount < FMaxResendAttempts then
               begin
                 if Packet.PacketType = ptPUBLISH then
                   (Packet as TMQTTPUBLISHPacket).Duplicate := True;

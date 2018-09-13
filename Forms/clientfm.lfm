@@ -126,11 +126,11 @@ object ClientForm: TClientForm
         Columns = <        
           item
             Title.Caption = 'Topic'
-            Width = 246
+            Width = 245
           end        
           item
             Title.Caption = 'Data'
-            Width = 246
+            Width = 245
           end        
           item
             SizePriority = 0
@@ -151,8 +151,8 @@ object ClientForm: TClientForm
         RowCount = 1
         TabOrder = 0
         ColWidths = (
-          246
-          246
+          245
+          245
           100
           60
         )
@@ -246,7 +246,7 @@ object ClientForm: TClientForm
           item
             ReadOnly = True
             Title.Caption = 'Message'
-            Width = 452
+            Width = 450
           end>
         DefaultRowHeight = 18
         ExtendedSelect = False
@@ -257,7 +257,7 @@ object ClientForm: TClientForm
         ColWidths = (
           80
           120
-          452
+          450
         )
       end
     end
