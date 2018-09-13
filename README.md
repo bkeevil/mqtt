@@ -25,6 +25,7 @@ To build this package you will need to check out and install my "bkutils" packag
 
 ## Command line server demo application
 
+The username/password database is not implemented yet.
 For help with command line options, run the program with the --help switch.
 
 Values specified in command line options override values loaded from configuration file.
