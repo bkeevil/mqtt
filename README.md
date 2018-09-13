@@ -1,6 +1,6 @@
 # mqtt
 
-MQTT Client/Server in FPC/Lazarus
+MQTT component pack and Client/Server demo applications in FPC/Lazarus
 
 The goal of this project is to create a Lazarus/FPC component package that 
 
@@ -12,10 +12,13 @@ For the client and server demo applications I have been using the LNet component
 
 There is a GUI client application and server application as well as a server command line application.
 
+The BROKERCONNECT packet is not implemented but may be at some future date.
+
 ## Project Status
- * Currently all parts of the component set and application are coded and working but require further testing and verification. 
- * There are FPDocs available in the Docs directory but they are a bit behind the code.  
+
+ * The components set is complete and ready for use in projects 
+ * There are mostly complete FPDocs available in the Docs directory
 
 ## Installation
 
-To build this package you will need to check out and install my "bkutils" package on which this package depends.
+To build this package you will need to check out and install my "bkutils" package on which this package depends. This package provides my buffer class. At some future date I plan to remove this dependency.
