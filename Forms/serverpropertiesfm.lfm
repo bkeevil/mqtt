@@ -1,127 +1,235 @@
 object ServerPropertiesForm: TServerPropertiesForm
-  Left = 608
-  Height = 191
-  Top = 283
-  Width = 374
+  Left = 816
+  Height = 327
+  Top = 202
+  Width = 389
   ActiveControl = cbEnabled
   BorderStyle = bsDialog
   Caption = 'MQTT Server Properties'
-  ClientHeight = 191
-  ClientWidth = 374
-  Position = poScreenCenter
+  ClientHeight = 327
+  ClientWidth = 389
+  Position = poMainFormCenter
   LCLVersion = '1.8.2.0'
   object cbEnabled: TCheckBox
-    Left = 13
+    Left = 15
     Height = 23
-    Top = 67
+    Hint = 'Uncheck to prevent the server from accepting new connections'
+    Top = 72
     Width = 156
     Caption = 'Allow New Connections'
     Checked = True
+    ParentShowHint = False
+    ShowHint = True
     State = cbChecked
-    TabOrder = 0
+    TabOrder = 3
   end
   object cbAuthentication: TCheckBox
-    Left = 13
+    Left = 15
     Height = 23
-    Top = 95
+    Hint = 'When checked, client connections must provide a username and password to connect'
+    Top = 100
     Width = 153
     Caption = 'Require Authentication'
-    TabOrder = 1
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 5
   end
   object CancelBtn: TButton
-    Left = 197
-    Height = 25
-    Top = 152
+    Left = 214
+    Height = 28
+    Top = 285
     Width = 75
+    Anchors = [akRight, akBottom]
     Cancel = True
     Caption = '&Cancel'
     ModalResult = 2
-    TabOrder = 2
+    TabOrder = 12
   end
   object OKBtn: TButton
-    Left = 281
-    Height = 25
-    Top = 152
+    Left = 298
+    Height = 28
+    Top = 285
     Width = 75
+    Anchors = [akRight, akBottom]
     Caption = '&OK'
     Default = True
     ModalResult = 1
-    TabOrder = 3
+    TabOrder = 11
   end
   object edAddress: TEdit
-    Left = 16
+    Left = 18
     Height = 29
-    Top = 27
-    Width = 128
-    TabOrder = 4
+    Hint = 'The interface address to bind the server to. (0.0.0.0 means all interface addresses)'
+    Top = 32
+    Width = 114
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 0
     Text = '0.0.0.0'
   end
   object lbAddress: TLabel
-    Left = 16
+    Left = 18
     Height = 17
-    Top = 7
+    Top = 12
     Width = 82
-    Caption = 'Listen Address'
+    Caption = 'Listen &Address'
+    FocusControl = edAddress
     ParentColor = False
   end
   object lbPort: TLabel
-    Left = 153
+    Left = 148
     Height = 17
-    Top = 7
+    Top = 12
     Width = 59
-    Caption = 'Listen Port'
+    Caption = 'Listen &Port'
+    FocusControl = sePort
     ParentColor = False
   end
   object sePort: TSpinEdit
-    Left = 153
+    Left = 147
     Height = 29
-    Top = 27
-    Width = 64
+    Hint = 'The TCP port number to listen on. (Default is 1883)'
+    Top = 32
+    Width = 62
     MaxValue = 65535
     MinValue = 81
-    TabOrder = 5
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 1
     Value = 1883
   end
   object cbAllowNullClientIDs: TCheckBox
-    Left = 184
+    Left = 198
     Height = 23
-    Top = 67
+    Hint = 'Clients connecting with no clientid will be assigned a random client id'
+    Top = 72
     Width = 138
     Caption = 'Allow Null Client IDs'
     Checked = True
+    ParentShowHint = False
+    ShowHint = True
     State = cbChecked
-    TabOrder = 6
+    TabOrder = 4
   end
   object lbMaximumQoS: TLabel
-    Left = 228
+    Left = 222
     Height = 17
-    Top = 7
+    Top = 12
     Width = 85
-    Caption = 'Maximum QoS:'
+    Caption = 'Maximum &QoS:'
+    FocusControl = cbMaximumQoS
     ParentColor = False
   end
   object cbMaximumQoS: TComboBox
-    Left = 225
+    Left = 222
     Height = 27
-    Top = 27
-    Width = 131
+    Hint = 'Maximum QoS level allowed by the server'
+    Top = 32
+    Width = 149
     ItemHeight = 0
     ItemIndex = 2
     Items.Strings = (
-      'No more than once'
-      'At least once'
-      'Exactly once'
+      'At most once (QOS0)'
+      'At least once (QOS1)'
+      'Exactly once (QOS2)'
     )
+    ParentShowHint = False
+    ShowHint = True
     Style = csDropDownList
-    TabOrder = 7
-    Text = 'Exactly once'
+    TabOrder = 2
+    Text = 'Exactly once (QOS2)'
   end
   object cbStrictClientIDValidation: TCheckBox
-    Left = 184
+    Left = 198
     Height = 23
-    Top = 95
+    Hint = 'Restrict clientids to alphanumeric characters'
+    Top = 100
     Width = 164
     Caption = 'Strict Client ID Validation'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 6
+  end
+  object lbResendPacketTimeout: TLabel
+    Left = 18
+    Height = 17
+    Top = 141
+    Width = 161
+    Caption = 'Resend Packet &Timeout (Sec)'
+    FocusControl = seResendPacketTimeout
+    ParentColor = False
+  end
+  object seResendPacketTimeout: TSpinEdit
+    Left = 18
+    Height = 29
+    Hint = 'Number of seconds to wait for an acknowledgement from a client before resending a packet'
+    Top = 162
+    Width = 62
+    MaxValue = 4
+    MinValue = 1
+    ParentShowHint = False
+    TabOrder = 7
+    Value = 2
+  end
+  object lbMaxResendAttempts: TLabel
+    Left = 198
+    Height = 17
+    Top = 141
+    Width = 154
+    Caption = 'Maximum &Resend Attempts'
+    FocusControl = seMaxResendAttempts
+    ParentColor = False
+  end
+  object seMaxResendAttempts: TSpinEdit
+    Left = 198
+    Height = 29
+    Hint = 'Maximum number of times to attempt to resend a packet before giving up. (0 = Don''t resend)'
+    Top = 160
+    Width = 62
+    MaxValue = 5
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 8
+    Value = 3
+  end
+  object lbMaxSubscriptionAge: TLabel
+    Left = 18
+    Height = 17
+    Top = 205
+    Width = 153
+    Caption = 'Max S&ubscription Age (Min)'
+    FocusControl = seMaxSubscriptionAge
+    ParentColor = False
+  end
+  object seMaxSubscriptionAge: TSpinEdit
+    Left = 18
+    Height = 29
+    Hint = 'Number of minutes before an unused subscription is automatically removed. (0 = Disabled)'
+    Top = 224
+    Width = 62
+    MaxValue = 65535
+    ParentShowHint = False
+    TabOrder = 9
+    Value = 1080
+  end
+  object lbMaxSessionAge: TLabel
+    Left = 198
+    Height = 17
+    Top = 205
+    Width = 127
+    Caption = 'Max S&ession Age (Min)'
+    FocusControl = seMaxSessionAge
+    ParentColor = False
+  end
+  object seMaxSessionAge: TSpinEdit
+    Left = 198
+    Height = 29
+    Hint = 'Number of minutes before an inactive session times out (0 = Never)'
+    Top = 226
+    Width = 62
+    MaxValue = 65535
+    ParentShowHint = False
+    TabOrder = 10
+    Value = 1080
   end
 end

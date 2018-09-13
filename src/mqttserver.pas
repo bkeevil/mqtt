@@ -121,14 +121,11 @@ type
       FConnections                : TMQTTServerConnectionList;
       FSessions                   : TMQTTSessionList;
       FRetainedMessages           : TMQTTMessageList;
-      FListenRetryDelay           : Integer;
-      FResendPacketTimeout        : Integer;
-      FMaxPacketResendTries       : Integer;
-      FMaxSubscriptionAge         : Integer;
-      FMaxSessionAge              : Integer;
+      FResendPacketTimeout        : Byte;
+      FMaxResendAttempts          : Byte;
+      FMaxSubscriptionAge         : Word;
+      FMaxSessionAge              : Word;
       FDefaultKeepAlive           : Integer;
-      FDefaultConfigFilename1     : String;
-      FDefaultConfigFilename2     : String;
       FEnabled                    : Boolean;
       FShutdown                   : Boolean;
       FRequireAuthentication      : Boolean;
@@ -185,14 +182,11 @@ type
       property Sessions: TMQTTSessionList read FSessions;
       property RetainedMessages: TMQTTMessageList read FRetainedMessages;
     published
-      property ListenRetryDelay: Integer read FListenRetryDelay write FListenRetryDelay default 15000;
-      property ResendPacketTimeout: Integer read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
-      property MaxPacketResendTries: Integer read FMaxPacketResendTries write FMaxPacketResendTries default 3;
-      property MaxSubscriptionAge: Integer read FMaxSubscriptionAge write FMaxSubscriptionAge default 1080; // Minutes
-      property MaxSessionAge: Integer read FMaxSessionAge write FMaxSessionAge default 1080; // Minutes
+      property ResendPacketTimeout: Byte read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
+      property MaxResendAttempts: Byte read FMaxResendAttempts write FMaxResendAttempts default 3;
+      property MaxSubscriptionAge: Word read FMaxSubscriptionAge write FMaxSubscriptionAge default 1080; // Minutes
+      property MaxSessionAge: Word read FMaxSessionAge write FMaxSessionAge default 1080; // Minutes
       property DefaultKeepAlive: Integer read FDefaultKeepAlive write FDefaultKeepAlive default 30; // Seconds
-      property DefaultConfigFilename1: String read FDefaultConfigFilename1 write FDefaultConfigFilename1;
-      property DefaultConfigFilename2: String read FDefaultConfigFilename2 write FDefaultConfigFilename2;
       property Enabled: Boolean read FEnabled write FEnabled default true;
       property MaximumQOS: TMQTTQOSType read FMaximumQOS write FMaximumQOS default qtEXACTLY_ONCE;
       property RequireAuthentication: Boolean read FRequireAuthentication write FRequireAuthentication default true;
@@ -310,14 +304,11 @@ begin
   FEnabled                := True;
   FAllowNullClientIDs     := False;
   FRequireAuthentication  := True;
-  FListenRetryDelay       := 15000;
   FResendPacketTimeout    := 2;
-  FMaxPacketResendTries   := 3;
+  FMaxResendAttempts      := 3;
   FMaxSubscriptionAge     := 1080;
   FMaxSessionAge          := 1080;
   FDefaultKeepAlive       := 30;
-  FDefaultConfigFilename1 := '/etc/mqtt/mqtt.ini';
-  FDefaultConfigFilename2 := 'mqttserver.ini';
   FRetainedMessages       := TMQTTMessageList.Create;
   FConnections            := TMQTTServerConnectionList.Create;
   FSessions               := TMQTTSessionList.Create(Self);
@@ -1424,9 +1415,9 @@ begin
   for I := FWaitingForAck.Count - 1 downto 0 do
     begin
       Packet := FWaitingForAck[I];
-      if Packet.SecondsInQueue = Server.ResendPacketTimeout then
+      if Packet.SecondsInQueue >= Server.ResendPacketTimeout then
         begin
-          if Packet.ResendCount < Server.MaxPacketResendTries then
+          if Packet.ResendCount < Server.MaxResendAttempts then
             begin
               if Packet.PacketType = ptPUBLISH then
                 (Packet as TMQTTPUBLISHPacket).Duplicate := True;
@@ -1461,11 +1452,12 @@ begin
       if Sub.Age < Server.MaxSubscriptionAge then
         Sub.Age := Sub.Age + 1
       else
-        Subscriptions.Delete(I);
+        if Server.MaxSubscriptionAge > 0 then
+          Subscriptions.Delete(I);
     end;
   inc(FAge);
   // If there are no subscriptions remaining and the session is older than the maximum session age then destroy it.
-  if (Subscriptions.Count = 0) and (FAge > Server.MaxSessionAge) then
+  if (Subscriptions.Count = 0) and (Server.MaxSessionAge > 0) and (FAge > Server.MaxSessionAge) then
     begin
       Server.Sessions.Remove(Self);
       Destroy;

@@ -12,6 +12,10 @@ uses
   Classes, SysUtils, CustApp, CRT, Logging, inifiles, lnetbase, lnet,
   mqttconsts, mqttserver;
 
+const
+  MQTT_DEFAULT_CONFIG_FILENAME1 = 'mqttservercli.ini';
+  MQTT_DEFAULT_CONFIG_FILENAME2 = '/etc/mqttservercli.ini';
+
 type
 
   { TMQTTServerCLI }
@@ -67,7 +71,7 @@ begin
   StopOnException := False;
   SetupLogging;
   TCP := TLTCP.Create(nil);
-  TCP.Port := MQTT_DEFAULT_PORT;
+  TCP.Port := 1883;
   TCP.ReuseAddress := True;
   TCP.Timeout := 100;
   TCP.OnAccept := @TCPAccept;
