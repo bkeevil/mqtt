@@ -9,8 +9,6 @@ uses
 
 type
 
-  // TODO: Implement persistent subscriptions
-
   { TMQTTSubscription }
 
   TMQTTSubscription = class(TObject)
@@ -19,23 +17,17 @@ type
       FQOS        : TMQTTQOSType;
       FTokens     : TMQTTTokenizer;
       FAge        : Integer;
-      FPersistent : Boolean;
       function GetTokens: TMQTTTokenizer;
       procedure SetFilter(AValue: UTF8String);
     public
       constructor Create(AFilter: UTF8String = ''; AQOS: TMQTTQOSType = qtAT_MOST_ONCE);
       destructor Destroy; override;
-      //
       procedure Assign(ASource: TMQTTSubscription);
       function IsMatch(ATokens: TMQTTTokenizer): Boolean;
-      procedure LoadFromStream(Stream: TStream);
-      procedure SaveToStream(Stream: TStream);
-      //
       property QOS: TMQTTQOSType read FQOS write FQOS;
       property Filter: UTF8String read FFilter write SetFilter;
       property Tokens: TMQTTTokenizer read GetTokens;
       property Age: Integer read FAge write FAge;
-      property Persistent: Boolean read FPersistent write FPersistent;
   end;
 
   { TMQTTSubscriptionList }
@@ -48,10 +40,6 @@ type
     public
       constructor Create;
       destructor Destroy; override;
-      //
-      procedure LoadFromStream(Stream: TStream);
-      procedure SaveToStream(Stream: TStream);
-
       procedure Assign(ASource: TMQTTSubscriptionList);
       procedure Clear;
       function New(AFilter: UTF8String; AQOS: TMQTTQOSType = qtAT_MOST_ONCE): TMQTTSubscription;
@@ -62,15 +50,11 @@ type
       procedure MergeList(AList: TMQTTSubscriptionList);
       procedure DeleteList(AList: TMQTTSubscriptionList);
       function RemoveInvalidSubscriptions: Integer;
-      //
       property Count: Integer read GetCount;
       property Items[Index: Integer]: TMQTTSubscription read GetItem; default;
   end;
 
 implementation
-
-uses
-  StreamUtils;
 
 { TMQTTSubscription }
 
@@ -159,34 +143,6 @@ begin
     Result := Result and (Tokens[Tokens.Count-1].Kind = tkMultiLevel);
 end;
 
-procedure TMQTTSubscription.LoadFromStream(Stream: TStream);
-var
-  B: Byte;
-begin
-  if Assigned(Stream) then
-    begin
-      FFilter := LoadStringFromStream(Stream);
-      B := 0; // To clear compiler hint message
-      Stream.Read(B,1);
-      FQOS := TMQTTQOSType(B);
-      FPersistent := True;
-      FAge := 0;
-    end;
-end;
-
-procedure TMQTTSubscription.SaveToStream(Stream: TStream);
-var
-  B: Byte;
-begin
-  if Assigned(Stream) then
-    begin
-      SaveStringToStream(FFilter,Stream);
-      B := ord(FQOS);
-      Stream.Write(B,1);
-      FAge := 0;
-    end;
-end;
-
 { TMQTTSubscriptionList }
 
 constructor TMQTTSubscriptionList.Create;
@@ -200,36 +156,6 @@ begin
   Clear;
   FList.Free;
   inherited Destroy;
-end;
-
-procedure TMQTTSubscriptionList.LoadFromStream(Stream: TStream);
-var
-  X,C: Integer;
-  O: TMQTTSubscription;
-begin
-  C := 0; // To clear hint message
-  Stream.Read(C,SizeOf(C));
-  for X := 1 to C do
-    begin
-      O := TMQTTSubscription.Create();
-      O.LoadFromStream(Stream);
-      Update(O);
-    end;
-end;
-
-procedure TMQTTSubscriptionList.SaveToStream(Stream: TStream);
-var
-  X,C: Integer;
-  O: TMQTTSubscription;
-begin
-  C := Count;
-  Stream.Write(C,SizeOf(C));
-  for X := 0 to C - 1 do
-    begin
-      O := Items[X];
-      if O.Persistent then
-        O.SaveToStream(Stream);
-    end;
 end;
 
 procedure TMQTTSubscriptionList.Clear;
@@ -279,7 +205,6 @@ begin
   if Assigned(Result) then
     begin
       Result.FAge := 0;
-      Result.FPersistent := False;
       Result.FQOS := AQOS;
     end
   else
@@ -355,10 +280,7 @@ begin
           S1 := AList[I];
           S2 := Find(S1.Filter);
           if not Assigned(S2) then
-            begin
-              S2 := New(S1.Filter,S1.QOS);
-              S2.FPersistent := S1.Persistent;
-            end
+            S2 := New(S1.Filter,S1.QOS)
           else
             S2.Assign(S1);
         end;

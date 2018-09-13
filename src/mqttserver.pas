@@ -1502,8 +1502,7 @@ begin
       if Sub.Age < MQTT_MAX_SUBSCRIPTION_AGE then
         Sub.Age := Sub.Age + 1
       else
-        if not Sub.Persistent then
-          Subscriptions.Delete(I);
+        Subscriptions.Delete(I);
     end;
   inc(FAge);
   // If there are no subscriptions remaining and the session is older than the maximum session age then destroy it.
