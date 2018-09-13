@@ -5,8 +5,7 @@ unit mqttpacketdefs;
 interface
 
 uses
-  Classes, SysUtils, Buffers, Logging,
-  MQTTConsts, MQTTPackets, MQTTSubscriptions;
+  Classes, SysUtils, Buffers, Logging, MQTTConsts, MQTTPackets, MQTTSubscriptions;
 
 type
 
@@ -23,7 +22,7 @@ type
       procedure Clear;
       procedure Assign(ASource: TPersistent); override;
       function DisplayText: String;
-      // Properties
+      function AsString: String;
       property Retain: Boolean read FRetain write FRetain;
       property QOS: TMQTTQOSType read FQOS write FQOS;
       property Enabled: Boolean read FEnabled write FEnabled;
@@ -80,6 +79,7 @@ type
       function Validate: Boolean; override;
       function GetPacketType: TMQTTPacketType; override;
     public
+      function AsString: String; override;
       procedure WriteToBuffer(ABuffer: TBuffer); override;
       property ReturnCode: Byte read FReturnCode write FReturnCode;
       property SessionPresent: Boolean read FSessionPresent write FSessionPresent;
@@ -120,7 +120,7 @@ type
       procedure WriteToBuffer(ABuffer: TBuffer); override;
   end;
 
-    { TMQTTPUBRECPacket }
+  { TMQTTPUBRECPacket }
 
   TMQTTPUBRECPacket = class(TMQTTQueuedPacket)
     protected
@@ -131,7 +131,7 @@ type
       procedure WriteToBuffer(ABuffer: TBuffer); override;
   end;
 
-    { TMQTTPUBRELPacket }
+  { TMQTTPUBRELPacket }
 
   TMQTTPUBRELPacket = class(TMQTTQueuedPacket)
     protected
@@ -165,6 +165,7 @@ type
     public
       constructor Create;
       destructor Destroy; override;
+      function AsString: String; override;
       procedure WriteToBuffer(ABuffer: TBuffer); override;
       property Subscriptions: TMQTTSubscriptionList read FSubscriptions;
   end;
@@ -181,6 +182,7 @@ type
     public
       constructor Create;
       destructor Destroy; override;
+      function AsString: String; override;
       procedure WriteToBuffer(ABuffer: TBuffer); override;
       property ReturnCodes: TBuffer read FReturnCodes;
   end;
@@ -197,6 +199,7 @@ type
     public
       constructor Create;
       destructor Destroy; override;
+      function AsString: String; override;
       procedure WriteToBuffer(ABuffer: TBuffer); override;
       property Subscriptions: TMQTTSubscriptionList read FSubscriptions;
   end;
@@ -284,6 +287,12 @@ begin
     Result := FTopic + '=' + FMessage
   else
     Result := '(Disabled)';
+end;
+
+function TMQTTWillMessage.AsString: String;
+begin
+  Result := 'Enabled: ' + BoolToStr(Enabled,true) + ', QOS: ' + MQTTQOSTypeNames[QOS] +
+    ', Retain: ' + BoolToStr(Retain,true) + ', Topic: ' + Topic + ', Message: ' + Message;
 end;
 
 { TMQTTDISCONNECTPacket }
@@ -462,6 +471,20 @@ begin
   inherited Destroy;
 end;
 
+function TMQTTUNSUBSCRIBEPacket.AsString: String;
+var
+  I: Integer;
+  S: TMQTTSubscription;
+begin
+  Result := inherited AsString;
+  for I := 0 to FSubscriptions.Count - 1 do
+    begin
+      S := FSubscriptions[I];
+      Result := Result + ', Subscription[' + IntToStr(I) + ']: (Filter: ' + S.Filter +
+        ', QOS: ' + MQTTQOSTypeNames[S.QOS] + ', Age: ' + IntToStr(S.Age)+')';
+    end;
+end;
+
 procedure TMQTTUNSUBSCRIBEPacket.WriteToBuffer(ABuffer: TBuffer);
 var
   B: Byte;
@@ -500,6 +523,30 @@ destructor TMQTTSUBACKPacket.Destroy;
 begin
   FReturnCodes.Free;
   inherited Destroy;
+end;
+
+function TMQTTSUBACKPacket.AsString: String;
+var
+  I: Integer;
+  RC: Byte;
+  Buf: TBuffer;
+begin
+  Result := inherited AsString;
+  if ReturnCodes.Size = 0 then Exit;
+  Buf := TBuffer.Create;
+  try
+    Buf.CopyFrom(ReturnCodes);
+    for I := 1 to Buf.Size do
+      begin
+        Buf.Read(@RC,1);
+        if RC = $80 then
+          Result := Result + ', ReturnCode[' + IntToStr(I) + ']=Error'
+        else
+          Result := Result + ', ReturnCode[' + IntToStr(I) + ']=' + MQTTQOSTypeNames[TMQTTQOSType(RC)];
+      end;
+  finally
+    Buf.Free;
+  end;
 end;
 
 function TMQTTSUBACKPacket.ReadFromBuffer(ABuffer: TBuffer): Word;
@@ -563,6 +610,20 @@ destructor TMQTTSUBSCRIBEPacket.Destroy;
 begin
   FSubscriptions.Free;
   inherited Destroy;
+end;
+
+function TMQTTSUBSCRIBEPacket.AsString: String;
+var
+  I: Integer;
+  S: TMQTTSubscription;
+begin
+  Result := inherited AsString;
+  for I := 0 to FSubscriptions.Count - 1 do
+    begin
+      S := FSubscriptions[I];
+      Result := Result + ', Subscription[' + IntToStr(I) + ']: (Filter: ' + S.Filter +
+        ', QOS: ' + MQTTQOSTypeNames[S.QOS] + ', Age: ' + IntToStr(S.Age)+')'
+    end;
 end;
 
 function TMQTTSUBSCRIBEPacket.ReadFromBuffer(ABuffer: TBuffer): Word;
@@ -798,6 +859,13 @@ begin
   Result := ptCONNACK;
 end;
 
+function TMQTTCONNACKPacket.AsString: String;
+begin
+  Result := inherited AsString +
+    ', ReturnCode: ' + IntToStr(ReturnCode) +
+    ', SessionPresent: ' + BoolToStr(SessionPresent,true);
+end;
+
 procedure TMQTTCONNACKPacket.WriteToBuffer(ABuffer: TBuffer);
 var
   B: Byte;
@@ -832,7 +900,10 @@ end;
 
 function TMQTTCONNECTPacket.AsString: String;
 begin
-  Result:=inherited AsString + ' ClientID: ' + FClientID + ' Username: ' + FUsername;
+  Result := inherited AsString + ', ClientID: ' + FClientID + ', Username: ' + FUsername +
+    ', UsernameFlag: ' + BoolToStr(UsernameFlag,true) + ', PasswordFlag: ' + BoolToStr(PasswordFlag,true) +
+    ', KeepAlive: ' + IntToStr(KeepAlive) + ', CleanSession: ' + BoolToStr(CleanSession,true) +
+    ', WillMessage: (' + WillMessage.AsString + '), ReturnCode: ' + IntToStr(ReturnCode);
 end;
 
 function TMQTTCONNECTPacket.GetPacketType: TMQTTPacketType;
@@ -999,7 +1070,11 @@ end;
 
 function TMQTTPUBLISHPacket.AsString: String;
 begin
-  Result := inherited AsString + ' QOS: ' + MQTTQOSTypeNames[FQOS] + ' Retain: ' + BoolToStr(FRetain,'true','false') + ' Duplicate: ' + BoolToStr(FDuplicate,'true','false') + ' Topic: ' + FTopic + ' Data: ' + FData;
+  Result := inherited AsString + ', QOS: ' + MQTTQOSTypeNames[FQOS] +
+    ', Retain: ' + BoolToStr(FRetain,true) +
+    ', Duplicate: ' + BoolToStr(FDuplicate,true) +
+    ', Topic: ' + FTopic +
+    ', Data: ' + FData;
 end;
 
 function TMQTTPUBLISHPacket.ReadFromBuffer(ABuffer: TBuffer): Word;

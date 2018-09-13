@@ -4,12 +4,14 @@ unit mqttpackets;
 
 interface
 
+{$DEFINE USE_PACKETLIST}
+
 uses
   Classes, SysUtils, Buffers, MQTTConsts;
 
 type
 
-  { TMQTTPacket }
+  { TMQTTPacket - Base class for objects that represents an MQTT Packet }
 
   TMQTTPacket = class(TObject)
     private
@@ -22,15 +24,14 @@ type
     public
       constructor Create;
       destructor Destroy; override;
-      function AsString: String; virtual; // For debugging purposes
+      function AsString: String; virtual; // Used for debugging purposes
       procedure WriteToBuffer(ABuffer: TBuffer); virtual; abstract;
-      //
       property PacketType: TMQTTPacketType read GetPacketType;
       property PacketTypeName: String read GetPacketTypeName;
       property RemainingLength: DWORD read FRemainingLength write FRemainingLength;
   end;
 
-  { TMQTTPacketIDPacket }
+  { TMQTTPacketIDPacket - Base class for MQTT Packet objects that implement a PacketID }
 
   TMQTTPacketIDPacket = class(TMQTTPacket)
     protected
@@ -40,18 +41,19 @@ type
       property PacketID: Word read FPacketID write FPacketID;
   end;
 
-  { TMQTTQueuedPacket }
+  { TMQTTQueuedPacket - Base class for MQTT Packets than can be resent (i.e. PUBLISH, PUBREC, PUBREL}
 
   TMQTTQueuedPacket = class(TMQTTPacketIDPacket)
     private
       FSecondsInQueue: DWORD;
       FResendCount: Byte;
     public
+      function AsString: String; override;
       property SecondsInQueue: DWORD read FSecondsInQueue write FSecondsInQueue;
       property ResendCount: Byte read FResendCount write FResendCount;
   end;
 
-  { TMQTTPacketQueue }
+  { TMQTTPacketQueue - Holds a list of packets. Not actually a queue anymore.}
 
   TMQTTPacketQueue = class(TObject)
     private
@@ -73,7 +75,7 @@ type
       property Count: Integer read GetCount;
   end;
 
-  { TMQTTPacketIDManager }
+  { TMQTTPacketIDManager - Assigns and keeps track of packet ids }
 
   TMQTTPacketIDManager = class(TObject)
     private
@@ -93,9 +95,11 @@ type
       property Items[Index: Integer]: Word read GetItem;
   end;
 
-  { TMQTTPacketList }
+  { TMQTTPacketList - Holds a list of all constructed packets and ensures they are destroyed on terminate.
+                      An object of this class was created to assist in debugging memory leaks. }
 
-  TMQTTPacketList = class(TObject) // A list of all constructed packets. Created to debug memory leaks.
+  {$IFDEF USE_PACKETLIST}
+  TMQTTPacketList = class(TObject)
     private
       FList: TList;
       function GetCount: Integer;
@@ -111,6 +115,9 @@ type
       property Count: Integer read GetCount;
       property Items[Index: Integer]: TMQTTPacket read GetItem; default;
   end;
+  {$ENDIF}
+
+// A bunch of utility functions used to read and write packets to a TBuffer object
 
 function ReadWordFromBuffer(ABuffer: TBuffer; out Value: Word): Boolean;
 procedure WriteWordToBuffer(ABuffer: TBuffer; const Value: Word);
@@ -122,86 +129,136 @@ function ReadRemainingLengthFromBuffer(ABuffer: TBuffer; out Value: DWORD): Bool
 procedure WriteRemainingLengthToBuffer(ABuffer: TBuffer; const Value: DWORD);
 function ReadMQTTPacketFromBuffer(ABuffer: TBuffer; out Packet: TMQTTPacket; Connected: Boolean = True): Word;
 
+{$IFDEF USE_PACKETLIST}
 var
-  PacketList: TMQTTPacketList;
+  PacketList: TMQTTPacketList; // Every packet that is created puts itself in this list for its entire lifecycle
+{$ENDIF}
 
 implementation
 
 uses
   Sockets, LazUTF8, MQTTPacketDefs;
 
+{ TMQTTPacket }
+
+function TMQTTPacket.GetPacketTypeName: String;
+begin
+  Result := MQTTPacketTypeNames[PacketType];
+end;
+
+function TMQTTPacket.Validate: Boolean;
+begin
+  // BROKERCONNECT packets are not implemented by this code.
+  Result := not (PacketType in [ptBROKERCONNECT,ptReserved15]);
+end;
+
+constructor TMQTTPacket.Create;
+begin
+  inherited Create;
+  {$IFDEF USE_PACKETLIST}
+  PacketList.Add(Self);
+  {$ENDIF}
+end;
+
+destructor TMQTTPacket.Destroy;
+begin
+  {$IFDEF USE_PACKETLIST}
+  PacketList.Remove(Self);
+  {$ENDIF}
+  inherited Destroy;
+end;
+
+function TMQTTPacket.AsString: String;
+begin
+  Result := 'PacketType: ' + GetPacketTypeName;
+end;
+
 { TMQTTPacketIDPacket }
 
 function TMQTTPacketIDPacket.AsString: String;
 begin
-  Result := inherited AsString + ' PacketID: ' + IntToStr(PacketID);
+  Result := inherited AsString + ', PacketID: ' + IntToStr(PacketID);
 end;
 
-{ TMQTTPacketList }
+{ TMQTTQueuedPacket }
 
-constructor TMQTTPacketList.Create;
+function TMQTTQueuedPacket.AsString: String;
+begin
+  Result := inherited AsString + ', SecondsInQueue: ' + IntToStr(SecondsInQueue) + ', ResendCount: ' + IntToStr(ResendCount);
+end;
+
+{ TMQTTPacketIDManager }
+
+constructor TMQTTPacketIDManager.Create;
 begin
   inherited Create;
   FList := TList.Create;
+  FList.Capacity := 16;
 end;
 
-destructor TMQTTPacketList.Destroy;
+destructor TMQTTPacketIDManager.Destroy;
 begin
+  Reset;
   FList.Free;
   inherited Destroy;
 end;
 
-function TMQTTPacketList.GetCount: Integer;
+function TMQTTPacketIDManager.GetCount: Integer;
 begin
   Result := FList.Count;
 end;
 
-function TMQTTPacketList.GetItem(Index: Integer): TMQTTPacket;
+function TMQTTPacketIDManager.GetItem(Index: Integer): Word;
 begin
-  Result := TMQTTPacket(FList[Index]);
+  Result := PtrUInt(FList[Index]);
 end;
 
-procedure TMQTTPacketList.Add(APacket: TMQTTPacket);
+function TMQTTPacketIDManager.GenerateID: Word;
+var
+  P: PtrUInt;
 begin
-  FList.Remove(APacket);
-  FList.Add(APacket);
+  repeat
+    Result := Random($FFFE) + 1;
+  until not CheckIDExists(Result);
+  P := Result;
+  FList.Add(Pointer(P));
 end;
 
-procedure TMQTTPacketList.Remove(APacket: TMQTTPacket);
-begin
-  FList.Remove(APacket);
-end;
-
-procedure TMQTTPacketList.Dump(Strings: TStrings);
+function TMQTTPacketIDManager.CheckIDExists(PacketID: Word): Boolean;
 var
   X: Integer;
-  P: TMQTTPacket;
 begin
-  if Assigned(Strings) then
+  Result := False;
+  for X := 0 to FList.Count - 1 do
     begin
-      Strings.Clear;
-      for X := 0 to FList.Count - 1 do
+      if Items[X] = PacketID then
         begin
-          P := Items[X];
-          if Assigned(P) then
-            begin
-              Strings.Add(P.AsString);
-            end;
+          Result := True;
+          Exit;
         end;
     end;
 end;
 
+procedure TMQTTPacketIDManager.ReleaseID(PacketID: Word);
+var
+  X: Integer;
+begin
+  for X := 0 to FList.Count - 1 do
+    begin
+      if Items[X] = PacketID then
+        begin
+          FList.Delete(X);
+          Exit;
+        end;
+    end;
+end;
+
+procedure TMQTTPacketIDManager.Reset;
+begin
+  FList.Clear;
+end;
+
 { TMQTTPacketQueue }
-
-function TMQTTPacketQueue.GetCount: Integer;
-begin
-  Result := FList.Count;
-end;
-
-function TMQTTPacketQueue.GetPacket(Index: Integer): TMQTTQueuedPacket;
-begin
-  Result := TMQTTQueuedPacket(FList[Index]);
-end;
 
 constructor TMQTTPacketQueue.Create;
 begin
@@ -214,6 +271,16 @@ begin
   Clear;
   FList.Destroy;
   inherited Destroy;
+end;
+
+function TMQTTPacketQueue.GetCount: Integer;
+begin
+  Result := FList.Count;
+end;
+
+function TMQTTPacketQueue.GetPacket(Index: Integer): TMQTTQueuedPacket;
+begin
+  Result := TMQTTQueuedPacket(FList[Index]);
 end;
 
 procedure TMQTTPacketQueue.Add(Packet: TMQTTQueuedPacket);
@@ -269,107 +336,65 @@ begin
   FList.Clear;
 end;
 
-{ TMQTTPacket }
+{ TMQTTPacketList }
 
-function TMQTTPacket.GetPacketTypeName: String;
-begin
-  Result := MQTTPacketTypeNames[PacketType];
-end;
+{$IFDEF USE_PACKETLIST}
 
-function TMQTTPacket.Validate: Boolean;
-begin
-  Result := not (PacketType in [ptBROKERCONNECT,ptReserved15]);
-end;
-
-constructor TMQTTPacket.Create;
-begin
-  inherited Create;
-  PacketList.Add(Self);
-end;
-
-destructor TMQTTPacket.Destroy;
-begin
-  PacketList.Remove(Self);
-  inherited Destroy;
-end;
-
-function TMQTTPacket.AsString: String;
-begin
-  Result := 'Name: ' + GetPacketTypeName;
-end;
-
-{ TMQTTPacketIDManager }
-
-function TMQTTPacketIDManager.GetCount: Integer;
-begin
-  Result := FList.Count;
-end;
-
-function TMQTTPacketIDManager.GetItem(Index: Integer): Word;
-begin
-  Result := PtrUInt(FList[Index]);
-end;
-
-constructor TMQTTPacketIDManager.Create;
+constructor TMQTTPacketList.Create;
 begin
   inherited Create;
   FList := TList.Create;
-  FList.Capacity := 16;
 end;
 
-destructor TMQTTPacketIDManager.Destroy;
+destructor TMQTTPacketList.Destroy;
 begin
-  Reset;
   FList.Free;
   inherited Destroy;
 end;
 
-function TMQTTPacketIDManager.GenerateID: Word;
-var
-  P: PtrUInt;
+function TMQTTPacketList.GetCount: Integer;
 begin
-  repeat
-    Result := Random($FFFE) + 1;
-  until not CheckIDExists(Result);
-  P := Result;
-  FList.Add(Pointer(P));
+  Result := FList.Count;
 end;
 
-function TMQTTPacketIDManager.CheckIDExists(PacketID: Word): Boolean;
+function TMQTTPacketList.GetItem(Index: Integer): TMQTTPacket;
+begin
+  Result := TMQTTPacket(FList[Index]);
+end;
+
+procedure TMQTTPacketList.Add(APacket: TMQTTPacket);
+begin
+  FList.Remove(APacket);
+  FList.Add(APacket);
+end;
+
+procedure TMQTTPacketList.Remove(APacket: TMQTTPacket);
+begin
+  FList.Remove(APacket);
+end;
+
+procedure TMQTTPacketList.Dump(Strings: TStrings);
 var
   X: Integer;
+  P: TMQTTPacket;
 begin
-  Result := False;
-  for X := 0 to FList.Count - 1 do
+  if Assigned(Strings) then
     begin
-      if Items[X] = PacketID then
+      Strings.Clear;
+      for X := 0 to FList.Count - 1 do
         begin
-          Result := True;
-          Exit;
+          P := Items[X];
+          if Assigned(P) then
+            begin
+              Strings.Add(P.AsString);
+            end;
         end;
     end;
 end;
 
-procedure TMQTTPacketIDManager.ReleaseID(PacketID: Word);
-var
-  X: Integer;
-begin
-  for X := 0 to FList.Count - 1 do
-    begin
-      if Items[X] = PacketID then
-        begin
-          FList.Delete(X);
-          Exit;
-        end;
-    end;
-end;
+{$ENDIF}
 
-procedure TMQTTPacketIDManager.Reset;
-begin
-  FList.Clear;
-end;
-
-{ Functions }
+{ Utility functions to read and write packets from a TBuffer }
 
 function ReadWordFromBuffer(ABuffer: TBuffer; out Value: Word): Boolean;
 begin
@@ -635,8 +660,10 @@ begin
   end;
 end;
 
+{$IFDEF USE_PACKETLIST}
 initialization
   PacketList := TMQTTPacketList.Create;
 finalization
   PacketList.Free;
+{$ENDIF}
 end.
