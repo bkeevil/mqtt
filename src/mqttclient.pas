@@ -15,13 +15,6 @@ type
   TMQTTClientReceiveMessageEvent = procedure (AClient: TMQTTClient; Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean) of object;
   TMQTTClientErrorEvent = procedure (AClient: TMQTTClient; ErrCode: Word; ErrMsg: String) of object;
 
-  TMQTTConnectionState = (csNew,csConnecting,csConnected,csDisconnecting,csDisconnected);
-
-const
-  MQTT_CONNECTION_STATE_NAMES: array[TMQTTConnectionState] of String = ('New','Connecting','Connected','Disconnecting','Disconnected');
-
-type
-
   { TMQTTClientThread }
 
   TMQTTClientThread = class(TThread)
@@ -794,7 +787,7 @@ begin
   Assert(Assigned(APacket) and (State = csConnected));
   if Assigned(APacket) and (State = csConnected) then
     begin
-      Log.Send(mtDebug,'Received PUBLISH (PacketID=%d,QOS=%s)',[APacket.PacketID,MQTTQOSTypeNames[APacket.QOS]]);
+      Log.Send(mtDebug,'Received PUBLISH (PacketID=%d,QOS=%s)',[APacket.PacketID,GetQOSTypeName(APacket.QOS)]);
       case APacket.QOS of
         qtAT_MOST_ONCE  : ReceiveMessage(APacket.Topic,APacket.Data,APacket.QOS,APacket.Retain);
         qtAT_LEAST_ONCE : HandlePUBLISHPacket1(APacket);

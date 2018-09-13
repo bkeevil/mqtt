@@ -291,7 +291,7 @@ end;
 
 function TMQTTWillMessage.AsString: String;
 begin
-  Result := 'Enabled: ' + BoolToStr(Enabled,true) + ', QOS: ' + MQTTQOSTypeNames[QOS] +
+  Result := 'Enabled: ' + BoolToStr(Enabled,true) + ', QOS: ' + GetQOSTypeName(QOS) +
     ', Retain: ' + BoolToStr(Retain,true) + ', Topic: ' + Topic + ', Message: ' + Message;
 end;
 
@@ -481,7 +481,7 @@ begin
     begin
       S := FSubscriptions[I];
       Result := Result + ', Subscription[' + IntToStr(I) + ']: (Filter: ' + S.Filter +
-        ', QOS: ' + MQTTQOSTypeNames[S.QOS] + ', Age: ' + IntToStr(S.Age)+')';
+        ', QOS: ' + GetQOSTypeName(S.QOS) + ', Age: ' + IntToStr(S.Age)+')';
     end;
 end;
 
@@ -542,7 +542,7 @@ begin
         if RC = $80 then
           Result := Result + ', ReturnCode[' + IntToStr(I) + ']=Error'
         else
-          Result := Result + ', ReturnCode[' + IntToStr(I) + ']=' + MQTTQOSTypeNames[TMQTTQOSType(RC)];
+          Result := Result + ', ReturnCode[' + IntToStr(I) + ']=' + GetQOSTypeName(TMQTTQOSType(RC));
       end;
   finally
     Buf.Free;
@@ -622,7 +622,7 @@ begin
     begin
       S := FSubscriptions[I];
       Result := Result + ', Subscription[' + IntToStr(I) + ']: (Filter: ' + S.Filter +
-        ', QOS: ' + MQTTQOSTypeNames[S.QOS] + ', Age: ' + IntToStr(S.Age)+')'
+        ', QOS: ' + GetQOSTypeName(S.QOS) + ', Age: ' + IntToStr(S.Age)+')'
     end;
 end;
 
@@ -695,7 +695,7 @@ begin
         LBuffer.Write(@B,1);
       end;
     if LBuffer.Size = 0 then
-      raise Exception.Create('No subscriptions send in SUBSCRIBE packet');
+      raise Exception.Create(GetMQTTErrorMessage(MQTT_ERROR_NOSUBSCRIPTIONSINSUBSCRIBE));
     WriteRemainingLengthToBuffer(ABuffer,LBuffer.Size+2);
     WriteWordToBuffer(ABuffer,PacketID);
     ABuffer.WriteBuffer(LBuffer);
@@ -1070,7 +1070,7 @@ end;
 
 function TMQTTPUBLISHPacket.AsString: String;
 begin
-  Result := inherited AsString + ', QOS: ' + MQTTQOSTypeNames[FQOS] +
+  Result := inherited AsString + ', QOS: ' + GetQOSTypeName(FQOS) +
     ', Retain: ' + BoolToStr(FRetain,true) +
     ', Duplicate: ' + BoolToStr(FDuplicate,true) +
     ', Topic: ' + FTopic +

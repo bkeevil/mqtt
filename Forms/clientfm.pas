@@ -211,7 +211,7 @@ var
   S: String;
 begin
   if Retain then S := '1' else S := '0';
-  MessagesGrid.InsertRowWithValues(1,[Topic,Data,MQTTQOSTypeNames[QOS],S]);
+  MessagesGrid.InsertRowWithValues(1,[Topic,Data,GetQOSTypeName(QOS),S]);
 end;
 
 procedure TClientForm.ClientSendData(AClient: TMQTTClient);
@@ -376,7 +376,7 @@ begin
       S := Client.Subscriptions[X];
       SubscriptionsGrid.RowCount := SubscriptionsGrid.RowCount + 1;
       SubscriptionsGrid.Cells[0,X+1] := S.Filter;
-      SubscriptionsGrid.Cells[1,X+1] := MQTTQOSTypeNames[S.QOS];
+      SubscriptionsGrid.Cells[1,X+1] := GetQOSTypeName(S.QOS);
       SubscriptionsGrid.Cells[2,X+1] := IntToStr(S.Age);
     end;
 end;

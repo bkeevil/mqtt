@@ -143,7 +143,7 @@ uses
 
 function TMQTTPacket.GetPacketTypeName: String;
 begin
-  Result := MQTTPacketTypeNames[PacketType];
+  Result := mqttconsts.GetPacketTypeName(PacketType);
 end;
 
 function TMQTTPacket.Validate: Boolean;

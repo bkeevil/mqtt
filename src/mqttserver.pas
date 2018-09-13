@@ -26,12 +26,6 @@ type
 
   { TMQTTServerConnection }
 
-  TMQTTServerConnectionState = (ssNew,ssConnecting,ssConnected,ssDisconnecting,ssDisconnected);
-
-const
-  SERVER_CONNECTION_STATE_NAMES: array[TMQTTServerConnectionState] of String =
-    ('New','Connecting','Connected','Disconnecting','Disconnected');
-
 type
   TMQTTServerConnection = class(TLogObject)
     private
@@ -39,7 +33,7 @@ type
       FSession             : TMQTTSession;
       FSocket              : TObject;
       FUsername            : UTF8String;
-      FState               : TMQTTServerConnectionState;
+      FState               : TMQTTConnectionState;
       FInsufficientData    : Byte;
       FKeepAlive           : Word;
       FKeepAliveRemaining  : Word;
@@ -81,7 +75,7 @@ type
       property SendBuffer  : TBuffer read FSendBuffer;
       property RecvBuffer  : TBuffer read FRecvBuffer;
       property Socket      : TObject read FSocket write FSocket;
-      property State       : TMQTTServerConnectionState read FState;
+      property State       : TMQTTConnectionState read FState;
       property WillMessage : TMQTTWillMessage read FWillMessage write FWillMessage;
       property Server      : TMQTTServer read FServer;
       property Session     : TMQTTSession read FSession;
@@ -549,7 +543,7 @@ begin
   for I := 0 to Connections.Count - 1 do
     begin
       C := Connections[I];
-      if Assigned(C) and (C.State <> ssDisconnected) then
+      if Assigned(C) and (C.State <> csDisconnected) then
         begin
           S := C.Session;
           if Assigned(S) then
@@ -557,19 +551,6 @@ begin
         end;
     end;
 end;
-
-{procedure TMQTTServer.SendRetainedMessages(Session: TMQTTSession);
-var
-  I: Integer;
-  M: TMQTTMessage;
-begin
-  for I := 0 to RetainedMessages.Count - 1 do
-    begin
-      M := RetainedMessages[I];
-      M.Retain := True;
-      Session.DispatchMessage(M);
-    end;
-end;  }
 
 procedure TMQTTServer.SendRetainedMessages(Session: TMQTTSession; Subscription: TMQTTSubscription);
 var
@@ -617,21 +598,21 @@ end;
 
 procedure TMQTTServerConnection.Accepted;
 begin
-  Assert(State = ssConnecting);
+  Assert(State = csConnecting);
   Log.Send(mtDebug,'New connection accepted');
-  FState := ssConnected;
+  FState := csConnected;
   Server.ConnectionsChanged;
   Server.Accepted(Self);
 end;
 
 procedure TMQTTServerConnection.Timeout;
 begin
-  if State = ssConnected then
+  if State = csConnected then
     begin
-      FState := ssDisconnecting;
+      FState := csDisconnecting;
       Log.Send(mtWarning,'Connection timed out');
       SendWillMessage;
-      if FState = ssDisconnected then
+      if FState = csDisconnected then
         begin
           Server.Disconnect(Self);
           if Assigned(FSession) then
@@ -658,19 +639,19 @@ end;
 
 procedure TMQTTServerConnection.Disconnect;
 begin
-  if (State = ssConnected) then
+  if (State = csConnected) then
     begin
       Log.Send(mtInfo,'Connection disconnecting');
-      FState := ssDisconnecting;
+      FState := csDisconnecting;
       CheckTerminateSession;
       Server.Disconnect(Self);
       Destroy;
     end
   else
-  if (State = ssConnecting) then
+  if (State = csConnecting) then
     begin
       Log.Send(mtError,'Connection failed');
-      FState := ssDisconnecting;
+      FState := csDisconnecting;
       //Server.Disconnect(Self);
       //CheckTerminateSession;
       Destroy;
@@ -679,12 +660,12 @@ end;
 
 procedure TMQTTServerConnection.Disconnected;
 begin
-  if State = ssConnected then
+  if State = csConnected then
     begin
-      FState := ssDisconnecting;
+      FState := csDisconnecting;
       SendWillMessage;
     end;
-  if State = ssDisconnected then
+  if State = csDisconnected then
     begin
       Log.Send(mtInfo,'Connection disconnected');
       Server.Disconnected(Self);
@@ -697,8 +678,8 @@ procedure TMQTTServerConnection.Bail(ErrCode: Word);
 var
   Msg: String;
 begin
-  Assert(State <> ssDisconnected);
-  FState := ssDisconnecting;
+  Assert(State <> csDisconnected);
+  FState := csDisconnecting;
   Msg := GetMQTTErrorMessage(ErrCode);
   Log.Send(mtError,'Bail: '+Msg);
   if Assigned(Server.FOnError) then
@@ -706,7 +687,7 @@ begin
   Server.Disconnect(Self);
   if Assigned(FSession) then
     FSession.FConnection := nil;
-  FState := ssDisconnected;
+  FState := csDisconnected;
   Destroy;
 end;
 
@@ -714,7 +695,7 @@ procedure TMQTTServerConnection.Publish(Topic: UTF8String; Data: String; QOS: TM
 var
   Packet: TMQTTPUBLISHPacket;
 begin
-  Assert(State in [ssConnected,ssDisconnecting]);
+  Assert(State in [csConnected,csDisconnecting]);
   Packet := TMQTTPUBLISHPacket.Create;
   try
     Packet.QOS := QOS;
@@ -749,14 +730,14 @@ begin
   DestroyPacket := True;
   Packet := nil;
   FKeepAliveRemaining := FKeepAlive; // Receipt of any data, even invalid data, should reset KeepAlive
-  ErrCode := ReadMQTTPacketFromBuffer(Buffer,Packet,State = ssConnected);
+  ErrCode := ReadMQTTPacketFromBuffer(Buffer,Packet,State = csConnected);
   try
     if ErrCode = MQTT_ERROR_NONE then
       begin
         if Assigned(Session) then
           Session.Age := 0;
         FInsufficientData := 0;
-        if State = ssConnected then
+        if State = csConnected then
           begin
             case Packet.PacketType of
               ptDISCONNECT  : HandleDISCONNECTPacket;
@@ -775,14 +756,14 @@ begin
               DestroyPacket := False;
           end
         else
-          if State = ssDisconnecting then
+          if State = csDisconnecting then
             case Packet.PacketType of
               ptPUBACK      : HandlePUBACKPacket(Packet as TMQTTPUBACKPacket);
               ptPUBREC      : HandlePUBRECPacket(Packet as TMQTTPUBRECPacket);
               ptPUBCOMP     : HandlePUBCOMPPacket(Packet as TMQTTPUBCOMPPacket);
             end
           else
-            if (State = ssNew) and (Packet is TMQTTCONNECTPacket) then
+            if (State = csNew) and (Packet is TMQTTCONNECTPacket) then
               HandleConnectPacket(Packet as TMQTTConnectPacket)
             else
               Bail(MQTT_ERROR_NOT_CONNECTED);
@@ -810,7 +791,7 @@ var
   X: Integer;
   C: TMQTTServerConnection;
 begin
-  Assert(State = ssConnecting);
+  Assert(State = csConnecting);
 
   // See if a return code has already been set by the parser.
   Result := APacket.ReturnCode;
@@ -883,7 +864,7 @@ end;
 
 function TMQTTServerConnection.InitSessionState(APacket: TMQTTCONNECTPacket): Boolean;
 begin
-  Assert(State=ssConnecting);
+  Assert(State=csConnecting);
   // Retrieve existing session, if any
   FSession := Server.Sessions.Find(APacket.ClientID);
   if Assigned(FSession) then
@@ -926,8 +907,8 @@ var
   ReturnCode     : Byte;
   Reply          : TMQTTCONNACKPacket;
 begin
-  Assert(State = ssNew);
-  FState := ssConnecting;
+  Assert(State = csNew);
+  FState := csConnecting;
   ReturnCode := InitNetworkConnection(APacket);
 
   if ReturnCode <> MQTT_CONNACK_SUCCESS then
@@ -1024,16 +1005,16 @@ end;
 
 procedure TMQTTServerConnection.SendWillMessage;
 begin
-  Assert(State = ssDisconnecting);
+  Assert(State = csDisconnecting);
   if WillMessage.Enabled then
     begin
       Log.Send(mtInfo,'Sending Will Message');
       Publish(WillMessage.Topic,WillMessage.Message,WillMessage.QOS,WillMessage.Retain,False);
       if WillMessage.QOS = qtAT_MOST_ONCE then
-        FState := ssDisconnected;
+        FState := csDisconnected;
     end
   else
-    FState := ssDisconnected;
+    FState := csDisconnected;
 end;
 
 procedure TMQTTServerConnection.HandleSUBSCRIBEPacket(APacket: TMQTTSUBSCRIBEPacket);
@@ -1084,7 +1065,7 @@ begin
   Session.FPacketIDManager.ReleaseID(APacket.PacketID);
   Session.FWaitingForAck.Remove(ptPUBLISH,APacket.PacketID);
   // Disconnects the connection after the willmessage has been sent
-  if State = ssDisconnecting then
+  if State = csDisconnecting then
     Disconnected;
 end;
 
@@ -1135,7 +1116,7 @@ begin
   Session.FPacketIDManager.ReleaseID(APacket.PacketID);
   Session.FWaitingForAck.Remove(ptPUBREL,APacket.PacketID);
   // Disconnects the connection after the willmessage has been sent
-  if State = ssDisconnecting then
+  if State = csDisconnecting then
     Disconnected;
 end;
 
@@ -1182,7 +1163,7 @@ end;
 
 procedure TMQTTServerConnection.HandlePUBLISHPacket(APacket: TMQTTPUBLISHPacket);
 begin
-  Log.Send(mtDebug,'Received PUBLISH (PacketID=%d,QOS=%s,Retain=%s)',[APacket.PacketID,MQTTQOSTypeNames[APacket.QOS],BoolToStr(APacket.Retain,'True','False')]);
+  Log.Send(mtDebug,'Received PUBLISH (PacketID=%d,QOS=%s,Retain=%s)',[APacket.PacketID,GetQOSTypeName(APacket.QOS),BoolToStr(APacket.Retain,'True','False')]);
   case APacket.QOS of
     qtAT_MOST_ONCE  : Server.DispatchMessage(Session,APacket.Topic,APacket.Data,APacket.QOS,APacket.Retain);
     qtAT_LEAST_ONCE : HandlePUBLISHPacket1(APacket);
@@ -1441,7 +1422,7 @@ begin
           if Message.QOS = qtAT_MOST_ONCE then
             begin
               // If this is a QoS0 message, send it right away
-              if Assigned(Connection) and (Connection.State <> ssDisconnected) then
+              if Assigned(Connection) and (Connection.State <> csDisconnected) then
                 Connection.Publish(Message.Topic,Message.Data,Subscription.QOS,False);
             end
           else
@@ -1528,4 +1509,3 @@ begin
 end;
 
 end.
-
