@@ -15,12 +15,6 @@ type
 var
   MQTTLanguagePack: TMQTTLanguagePack = lpEnglish;
 
-const
-
-  MQTT_DEFAULT_KEEPALIVE        =   30; // Seconds.  0 to 65535
-  MQTT_DEFAULT_PING_INTERVAL    =   15; // Seconds
-  MQTT_DEFAULT_PORT             = 1883;
-
 var
   MQTTStrictClientIDValidationChars: set of char = ['0'..'9','a'..'z','A'..'Z'];
 

@@ -9,7 +9,6 @@ uses
   MQTTMessages;
 
 type
-  TMQTTServerSettings       = class;
   TMQTTServer               = class;
   TMQTTServerConnection     = class;
   TMQTTServerConnectionList = class;
@@ -24,30 +23,6 @@ type
   TMQTTConnectionSendDataEvent = procedure (AConnection: TMQTTServerConnection) of object;
   TMQTTConnectionDestroyEvent = procedure (AConnection: TMQTTServerConnection) of object;
   EMQTTConnectionError = class(Exception);
-
-  { TMQTTServerSettings }
-
-  TMQTTServerSettings = class(TPersistent)
-    private
-      FListenRetryDelay: Integer;
-      FResendPacketTimeout: Integer;
-      FMaxPacketResendTries: Integer;
-      FMaxSubscriptionAge: Integer;
-      FMaxSessionAge: Integer;
-      FDefaultConfigFilename1: String;
-      FDefaultConfigFilename2: String;
-    public
-      constructor Create;
-      procedure Assign(Source: TPersistent); override;
-    published
-      property ListenRetryDelay: Integer read FListenRetryDelay write FListenRetryDelay default 15000;
-      property ResendPacketTimeout: Integer read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
-      property MaxPacketResendTries: Integer read FMaxPacketResendTries write FMaxPacketResendTries default 3;
-      property MaxSubscriptionAge: Integer read FMaxSubscriptionAge write FMaxSubscriptionAge default 1080; // Minutes
-      property MaxSessionAge: Integer read FMaxSessionAge write FMaxSessionAge default 1080; // Minutes
-      property DefaultConfigFilename1: String read FDefaultConfigFilename1 write FDefaultConfigFilename1;
-      property DefaultConfigFilename2: String read FDefaultConfigFilename2 write FDefaultConfigFilename2;
-  end;
 
   { TMQTTServerConnection }
 
@@ -146,7 +121,14 @@ type
       FConnections                : TMQTTServerConnectionList;
       FSessions                   : TMQTTSessionList;
       FRetainedMessages           : TMQTTMessageList;
-      FSettings                   : TMQTTServerSettings;
+      FListenRetryDelay           : Integer;
+      FResendPacketTimeout        : Integer;
+      FMaxPacketResendTries       : Integer;
+      FMaxSubscriptionAge         : Integer;
+      FMaxSessionAge              : Integer;
+      FDefaultKeepAlive           : Integer;
+      FDefaultConfigFilename1     : String;
+      FDefaultConfigFilename2     : String;
       FEnabled                    : Boolean;
       FShutdown                   : Boolean;
       FRequireAuthentication      : Boolean;
@@ -175,7 +157,6 @@ type
       procedure ProcessAckQueues;
       procedure ProcessSessionAges;
       procedure HandleTimer;
-      procedure SetSettings(AValue: TMQTTServerSettings);
     protected
       // Methods that trigger event handlers
       procedure Accepted(Connection: TMQTTServerConnection); virtual;
@@ -204,7 +185,14 @@ type
       property Sessions: TMQTTSessionList read FSessions;
       property RetainedMessages: TMQTTMessageList read FRetainedMessages;
     published
-      property Settings: TMQTTServerSettings read FSettings write SetSettings;
+      property ListenRetryDelay: Integer read FListenRetryDelay write FListenRetryDelay default 15000;
+      property ResendPacketTimeout: Integer read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
+      property MaxPacketResendTries: Integer read FMaxPacketResendTries write FMaxPacketResendTries default 3;
+      property MaxSubscriptionAge: Integer read FMaxSubscriptionAge write FMaxSubscriptionAge default 1080; // Minutes
+      property MaxSessionAge: Integer read FMaxSessionAge write FMaxSessionAge default 1080; // Minutes
+      property DefaultKeepAlive: Integer read FDefaultKeepAlive write FDefaultKeepAlive default 30; // Seconds
+      property DefaultConfigFilename1: String read FDefaultConfigFilename1 write FDefaultConfigFilename1;
+      property DefaultConfigFilename2: String read FDefaultConfigFilename2 write FDefaultConfigFilename2;
       property Enabled: Boolean read FEnabled write FEnabled default true;
       property MaximumQOS: TMQTTQOSType read FMaximumQOS write FMaximumQOS default qtEXACTLY_ONCE;
       property RequireAuthentication: Boolean read FRequireAuthentication write FRequireAuthentication default true;
@@ -292,36 +280,6 @@ type
 
 implementation
 
-{ TMQTTServerSettings }
-
-constructor TMQTTServerSettings.Create;
-begin
-  inherited Create;
-  FListenRetryDelay := 15000;
-  FResendPacketTimeout := 2;
-  FMaxPacketResendTries := 3;
-  FMaxSubscriptionAge := 1080;
-  FMaxSessionAge := 1080;
-  FDefaultConfigFilename1 := '/etc/mqtt/mqtt.ini';
-  FDefaultConfigFilename2 := 'mqttserver.ini';
-end;
-
-procedure TMQTTServerSettings.Assign(Source: TPersistent);
-begin
-  if Source is TMQTTServerSettings then
-    begin
-      FListenRetryDelay := (Source as TMQTTServerSettings).FListenRetryDelay;
-      FResendPacketTimeout := (Source as TMQTTServerSettings).FResendPacketTimeout;
-      FMaxPacketResendTries := (Source as TMQTTServerSettings).FMaxPacketResendTries;
-      FMaxSubscriptionAge := (Source as TMQTTServerSettings).FMaxSubscriptionAge;
-      FMaxSessionAge := (Source as TMQTTServerSettings).FMaxSessionAge;
-      FDefaultConfigFilename1 := (Source as TMQTTServerSettings).FDefaultConfigFilename1;
-      FDefaultConfigFilename2 := (Source as TMQTTServerSettings).FDefaultConfigFilename2;
-    end
-  else
-    inherited Assign(Source);
-end;
-
 { TMQTTServerThread }
 
 procedure TMQTTServerThread.OnTimer;
@@ -344,15 +302,22 @@ end;
 constructor TMQTTServer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  Log                    := TLogDispatcher.Create(Name);
-  FMaximumQOS            := qtEXACTLY_ONCE;
-  FEnabled               := True;
-  FAllowNullClientIDs    := False;
-  FRequireAuthentication := True;
-  FSettings              := TMQTTServerSettings.Create;
-  FRetainedMessages      := TMQTTMessageList.Create;
-  FConnections           := TMQTTServerConnectionList.Create;
-  FSessions              := TMQTTSessionList.Create(Self);
+  Log                     := TLogDispatcher.Create(Name);
+  FMaximumQOS             := qtEXACTLY_ONCE;
+  FEnabled                := True;
+  FAllowNullClientIDs     := False;
+  FRequireAuthentication  := True;
+  FListenRetryDelay       := 15000;
+  FResendPacketTimeout    := 2;
+  FMaxPacketResendTries   := 3;
+  FMaxSubscriptionAge     := 1080;
+  FMaxSessionAge          := 1080;
+  FDefaultKeepAlive       := 30;
+  FDefaultConfigFilename1 := '/etc/mqtt/mqtt.ini';
+  FDefaultConfigFilename2 := 'mqttserver.ini';
+  FRetainedMessages       := TMQTTMessageList.Create;
+  FConnections            := TMQTTServerConnectionList.Create;
+  FSessions               := TMQTTSessionList.Create(Self);
   //
   FThread                 := TMQTTServerThread.Create(False);
   FThread.FreeOnTerminate := True;
@@ -367,7 +332,6 @@ begin
   FSessions.Free;
   FConnections.Free;
   FRetainedMessages.Free;
-  FSettings.Free;
   Log.Free;
   inherited Destroy;
 end;
@@ -410,11 +374,6 @@ begin
       // Runs every minute
       ProcessSessionAges;
     end;
-end;
-
-procedure TMQTTServer.SetSettings(AValue: TMQTTServerSettings);
-begin
-  FSettings.Assign(AValue);
 end;
 
 procedure TMQTTServer.Accepted(Connection: TMQTTServerConnection);
@@ -593,7 +552,7 @@ begin
   FServer.Connections.Add(Self);
   FSendBuffer          := TBuffer.Create;
   FRecvBuffer          := TBuffer.Create;
-  FKeepAlive           := MQTT_DEFAULT_KEEPALIVE;
+  FKeepAlive           := Server.DefaultKeepAlive;
   FKeepAliveRemaining  := FKeepAlive;
   FWillMessage         := TMQTTWillMessage.Create;
   FServer.ConnectionsChanged;
@@ -1462,9 +1421,9 @@ begin
   for I := FWaitingForAck.Count - 1 downto 0 do
     begin
       Packet := FWaitingForAck[I];
-      if Packet.SecondsInQueue = Server.Settings.ResendPacketTimeout then
+      if Packet.SecondsInQueue = Server.ResendPacketTimeout then
         begin
-          if Packet.ResendCount < Server.Settings.MaxPacketResendTries then
+          if Packet.ResendCount < Server.MaxPacketResendTries then
             begin
               if Packet.PacketType = ptPUBLISH then
                 (Packet as TMQTTPUBLISHPacket).Duplicate := True;
@@ -1496,14 +1455,14 @@ begin
   for I := 0 to Subscriptions.Count - 1 do
     begin
       Sub := Subscriptions[I];
-      if Sub.Age < Server.Settings.MaxSubscriptionAge then
+      if Sub.Age < Server.MaxSubscriptionAge then
         Sub.Age := Sub.Age + 1
       else
         Subscriptions.Delete(I);
     end;
   inc(FAge);
   // If there are no subscriptions remaining and the session is older than the maximum session age then destroy it.
-  if (Subscriptions.Count = 0) and (FAge > Server.Settings.MaxSessionAge) then
+  if (Subscriptions.Count = 0) and (FAge > Server.MaxSessionAge) then
     begin
       Server.Sessions.Remove(Self);
       Destroy;

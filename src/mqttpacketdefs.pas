@@ -60,7 +60,7 @@ type
       property UsernameFlag: Boolean read FUsernameFlag write FUsernameFlag;
       property PasswordFlag: Boolean read FPasswordFlag write FPasswordFlag;
       property CleanSession: Boolean read FCleanSession write FCleanSession;
-      property KeepAlive: Word read FKeepAlive write FKeepAlive default MQTT_DEFAULT_KEEPALIVE;
+      property KeepAlive: Word read FKeepAlive write FKeepAlive;
       property ClientID: UTF8String read FClientID write FClientID;
       property Username: UTF8String read FUsername write FUsername;
       property Password: AnsiString read FPassword write FPassword;
@@ -889,7 +889,7 @@ constructor TMQTTCONNECTPacket.Create;
 begin
   inherited Create;
   FWillMessage := TMQTTWillMessage.Create;
-  FKeepAlive := MQTT_DEFAULT_KEEPALIVE;
+  FKeepAlive := 30;
 end;
 
 destructor TMQTTCONNECTPacket.Destroy;

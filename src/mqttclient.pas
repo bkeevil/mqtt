@@ -27,20 +27,6 @@ type
       procedure Execute; override;
   end;
 
-  { TMQTTClientSettings }
-
-  TMQTTClientSettings = class(TPersistent)
-    private
-      FResendPacketTimeout: Integer;
-      FMaxPacketResendTries: Integer;
-    public
-      constructor Create;
-      procedure Assign(Source: TPersistent); override;
-    published
-      property ResendPacketTimeout: Integer read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
-      property MaxPacketResendTries: Integer read FMaxPacketResendTries write FMaxPacketResendTries default 3;
-  end;
-
   { TMQTTClient }
 
   TMQTTClient = class(TComponent)
@@ -51,7 +37,8 @@ type
       FSubscriptions       : TMQTTSubscriptionList;
       FSendBuffer          : TBuffer;
       FRecvBuffer          : TBuffer;
-      FSettings            : TMQTTClientSettings;
+      FResendPacketTimeout: Integer;
+      FMaxPacketResendTries: Integer;
       // Packet Queues
       //FPendingTransmission : TMQTTMessageList; // QoS 1 and QoS 2 messages pending transmission to the Server.
       FWaitingForAck       : TMQTTPacketQueue; // QoS 1 and QoS 2 messages which have been sent to the Server, but have not been completely acknowledged.
@@ -103,7 +90,6 @@ type
       procedure SetPingInterval(AValue: Word);
       // Methods to send packets
       procedure Ping;
-      procedure SetSettings(AValue: TMQTTClientSettings);
       procedure SetWillMessage(AValue: TMQTTWillMessage);
     protected
       // Event Handlers
@@ -136,14 +122,15 @@ type
       property State: TMQTTConnectionState read FState;
       property Subscriptions: TMQTTSubscriptionList read FSubscriptions;
     published
-      property Settings: TMQTTClientSettings read FSettings write SetSettings;
+      property ResendPacketTimeout: Integer read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
+      property MaxPacketResendTries: Integer read FMaxPacketResendTries write FMaxPacketResendTries default 3;
       property ClientID: UTF8String read FClientID write SetClientID;
       property Username: UTF8String read FUsername write FUsername;
       property Password: AnsiString read FPassword write FPassword;
       property WillMessage: TMQTTWillMessage read FWillMessage write SetWillMessage;
       property CleanSession: Boolean read FCleanSession write FCleanSession default True;
-      property KeepAlive: Word read FKeepAlive write SetKeepAlive default MQTT_DEFAULT_KEEPALIVE;
-      property PingInterval: Word read FPingInterval write SetPingInterval default MQTT_DEFAULT_PING_INTERVAL;
+      property KeepAlive: Word read FKeepAlive write SetKeepAlive default 30;
+      property PingInterval: Word read FPingInterval write SetPingInterval default 15;
       // Events
       property OnConnected: TNotifyEvent read FOnConnected write FOnConnected;
       property OnDisconnect: TNotifyEvent read FOnDisconnect write FOnDisconnect;
@@ -156,26 +143,6 @@ type
   end;
 
 implementation
-
-{ TMQTTClientSettings }
-
-constructor TMQTTClientSettings.Create;
-begin
-  inherited Create;
-  FResendPacketTimeout := 2;
-  FMaxPacketResendTries := 3;
-end;
-
-procedure TMQTTClientSettings.Assign(Source: TPersistent);
-begin
-  if Source is TMQTTClientSettings then
-    begin
-      FResendPacketTimeout := (Source as TMQTTClientSettings).FResendPacketTimeout;
-      FMaxPacketResendTries := (Source as TMQTTClientSettings).FMaxPacketResendTries;
-    end
-  else
-    inherited Assign(Source);
-end;
 
 { TMQTTClientThread }
 
@@ -216,7 +183,8 @@ constructor TMQTTClient.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   Log                  := TLogDispatcher.Create('Client');
-  FSettings            := TMQTTClientSettings.Create;
+  FResendPacketTimeout := 2;
+  FMaxPacketResendTries:= 3;
   FSendBuffer          := TBuffer.Create;
   FRecvBuffer          := TBuffer.Create;
   FPacketIDManager     := TMQTTPacketIDManager.Create;
@@ -225,8 +193,8 @@ begin
   FWaitingForAck       := TMQTTPacketQueue.Create;
   FPendingReceive      := TMQTTPacketQueue.Create;
   FWillMessage         := TMQTTWillMessage.Create;
-  FKeepAlive           := MQTT_DEFAULT_KEEPALIVE;
-  FPingInterval        := MQTT_DEFAULT_PING_INTERVAL;
+  FKeepAlive           := 30;
+  FPingInterval        := 15;
   FPingIntRemaining    := FPingInterval;
   FCleanSession        := True;
   FThread                 := TMQTTClientThread.Create(False);
@@ -246,7 +214,6 @@ begin
   FPacketIDManager.Free;
   FSendBuffer.Free;
   FRecvBuffer.Free;
-  FSettings.Free;
   Log.Free;
   FThread.Free;
   inherited Destroy;
@@ -299,9 +266,9 @@ begin
     for I := FWaitingForAck.Count - 1 downto 0 do
       begin
         Packet := FWaitingForAck[I];
-        if Packet.SecondsInQueue = Settings.ResendPacketTimeout then
+        if Packet.SecondsInQueue = FResendPacketTimeout then
           begin
-            if Packet.ResendCount < Settings.MaxPacketResendTries then
+            if Packet.ResendCount < FMaxPacketResendTries then
               begin
                 if Packet.PacketType = ptPUBLISH then
                   (Packet as TMQTTPUBLISHPacket).Duplicate := True;
@@ -594,11 +561,6 @@ begin
         Packet.Free;
       end;
     end;
-end;
-
-procedure TMQTTClient.SetSettings(AValue: TMQTTClientSettings);
-begin
-  FSettings.Assign(AValue);
 end;
 
 procedure TMQTTClient.HandlePINGRESPPacket;
