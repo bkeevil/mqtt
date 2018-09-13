@@ -15,9 +15,6 @@ type
 var
   MQTTLanguagePack: TMQTTLanguagePack = lpEnglish;
 
-var
-  MQTTStrictClientIDValidationChars: set of char = ['0'..'9','a'..'z','A'..'Z'];
-
 type
   TMQTTConnectionState = (csNew,csConnecting,csConnected,csDisconnecting,csDisconnected);
 

@@ -278,6 +278,9 @@ type
       property Items[Index: Integer]: TMQTTSession read GetItem; default;
   end;
 
+var
+  MQTTStrictClientIDValidationChars: set of char = ['0'..'9','a'..'z','A'..'Z'];
+
 implementation
 
 { TMQTTServerThread }
