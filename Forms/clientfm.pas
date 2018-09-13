@@ -378,10 +378,6 @@ begin
       SubscriptionsGrid.Cells[0,X+1] := S.Filter;
       SubscriptionsGrid.Cells[1,X+1] := MQTTQOSTypeNames[S.QOS];
       SubscriptionsGrid.Cells[2,X+1] := IntToStr(S.Age);
-      if S.Persistent then
-        SubscriptionsGrid.Cells[3,X+1] := '1'
-      else
-        SubscriptionsGrid.Cells[3,X+1] := '0';
     end;
 end;
 

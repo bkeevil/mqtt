@@ -53,9 +53,9 @@ object ClientForm: TClientForm
     Height = 296
     Top = 48
     Width = 664
-    ActivePage = PacketsInMemTab
+    ActivePage = SubscriptionsTab
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 4
     object SubscriptionsTab: TTabSheet
       Caption = 'Subscriptions'
@@ -63,9 +63,9 @@ object ClientForm: TClientForm
       ClientWidth = 654
       object SubscriptionsGrid: TStringGrid
         Left = 0
-        Height = 261
+        Height = 265
         Top = 0
-        Width = 658
+        Width = 654
         Align = alClient
         Anchors = [akTop, akLeft, akBottom]
         AutoEdit = False
@@ -74,7 +74,7 @@ object ClientForm: TClientForm
         Columns = <        
           item
             Title.Caption = 'Topic Filter'
-            Width = 450
+            Width = 448
           end        
           item
             SizePriority = 0
@@ -102,7 +102,7 @@ object ClientForm: TClientForm
         PopupMenu = SubscriptionsPopup
         TabOrder = 0
         ColWidths = (
-          450
+          448
           140
           64
           0
@@ -115,9 +115,9 @@ object ClientForm: TClientForm
       ClientWidth = 654
       object MessagesGrid: TStringGrid
         Left = 0
-        Height = 165
+        Height = 265
         Top = 0
-        Width = 482
+        Width = 654
         Align = alClient
         Anchors = [akTop, akLeft, akBottom]
         AutoEdit = False
@@ -126,11 +126,11 @@ object ClientForm: TClientForm
         Columns = <        
           item
             Title.Caption = 'Topic'
-            Width = 159
+            Width = 246
           end        
           item
             Title.Caption = 'Data'
-            Width = 159
+            Width = 246
           end        
           item
             SizePriority = 0
@@ -151,8 +151,8 @@ object ClientForm: TClientForm
         RowCount = 1
         TabOrder = 0
         ColWidths = (
-          159
-          159
+          246
+          246
           100
           60
         )
