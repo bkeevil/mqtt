@@ -80,9 +80,9 @@ begin
   TCP.OnReceive := @TCPReceive;
   TCP.OnCanSend := @TCPCanSend;
   Server := TMQTTServer.Create(nil);
-  Server.AllowNullClientIDS := True;
+{  Server.AllowNullClientIDS := True;
   Server.MaximumQOS := qtEXACTLY_ONCE;
-  Server.RequireAuthentication := False;
+  Server.RequireAuthentication := False; }
   Server.OnAccepted := @ServerAccepted;
   Server.OnDisconnect := @ServerDisconnect;
   Server.OnDisconnected := @ServerDisconnected;
@@ -245,6 +245,10 @@ begin
     Server.RequireAuthentication := Ini.ReadBool('Server','RequireAuthentication',False);
     Server.AllowNullClientIDs := Ini.ReadBool('Server','AllowNullClientIDs',True);
     Server.StrictClientIDValidation := Ini.ReadBool('Server','StrictClientIDValidation',False);
+    Server.ResendPacketTimeout := Ini.ReadInteger('Server','ResetPacketTimeout',2);
+    Server.MaxResendAttempts := Ini.ReadInteger('Server','MaxResendAttempts',3);
+    Server.MaxSubscriptionAge := Ini.ReadInteger('Server','MaxSubscriptionAge',1080);
+    Server.MaxSessionAge := Ini.ReadInteger('Server','MaxSessionAge',1080);
 
     I := Ini.ReadInteger('Server','MaximumQOS',2);
     if I < 0 then
