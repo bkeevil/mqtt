@@ -76,10 +76,10 @@ const
 
   MQTTQOSTypeNames : array [TMQTTQOSType] of string =
   (
-    'AT MOST ONCE',   //  0 At most once Fire and Forget        <=1
-    'AT LEAST ONCE',  //  1 At least once Acknowledged delivery >=1
-    'EXACTLY ONCE',   //  2 Exactly once Assured delivery       =1
-    'RESERVED'	      //  3	Reserved
+    'AT MOST ONCE (QOS0)',   //  0 At most once Fire and Forget        <=1
+    'AT LEAST ONCE (QOS1)',  //  1 At least once Acknowledged delivery >=1
+    'EXACTLY ONCE (QOS2)',   //  2 Exactly once Assured delivery       =1
+    'RESERVED'	             //  3	Reserved
   );
 
   // CONNACK RETURN CODES
