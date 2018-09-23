@@ -17,9 +17,9 @@ object ServerForm: TServerForm
     Height = 346
     Top = 0
     Width = 817
-    ActivePage = PacketsInMemTab
+    ActivePage = SubscriptionsTab
     Align = alClient
-    TabIndex = 5
+    TabIndex = 1
     TabOrder = 0
     object ConnectionsTab: TTabSheet
       Caption = 'Connections'
@@ -54,7 +54,7 @@ object ServerForm: TServerForm
             ButtonStyle = cbsEllipsis
             SizePriority = 0
             Title.Caption = 'Will Message'
-            Width = 505
+            Width = 503
           end>
         DefaultRowHeight = 20
         Enabled = False
@@ -68,7 +68,7 @@ object ServerForm: TServerForm
           80
           120
           100
-          505
+          503
         )
       end
     end
@@ -78,9 +78,9 @@ object ServerForm: TServerForm
       ClientWidth = 807
       object SubscriptionsGrid: TStringGrid
         Left = 0
-        Height = 336
+        Height = 315
         Top = 0
-        Width = 811
+        Width = 807
         Align = alClient
         AutoEdit = False
         AutoFillColumns = True
@@ -93,7 +93,7 @@ object ServerForm: TServerForm
           end        
           item
             Title.Caption = 'Topic Filter'
-            Width = 503
+            Width = 501
           end        
           item
             SizePriority = 0
@@ -117,7 +117,7 @@ object ServerForm: TServerForm
         TabOrder = 0
         ColWidths = (
           120
-          503
+          501
           120
           64
         )

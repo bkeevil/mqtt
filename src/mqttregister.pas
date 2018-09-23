@@ -11,9 +11,14 @@ procedure Register;
 
 implementation
 
+uses
+  LResources;
+
 procedure Register;
 begin
-  RegisterComponents('Bond',[TMQTTClient, TMQTTServer]);
+  {$I mqttserver_icon.lrs}
+  {$I mqttclient_icon.lrs}
+  RegisterComponents('MQTT',[TMQTTClient, TMQTTServer]);
 end;
 
 end.

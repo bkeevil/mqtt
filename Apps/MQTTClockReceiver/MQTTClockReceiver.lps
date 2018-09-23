@@ -3,24 +3,24 @@
   <ProjectSession>
     <Version Value="10"/>
     <BuildModes Active="Default"/>
-    <Units Count="8">
+    <Units Count="14">
       <Unit0>
         <Filename Value="MQTTClockReceiver.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="5" Y="5"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
       </Unit0>
       <Unit1>
         <Filename Value="mainfm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MainFM"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="131"/>
-        <CursorPos X="28" Y="143"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="130"/>
+        <CursorPos X="51" Y="139"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -38,39 +38,81 @@
       </Unit3>
       <Unit4>
         <Filename Value="../../src/mqttsubscriptions.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="9"/>
         <TopLine Value="27"/>
         <CursorPos Y="56"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="../../../bkutils/logging.pas"/>
         <UnitName Value="Logging"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="238"/>
         <CursorPos X="3" Y="242"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="../../src/mqttclient.pas"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="875"/>
         <CursorPos X="23" Y="897"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="/usr/share/fpcsrc/3.0.4/rtl/objpas/sysutils/datih.inc"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="141"/>
         <CursorPos X="10" Y="156"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="../../src/mqttserver1.pas"/>
+        <UnitName Value="MQTTServer1"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="3" Y="28"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../src/mqttregister.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <CursorPos Y="16"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../../src/mqttclient1.pas"/>
+        <UnitName Value="MQTTClient1"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../src/mqttserver_icon.lrs"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="67" Y="12"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../src/mqttclient_icon.lrs"/>
+        <EditorIndex Value="4"/>
+        <CursorPos X="57" Y="10"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit13>
     </Units>
-    <JumpHistory Count="16" HistoryIndex="15">
+    <JumpHistory Count="19" HistoryIndex="18">
       <Position1>
         <Filename Value="mainfm.pas"/>
         <Caret Line="54" Column="22" TopLine="38"/>
@@ -134,6 +176,18 @@
         <Filename Value="mainfm.pas"/>
         <Caret Line="156" Column="39" TopLine="131"/>
       </Position16>
+      <Position17>
+        <Filename Value="../../src/mqttregister.pas"/>
+        <Caret Line="17" Column="17"/>
+      </Position17>
+      <Position18>
+        <Filename Value="../../src/mqttregister.pas"/>
+        <Caret Line="16" Column="4"/>
+      </Position18>
+      <Position19>
+        <Filename Value="../../src/mqttserver_icon.lrs"/>
+        <Caret Line="12" Column="67"/>
+      </Position19>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

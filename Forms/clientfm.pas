@@ -51,8 +51,7 @@ type
     procedure cbShowDebugMessagesChange(Sender: TObject);
     procedure ClearBtnClick(Sender: TObject);
     procedure ClientDisconnected(Sender: TObject);
-    procedure ClientReceiveMessage(AClient: TMQTTClient; Topic: UTF8String;
-      Data: String; QOS: TMQTTQOSType; Retain: Boolean);
+    procedure ClientReceiveMessage(AClient: TMQTTClient; Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean);
     procedure ClientSendData(AClient: TMQTTClient);
     procedure ConnectBtnClick(Sender: TObject);
     procedure DisconnectBtnClick(Sender: TObject);
@@ -65,8 +64,7 @@ type
     procedure RefreshPacketsBtnClick(Sender: TObject);
     procedure RefreshSubscriptionsItmClick(Sender: TObject);
     procedure SubscribeBtnClick(Sender: TObject);
-    procedure PacketsInMemTabContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
+    procedure PacketsInMemTabContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure TCPCanSend(aSocket: TLSocket);
     procedure TCPConnect(aSocket: TLSocket);
     procedure TCPDisconnect(aSocket: TLSocket);
@@ -211,7 +209,7 @@ var
   S: String;
 begin
   if Retain then S := '1' else S := '0';
-  MessagesGrid.InsertRowWithValues(1,[Topic,Data,MQTTQOSTypeNames[QOS],S]);
+  MessagesGrid.InsertRowWithValues(1,[Topic,Data,GetQOSTypeName(QOS),S]);
 end;
 
 procedure TClientForm.ClientSendData(AClient: TMQTTClient);
@@ -234,29 +232,6 @@ begin
     FreeMem(Data,Size);
   end;
 end;
-
-{var
-  Data: Pointer;
-  Size,Sent: Integer;
-begin
-  if Client.SendBuffer.Size > 0 then
-    begin
-      GetMem(Data,32);
-      try
-        repeat
-          Size := Client.SendBuffer.Peek(Data,32);
-          if Size > 0 then
-            begin
-              Sent := TCP.Send(Data^,Size);
-              if Sent > 0 then
-                 Client.SendBuffer.Read(Data,Sent);
-            end;
-        until (Size = 0) or (Sent < Size) or (Size < 32);
-      finally
-        FreeMem(Data,32);
-      end;
-    end;
-end;   }
 
 procedure TClientForm.SubscribeBtnClick(Sender: TObject);
 var
@@ -341,7 +316,6 @@ begin
             if (S > '') and (SubscribeForm.Grid.Cells[0,X] = '1') then
               begin
                 LSubscription := TMQTTSubscription.Create(S,Q);
-                //LSubscription.Persistent := SubscribeForm.Grid.Cells[3,X] = '1';
                 if LSubscription.Tokens.Valid then
                   LSubscriptions.Update(LSubscription)
                 else
@@ -376,12 +350,8 @@ begin
       S := Client.Subscriptions[X];
       SubscriptionsGrid.RowCount := SubscriptionsGrid.RowCount + 1;
       SubscriptionsGrid.Cells[0,X+1] := S.Filter;
-      SubscriptionsGrid.Cells[1,X+1] := MQTTQOSTypeNames[S.QOS];
+      SubscriptionsGrid.Cells[1,X+1] := GetQOSTypeName(S.QOS);
       SubscriptionsGrid.Cells[2,X+1] := IntToStr(S.Age);
-      if S.Persistent then
-        SubscriptionsGrid.Cells[3,X+1] := '1'
-      else
-        SubscriptionsGrid.Cells[3,X+1] := '0';
     end;
 end;
 

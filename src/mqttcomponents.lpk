@@ -41,7 +41,7 @@
     </CompilerOptions>
     <Description Value="MQTT client and server components that are independent of a specific network technology"/>
     <License Value="CC-BY-SA 4.0"/>
-    <Version Minor="8" Release="1" Build="100"/>
+    <Version Minor="9" Build="100"/>
     <Files Count="9">
       <Item1>
         <Filename Value="mqttserver.pas"/>
@@ -82,13 +82,16 @@
       </Item9>
     </Files>
     <LazDoc Paths="/home/bkeevil/lazarus/mqtt/doc/fpdoc"/>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="LazUtils"/>
+        <PackageName Value="LCL"/>
       </Item1>
       <Item2>
-        <PackageName Value="bkutils"/>
+        <PackageName Value="LazUtils"/>
       </Item2>
+      <Item3>
+        <PackageName Value="bkutils"/>
+      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

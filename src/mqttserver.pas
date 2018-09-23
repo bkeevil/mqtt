@@ -26,20 +26,13 @@ type
 
   { TMQTTServerConnection }
 
-  TMQTTServerConnectionState = (ssNew,ssConnecting,ssConnected,ssDisconnecting,ssDisconnected);
-
-const
-  SERVER_CONNECTION_STATE_NAMES: array[TMQTTServerConnectionState] of String =
-    ('New','Connecting','Connected','Disconnecting','Disconnected');
-
-type
   TMQTTServerConnection = class(TLogObject)
     private
       FServer              : TMQTTServer;
       FSession             : TMQTTSession;
       FSocket              : TObject;
       FUsername            : UTF8String;
-      FState               : TMQTTServerConnectionState;
+      FState               : TMQTTConnectionState;
       FInsufficientData    : Byte;
       FKeepAlive           : Word;
       FKeepAliveRemaining  : Word;
@@ -81,7 +74,7 @@ type
       property SendBuffer  : TBuffer read FSendBuffer;
       property RecvBuffer  : TBuffer read FRecvBuffer;
       property Socket      : TObject read FSocket write FSocket;
-      property State       : TMQTTServerConnectionState read FState;
+      property State       : TMQTTConnectionState read FState;
       property WillMessage : TMQTTWillMessage read FWillMessage write FWillMessage;
       property Server      : TMQTTServer read FServer;
       property Session     : TMQTTSession read FSession;
@@ -128,6 +121,11 @@ type
       FConnections                : TMQTTServerConnectionList;
       FSessions                   : TMQTTSessionList;
       FRetainedMessages           : TMQTTMessageList;
+      FResendPacketTimeout        : Byte;
+      FMaxResendAttempts          : Byte;
+      FMaxSubscriptionAge         : Word;
+      FMaxSessionAge              : Word;
+      FDefaultKeepAlive           : Integer;
       FEnabled                    : Boolean;
       FShutdown                   : Boolean;
       FRequireAuthentication      : Boolean;
@@ -137,9 +135,6 @@ type
       //
       FThread                     : TMQTTServerThread;
       FTimerTicks                 : Byte;                    // Accumulator
-      //
-      FSystemClock                : Boolean;
-      FLastTime                   : TSystemTime;
       // Connection related events
       FOnAccepted                 : TMQTTConnectionNotifyEvent;
       FOnDisconnect               : TMQTTConnectionNotifyEvent;
@@ -156,11 +151,9 @@ type
       FOnSessionsChanged          : TNotifyEvent;
       FOnRetainedMessagesChanged  : TNotifyEvent;
       // Timer routines
-      procedure InitSystemClockMessages;
       procedure ProcessAckQueues;
       procedure ProcessSessionAges;
       procedure HandleTimer;
-      procedure UpdateSystemClockMessages;
     protected
       // Methods that trigger event handlers
       procedure Accepted(Connection: TMQTTServerConnection); virtual;
@@ -189,8 +182,12 @@ type
       property Sessions: TMQTTSessionList read FSessions;
       property RetainedMessages: TMQTTMessageList read FRetainedMessages;
     published
+      property ResendPacketTimeout: Byte read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
+      property MaxResendAttempts: Byte read FMaxResendAttempts write FMaxResendAttempts default 3;
+      property MaxSubscriptionAge: Word read FMaxSubscriptionAge write FMaxSubscriptionAge default 1080; // Minutes
+      property MaxSessionAge: Word read FMaxSessionAge write FMaxSessionAge default 1080; // Minutes
+      property DefaultKeepAlive: Integer read FDefaultKeepAlive write FDefaultKeepAlive default 30; // Seconds
       property Enabled: Boolean read FEnabled write FEnabled default true;
-      property SystemClock: Boolean read FSystemClock write FSystemClock default true;
       property MaximumQOS: TMQTTQOSType read FMaximumQOS write FMaximumQOS default qtEXACTLY_ONCE;
       property RequireAuthentication: Boolean read FRequireAuthentication write FRequireAuthentication default true;
       property AllowNullClientIDs: Boolean read FAllowNullClientIDs write FAllowNullClientIds default false;
@@ -275,6 +272,9 @@ type
       property Items[Index: Integer]: TMQTTSession read GetItem; default;
   end;
 
+var
+  MQTTStrictClientIDValidationChars: set of char = ['0'..'9','a'..'z','A'..'Z'];
+
 implementation
 
 { TMQTTServerThread }
@@ -299,15 +299,19 @@ end;
 constructor TMQTTServer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  Log                    := TLogDispatcher.Create(Name);
-  FMaximumQOS            := qtEXACTLY_ONCE;
-  FEnabled               := True;
-  FAllowNullClientIDs    := False;
-  FRequireAuthentication := True;
-  FSystemClock           := True;
-  FRetainedMessages      := TMQTTMessageList.Create;
-  FConnections           := TMQTTServerConnectionList.Create;
-  FSessions              := TMQTTSessionList.Create(Self);
+  Log                     := TLogDispatcher.Create(Name);
+  FMaximumQOS             := qtEXACTLY_ONCE;
+  FEnabled                := True;
+  FAllowNullClientIDs     := False;
+  FRequireAuthentication  := True;
+  FResendPacketTimeout    := 2;
+  FMaxResendAttempts      := 3;
+  FMaxSubscriptionAge     := 1080;
+  FMaxSessionAge          := 1080;
+  FDefaultKeepAlive       := 30;
+  FRetainedMessages       := TMQTTMessageList.Create;
+  FConnections            := TMQTTServerConnectionList.Create;
+  FSessions               := TMQTTSessionList.Create(Self);
   //
   FThread                 := TMQTTServerThread.Create(False);
   FThread.FreeOnTerminate := True;
@@ -324,44 +328,6 @@ begin
   FRetainedMessages.Free;
   Log.Free;
   inherited Destroy;
-end;
-
-procedure TMQTTServer.InitSystemClockMessages;
-begin
-  if FSystemClock then
-    begin
-      DateTimeToSystemTime(Now(),FLastTime);
-      DispatchMessage(nil,'System/Time/Year',IntToStr(FLastTime.Year),qtAT_MOST_ONCE,true);
-      DispatchMessage(nil,'System/Time/Month',IntToStr(FLastTime.Month),qtAT_MOST_ONCE,true);
-      DispatchMessage(nil,'System/Time/Day',IntToStr(FLastTime.Day),qtAT_MOST_ONCE,true);
-      DispatchMessage(nil,'System/Time/Hour',IntToStr(FLastTime.Hour),qtAT_MOST_ONCE,true);
-      DispatchMessage(nil,'System/Time/Minute',IntToStr(FLastTime.Minute),qtAT_MOST_ONCE,true);
-      //DispatchMessage(nil,'System/Time/Second',IntToStr(FLastTime.Second),qtAT_MOST_ONCE,true);
-      //DispatchMessage(nil,'System/Time/DOW',IntToStr(FLastTime.DayOfWeek),qtAT_MOST_ONCE,true);
-    end;
-end;
-
-procedure TMQTTServer.UpdateSystemClockMessages;
-var
-  LNow: TSystemTime;
-begin
-  DateTimeToSystemTime(Now(),LNow);
-  if (LNow.Year <> FLastTime.Year) then
-    DispatchMessage(nil,'System/Time/Year',IntToStr(LNow.Year),qtAT_MOST_ONCE,true);
-  if (LNow.Month <> FLastTime.Month) then
-    DispatchMessage(nil,'System/Time/Month',IntToStr(LNow.Month),qtAT_MOST_ONCE,true);
-  if (LNow.Day <> FLastTime.Day) then
-    DispatchMessage(nil,'System/Time/Day',IntToStr(LNow.Day),qtAT_MOST_ONCE,true);
-  if (LNow.Hour <> FLastTime.Hour) then
-    DispatchMessage(nil,'System/Time/Hour',IntToStr(LNow.Hour),qtAT_MOST_ONCE,true);
-  //if (LNow.DayOfWeek <> FLastTime.DayOfWeek) then                                        { Doesn't work in Raspberry pi }
-  //  DispatchMessage(nil,'System/Time/DOW',IntToStr(LNow.DayOfWeek),qtAT_MOST_ONCE,true);
-  if (LNow.Minute <> FLastTime.Minute) then
-    begin
-      DispatchMessage(nil,'System/Time/Minute',IntToStr(LNow.Minute),qtAT_MOST_ONCE,true);
-      RetainedMessagesChanged;
-    end;
-  FLastTime := LNow;
 end;
 
 procedure TMQTTServer.ProcessSessionAges;
@@ -396,8 +362,6 @@ begin
   Connections.CheckTimeouts;
   ProcessAckQueues;
   inc(FTimerTicks);
-  if FSystemClock then
-    UpdateSystemClockMessages;
   if FTimerTicks = 60 then
     begin
       FTimerTicks := 0;
@@ -469,7 +433,6 @@ procedure TMQTTServer.Loaded;
 begin
   inherited Loaded;
   Log.Name := Name;
-  InitSystemClockMessages;
 end;
 
 function TMQTTServer.ValidateClientID(AClientID: UTF8String): Boolean;
@@ -549,7 +512,7 @@ begin
   for I := 0 to Connections.Count - 1 do
     begin
       C := Connections[I];
-      if Assigned(C) and (C.State <> ssDisconnected) then
+      if Assigned(C) and (C.State <> csDisconnected) then
         begin
           S := C.Session;
           if Assigned(S) then
@@ -557,19 +520,6 @@ begin
         end;
     end;
 end;
-
-{procedure TMQTTServer.SendRetainedMessages(Session: TMQTTSession);
-var
-  I: Integer;
-  M: TMQTTMessage;
-begin
-  for I := 0 to RetainedMessages.Count - 1 do
-    begin
-      M := RetainedMessages[I];
-      M.Retain := True;
-      Session.DispatchMessage(M);
-    end;
-end;  }
 
 procedure TMQTTServer.SendRetainedMessages(Session: TMQTTSession; Subscription: TMQTTSubscription);
 var
@@ -596,7 +546,7 @@ begin
   FServer.Connections.Add(Self);
   FSendBuffer          := TBuffer.Create;
   FRecvBuffer          := TBuffer.Create;
-  FKeepAlive           := MQTT_DEFAULT_KEEPALIVE;
+  FKeepAlive           := Server.DefaultKeepAlive;
   FKeepAliveRemaining  := FKeepAlive;
   FWillMessage         := TMQTTWillMessage.Create;
   FServer.ConnectionsChanged;
@@ -617,21 +567,21 @@ end;
 
 procedure TMQTTServerConnection.Accepted;
 begin
-  Assert(State = ssConnecting);
+  Assert(State = csConnecting);
   Log.Send(mtDebug,'New connection accepted');
-  FState := ssConnected;
+  FState := csConnected;
   Server.ConnectionsChanged;
   Server.Accepted(Self);
 end;
 
 procedure TMQTTServerConnection.Timeout;
 begin
-  if State = ssConnected then
+  if State = csConnected then
     begin
-      FState := ssDisconnecting;
+      FState := csDisconnecting;
       Log.Send(mtWarning,'Connection timed out');
       SendWillMessage;
-      if FState = ssDisconnected then
+      if FState = csDisconnected then
         begin
           Server.Disconnect(Self);
           if Assigned(FSession) then
@@ -658,19 +608,19 @@ end;
 
 procedure TMQTTServerConnection.Disconnect;
 begin
-  if (State = ssConnected) then
+  if (State = csConnected) then
     begin
       Log.Send(mtInfo,'Connection disconnecting');
-      FState := ssDisconnecting;
+      FState := csDisconnecting;
       CheckTerminateSession;
       Server.Disconnect(Self);
       Destroy;
     end
   else
-  if (State = ssConnecting) then
+  if (State = csConnecting) then
     begin
       Log.Send(mtError,'Connection failed');
-      FState := ssDisconnecting;
+      FState := csDisconnecting;
       //Server.Disconnect(Self);
       //CheckTerminateSession;
       Destroy;
@@ -679,12 +629,12 @@ end;
 
 procedure TMQTTServerConnection.Disconnected;
 begin
-  if State = ssConnected then
+  if State = csConnected then
     begin
-      FState := ssDisconnecting;
+      FState := csDisconnecting;
       SendWillMessage;
     end;
-  if State = ssDisconnected then
+  if State = csDisconnected then
     begin
       Log.Send(mtInfo,'Connection disconnected');
       Server.Disconnected(Self);
@@ -697,8 +647,8 @@ procedure TMQTTServerConnection.Bail(ErrCode: Word);
 var
   Msg: String;
 begin
-  Assert(State <> ssDisconnected);
-  FState := ssDisconnecting;
+  Assert(State <> csDisconnected);
+  FState := csDisconnecting;
   Msg := GetMQTTErrorMessage(ErrCode);
   Log.Send(mtError,'Bail: '+Msg);
   if Assigned(Server.FOnError) then
@@ -706,7 +656,7 @@ begin
   Server.Disconnect(Self);
   if Assigned(FSession) then
     FSession.FConnection := nil;
-  FState := ssDisconnected;
+  FState := csDisconnected;
   Destroy;
 end;
 
@@ -714,7 +664,7 @@ procedure TMQTTServerConnection.Publish(Topic: UTF8String; Data: String; QOS: TM
 var
   Packet: TMQTTPUBLISHPacket;
 begin
-  Assert(State in [ssConnected,ssDisconnecting]);
+  Assert(State in [csConnected,csDisconnecting]);
   Packet := TMQTTPUBLISHPacket.Create;
   try
     Packet.QOS := QOS;
@@ -749,14 +699,14 @@ begin
   DestroyPacket := True;
   Packet := nil;
   FKeepAliveRemaining := FKeepAlive; // Receipt of any data, even invalid data, should reset KeepAlive
-  ErrCode := ReadMQTTPacketFromBuffer(Buffer,Packet,State = ssConnected);
+  ErrCode := ReadMQTTPacketFromBuffer(Buffer,Packet,State = csConnected);
   try
     if ErrCode = MQTT_ERROR_NONE then
       begin
         if Assigned(Session) then
           Session.Age := 0;
         FInsufficientData := 0;
-        if State = ssConnected then
+        if State = csConnected then
           begin
             case Packet.PacketType of
               ptDISCONNECT  : HandleDISCONNECTPacket;
@@ -775,14 +725,14 @@ begin
               DestroyPacket := False;
           end
         else
-          if State = ssDisconnecting then
+          if State = csDisconnecting then
             case Packet.PacketType of
               ptPUBACK      : HandlePUBACKPacket(Packet as TMQTTPUBACKPacket);
               ptPUBREC      : HandlePUBRECPacket(Packet as TMQTTPUBRECPacket);
               ptPUBCOMP     : HandlePUBCOMPPacket(Packet as TMQTTPUBCOMPPacket);
             end
           else
-            if (State = ssNew) and (Packet is TMQTTCONNECTPacket) then
+            if (State = csNew) and (Packet is TMQTTCONNECTPacket) then
               HandleConnectPacket(Packet as TMQTTConnectPacket)
             else
               Bail(MQTT_ERROR_NOT_CONNECTED);
@@ -810,7 +760,7 @@ var
   X: Integer;
   C: TMQTTServerConnection;
 begin
-  Assert(State = ssConnecting);
+  Assert(State = csConnecting);
 
   // See if a return code has already been set by the parser.
   Result := APacket.ReturnCode;
@@ -883,7 +833,7 @@ end;
 
 function TMQTTServerConnection.InitSessionState(APacket: TMQTTCONNECTPacket): Boolean;
 begin
-  Assert(State=ssConnecting);
+  Assert(State=csConnecting);
   // Retrieve existing session, if any
   FSession := Server.Sessions.Find(APacket.ClientID);
   if Assigned(FSession) then
@@ -926,8 +876,8 @@ var
   ReturnCode     : Byte;
   Reply          : TMQTTCONNACKPacket;
 begin
-  Assert(State = ssNew);
-  FState := ssConnecting;
+  Assert(State = csNew);
+  FState := csConnecting;
   ReturnCode := InitNetworkConnection(APacket);
 
   if ReturnCode <> MQTT_CONNACK_SUCCESS then
@@ -1024,16 +974,16 @@ end;
 
 procedure TMQTTServerConnection.SendWillMessage;
 begin
-  Assert(State = ssDisconnecting);
+  Assert(State = csDisconnecting);
   if WillMessage.Enabled then
     begin
       Log.Send(mtInfo,'Sending Will Message');
       Publish(WillMessage.Topic,WillMessage.Message,WillMessage.QOS,WillMessage.Retain,False);
       if WillMessage.QOS = qtAT_MOST_ONCE then
-        FState := ssDisconnected;
+        FState := csDisconnected;
     end
   else
-    FState := ssDisconnected;
+    FState := csDisconnected;
 end;
 
 procedure TMQTTServerConnection.HandleSUBSCRIBEPacket(APacket: TMQTTSUBSCRIBEPacket);
@@ -1084,7 +1034,7 @@ begin
   Session.FPacketIDManager.ReleaseID(APacket.PacketID);
   Session.FWaitingForAck.Remove(ptPUBLISH,APacket.PacketID);
   // Disconnects the connection after the willmessage has been sent
-  if State = ssDisconnecting then
+  if State = csDisconnecting then
     Disconnected;
 end;
 
@@ -1135,7 +1085,7 @@ begin
   Session.FPacketIDManager.ReleaseID(APacket.PacketID);
   Session.FWaitingForAck.Remove(ptPUBREL,APacket.PacketID);
   // Disconnects the connection after the willmessage has been sent
-  if State = ssDisconnecting then
+  if State = csDisconnecting then
     Disconnected;
 end;
 
@@ -1182,7 +1132,7 @@ end;
 
 procedure TMQTTServerConnection.HandlePUBLISHPacket(APacket: TMQTTPUBLISHPacket);
 begin
-  Log.Send(mtDebug,'Received PUBLISH (PacketID=%d,QOS=%s,Retain=%s)',[APacket.PacketID,MQTTQOSTypeNames[APacket.QOS],BoolToStr(APacket.Retain,'True','False')]);
+  Log.Send(mtDebug,'Received PUBLISH (PacketID=%d,QOS=%s,Retain=%s)',[APacket.PacketID,GetQOSTypeName(APacket.QOS),BoolToStr(APacket.Retain,'True','False')]);
   case APacket.QOS of
     qtAT_MOST_ONCE  : Server.DispatchMessage(Session,APacket.Topic,APacket.Data,APacket.QOS,APacket.Retain);
     qtAT_LEAST_ONCE : HandlePUBLISHPacket1(APacket);
@@ -1441,7 +1391,7 @@ begin
           if Message.QOS = qtAT_MOST_ONCE then
             begin
               // If this is a QoS0 message, send it right away
-              if Assigned(Connection) and (Connection.State <> ssDisconnected) then
+              if Assigned(Connection) and (Connection.State <> csDisconnected) then
                 Connection.Publish(Message.Topic,Message.Data,Subscription.QOS,False);
             end
           else
@@ -1465,9 +1415,9 @@ begin
   for I := FWaitingForAck.Count - 1 downto 0 do
     begin
       Packet := FWaitingForAck[I];
-      if Packet.SecondsInQueue = MQTT_RESEND_PACKET_TIMEOUT then
+      if Packet.SecondsInQueue >= Server.ResendPacketTimeout then
         begin
-          if Packet.ResendCount < MQTT_MAX_PACKET_RESEND_TRIES then
+          if Packet.ResendCount < Server.MaxResendAttempts then
             begin
               if Packet.PacketType = ptPUBLISH then
                 (Packet as TMQTTPUBLISHPacket).Duplicate := True;
@@ -1499,15 +1449,15 @@ begin
   for I := 0 to Subscriptions.Count - 1 do
     begin
       Sub := Subscriptions[I];
-      if Sub.Age < MQTT_MAX_SUBSCRIPTION_AGE then
+      if Sub.Age < Server.MaxSubscriptionAge then
         Sub.Age := Sub.Age + 1
       else
-        if not Sub.Persistent then
+        if Server.MaxSubscriptionAge > 0 then
           Subscriptions.Delete(I);
     end;
   inc(FAge);
   // If there are no subscriptions remaining and the session is older than the maximum session age then destroy it.
-  if (Subscriptions.Count = 0) and (FAge > MQTT_MAX_SESSION_AGE) then
+  if (Subscriptions.Count = 0) and (Server.MaxSessionAge > 0) and (FAge > Server.MaxSessionAge) then
     begin
       Server.Sessions.Remove(Self);
       Destroy;
@@ -1529,4 +1479,3 @@ begin
 end;
 
 end.
-
