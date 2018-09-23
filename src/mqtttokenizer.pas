@@ -45,7 +45,50 @@ type
       property Items[Index: Integer]: TMQTTToken read GetItem; default;
   end;
 
+function CheckTopicMatchesFilter(Topic: TMQTTTokenizer; Filter: TMQTTTokenizer): Boolean;
+
 implementation
+
+function CheckTopicMatchesFilter(Topic: TMQTTTokenizer; Filter: TMQTTTokenizer): Boolean;
+var
+  I: Integer;
+  FilterToken: TMQTTToken;
+  TopicToken: TMQTTToken;
+begin
+  Result := False;
+  for I := 0 to Filter.Count - 1 do
+    begin
+      FilterToken := Filter[I];
+      if I >= Topic.Count then
+        begin
+          Result := Result and (FilterToken.Kind = tkMultiLevel);
+          Exit;
+        end;
+      TopicToken  := Topic[I];
+      if FilterToken.Kind = tkInvalid then
+        begin
+          Result := False;
+          Exit;
+        end
+      else
+      if FilterToken.Kind = tkValid then
+        begin
+          Result := FilterToken.Text = TopicToken.Text;
+          if not Result then Exit;
+        end
+      else
+      if FilterToken.Kind = tkMultilevel then
+        begin
+          Result := True;
+          Exit;
+        end
+      else
+      if FilterToken.Kind = tkSingleLevel then
+        Result := True;
+    end;
+  if Filter.Count < Topic.Count then
+    Result := Result and (Filter[Filter.Count-1].Kind = tkMultiLevel);
+end;
 
 { TMQTTToken }
 

@@ -23,7 +23,6 @@ type
       constructor Create(AFilter: UTF8String = ''; AQOS: TMQTTQOSType = qtAT_MOST_ONCE);
       destructor Destroy; override;
       procedure Assign(ASource: TMQTTSubscription);
-      function IsMatch(ATokens: TMQTTTokenizer): Boolean;
       property QOS: TMQTTQOSType read FQOS write FQOS;
       property Filter: UTF8String read FFilter write SetFilter;
       property Tokens: TMQTTTokenizer read GetTokens;
@@ -98,49 +97,6 @@ begin
       if Assigned(FTokens) then
         FreeAndNil(FTokens);
     end;
-end;
-
-function TMQTTSubscription.IsMatch(ATokens: TMQTTTokenizer): Boolean;
-var
-  I: Integer;
-  FilterToken: TMQTTToken;
-  TopicToken: TMQTTToken;
-begin
-  Result := False;
-  for I := 0 to Tokens.Count - 1 do
-    begin
-      FilterToken := Tokens[I];
-      if I >= ATokens.Count then
-        begin
-          Result := Result and (FilterToken.Kind = tkMultiLevel);
-          Exit;
-        end;
-      TopicToken  := ATokens[I];
-      if FilterToken.Kind = tkInvalid then
-        begin
-          Result := False;
-          Exit;
-        end
-      else
-      if FilterToken.Kind = tkValid then
-        begin
-          Result := FilterToken.Text = TopicToken.Text;
-          if not Result then Exit;
-        end
-      else
-      if FilterToken.Kind = tkMultilevel then
-        begin
-          Result := True;
-          Exit;
-        end
-      else
-      if FilterToken.Kind = tkSingleLevel then
-        begin
-          Result := True;
-        end;
-    end;
-  if Tokens.Count < ATokens.Count then
-    Result := Result and (Tokens[Tokens.Count-1].Kind = tkMultiLevel);
 end;
 
 { TMQTTSubscriptionList }

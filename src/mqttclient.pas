@@ -5,15 +5,17 @@ unit mqttclient;
 interface
 
 uses
-  Classes, SysUtils, Buffers, Logging,
+  Classes, SysUtils, Buffers, Logging, MQTTTokenizer,
   MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions;
 
 type
   TMQTTClient = class;
+  TMQTTClientSubscription = class;
 
   TMQTTClientSendDataEvent = procedure (AClient: TMQTTClient) of object;
   TMQTTClientReceiveMessageEvent = procedure (AClient: TMQTTClient; Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean) of object;
   TMQTTClientErrorEvent = procedure (AClient: TMQTTClient; ErrCode: Word; ErrMsg: String) of object;
+  TMQTTClientSubscriptionReceiveMessageEvent = procedure (Subscription: TMQTTClientSubscription; Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean) of object;
 
   { TMQTTClientThread }
 
@@ -35,12 +37,12 @@ type
       FState               : TMQTTConnectionState;
       FPacketIDManager     : TMQTTPacketIDManager;
       FSubscriptions       : TMQTTSubscriptionList;
+      FClientSubscriptions : TList;
       FSendBuffer          : TBuffer;
       FRecvBuffer          : TBuffer;
       FResendPacketTimeout : Word;
       FMaxResendAttempts   : Byte;
       // Packet Queues
-      //FPendingTransmission : TMQTTMessageList; // QoS 1 and QoS 2 messages pending transmission to the Server.
       FWaitingForAck       : TMQTTPacketQueue; // QoS 1 and QoS 2 messages which have been sent to the Server, but have not been completely acknowledged.
       FPendingReceive      : TMQTTPacketQueue; // QoS 2 messages which have been received from the Server, but have not been completely acknowledged.       // Attributes
       FWillMessage         : TMQTTWillMessage;
@@ -98,7 +100,7 @@ type
       procedure Loaded; override;
       procedure InitSession; virtual;
       procedure SendData; virtual;
-      procedure ReceiveMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean); virtual;
+      procedure ReceiveMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean); virtual;
       property PacketIDManager: TMQTTPacketIDManager read FPacketIDManager;
     public
       Log: TLogDispatcher;
@@ -140,6 +142,32 @@ type
       property OnSendData: TMQTTClientSendDataEvent read FOnSendData write FOnSendData;
       property OnReceiveMessage: TMQTTClientReceiveMessageEvent read FOnReceiveMessage write FOnReceiveMessage;
       property OnSubscriptionsChanged: TNotifyEvent read FOnSubscriptionsChanged write FOnSubscriptionsChanged;
+  end;
+
+  { TMQTTClientSubscription }
+
+  TMQTTClientSubscription = class(TComponent)
+    private
+      FFilter: UTF8String;
+      FTokenizer: TMQTTTokenizer;
+      FQOS: TMQTTQOSType;
+      FClient: TMQTTClient;
+      FOnMessage: TMQTTClientSubscriptionReceiveMessageEvent;
+      procedure SetClient(AValue: TMQTTClient);
+      procedure SetFilter(AValue: UTF8String);
+    protected
+      procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+      procedure HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean); virtual;
+    public
+      constructor Create(AOwner: TComponent); override;
+      destructor Destroy; override;
+      property Tokens: TMQTTTokenizer read FTokenizer;
+    published
+      property Filter: UTF8String read FFilter write SetFilter;
+      property QOS: TMQTTQOSType read FQOS write FQOS default qtAT_MOST_ONCE;
+      property Client: TMQTTClient read FClient write SetClient;
+      //
+      property OnMessage: TMQTTClientSubscriptionReceiveMessageEvent read FOnMessage write FOnMessage;
   end;
 
 implementation
@@ -189,7 +217,7 @@ begin
   FRecvBuffer          := TBuffer.Create;
   FPacketIDManager     := TMQTTPacketIDManager.Create;
   FSubscriptions       := TMQTTSubscriptionList.Create;
-  //FPendingTransmission := TMQTTMessageList.Create;
+  FClientSubscriptions := TList.Create;
   FWaitingForAck       := TMQTTPacketQueue.Create;
   FPendingReceive      := TMQTTPacketQueue.Create;
   FWillMessage         := TMQTTWillMessage.Create;
@@ -209,8 +237,8 @@ begin
   FThread.Terminate;
   FWillMessage.Free;
   FWaitingForAck.Free;
-  //FPendingTransmission.Free;
   FPendingReceive.Free;
+  FClientSubscriptions.Free;
   FSubscriptions.Free;
   FPacketIDManager.Free;
   FSendBuffer.Free;
@@ -222,7 +250,6 @@ end;
 
 procedure TMQTTClient.Reset;
 begin
-  //FPendingTransmission.Clear;
   FPendingReceive.Clear;
   FWaitingForAck.Clear;
   FPacketIDManager.Reset;
@@ -398,7 +425,6 @@ procedure TMQTTClient.InitSession;
 begin
   FSubscriptions.Clear;
   FWaitingForAck.Clear;
-  //FPendingTransmission.Clear;
   FPendingReceive.Clear;
   if Assigned(FOnInitSession) then
     FOnInitSession(Self);
@@ -741,23 +767,28 @@ begin
     end;
 end;
 
-{procedure TMQTTClient.SendPendingMessages;
+procedure TMQTTClient.ReceiveMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean);
 var
+  Tokens: TMQTTTokenizer;
   I: Integer;
-  M: TMQTTMessage;
+  Subscription: TMQTTClientSubscription;
 begin
-  for I := 0 to FPendingTransmission.Count - 1 do
+  if FClientSubscriptions.Count > 0 then
     begin
-      M := FPendingTransmission[I];
-      Publish(M.Topic,M.Data,M.QOS,M.Retain);
+      Tokens := TMQTTTokenizer.Create(Topic,False);
+      try
+        for I := 0 to FClientSubscriptions.Count - 1 do
+          begin
+            Subscription := TMQTTClientSubscription(FClientSubscriptions[I]);
+            if CheckTopicMatchesFilter(Tokens,Subscription.Tokens) then
+              Subscription.HandleMessage(Topic,Data,QOS,Retained);
+          end;
+      finally
+        Tokens.Free;
+      end;
     end;
-  FPendingTransmission.Clear;
-end;}
-
-procedure TMQTTClient.ReceiveMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean);
-begin
   if Assigned(FOnReceiveMessage) then
-    FOnReceiveMessage(Self,Topic,Data,QOS,Retain);
+    FOnReceiveMessage(Self,Topic,Data,QOS,Retained);
 end;
 
 procedure TMQTTClient.Publish(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean; Duplicate: Boolean);
@@ -913,6 +944,64 @@ begin
       FPacketIDManager.ReleaseID(APacket.PacketID);
       FWaitingForAck.Remove(ptPUBREL,APacket.PacketID);
     end;
+end;
+
+{ TMQTTClientSubscription }
+
+constructor TMQTTClientSubscription.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FQOS := qtAT_MOST_ONCE;
+end;
+
+destructor TMQTTClientSubscription.Destroy;
+begin
+  if Assigned(FTokenizer) then
+    FreeAndNil(FTokenizer);
+  if Assigned(FClient) then
+    begin
+      FClient.FClientSubscriptions.Remove(Self);
+      FClient.RemoveFreeNotification(Self);
+    end;
+  inherited Destroy;
+end;
+
+procedure TMQTTClientSubscription.SetClient(AValue: TMQTTClient);
+begin
+  if FClient=AValue then Exit;
+  if Assigned(FClient) then
+    begin
+      FClient.FClientSubscriptions.Remove(Self);
+      FClient.RemoveFreeNotification(Self);
+    end;
+  FClient:=AValue;
+  if Assigned(FClient) then
+    begin
+      FClient.FClientSubscriptions.Add(Self);
+      FClient.FreeNotification(Self);
+    end;
+end;
+
+procedure TMQTTClientSubscription.SetFilter(AValue: UTF8String);
+begin
+  if Assigned(FTokenizer) then
+    FreeAndNil(FTokenizer);
+  FFilter := AValue;
+  if FFilter > '' then
+    FTokenizer := TMQTTTokenizer.Create(AValue,True);
+end;
+
+procedure TMQTTClientSubscription.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+  if (AComponent = FClient) and (Operation = opRemove) then
+    FClient := nil;
+  inherited Notification(AComponent, Operation);
+end;
+
+procedure TMQTTClientSubscription.HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean);
+begin
+  if Assigned(FOnMessage) then
+    FOnMessage(Self,Topic,Data,QOS,Retained);
 end;
 
 end.

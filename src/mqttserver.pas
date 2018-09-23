@@ -277,6 +277,9 @@ var
 
 implementation
 
+uses
+  MQTTTokenizer;
+
 { TMQTTServerThread }
 
 procedure TMQTTServerThread.OnTimer;
@@ -524,14 +527,14 @@ end;
 procedure TMQTTServer.SendRetainedMessages(Session: TMQTTSession; Subscription: TMQTTSubscription);
 var
   I: Integer;
-  M: TMQTTMessage;
+  Message: TMQTTMessage;
 begin
   for I := 0 to RetainedMessages.Count - 1 do
     begin
-      M := RetainedMessages[I];
-      M.Retain := True;
-      if Subscription.IsMatch(M.Tokens) then
-        Session.FPendingTransmission.Add(M.Clone);
+      Message := RetainedMessages[I];
+      Message.Retain := True;
+      if CheckTopicMatchesFilter(Message.Tokens,Subscription.Tokens) then
+        Session.FPendingTransmission.Add(Message.Clone);
     end;
 end;
 
@@ -1385,7 +1388,7 @@ begin
   for I := 0 to Subscriptions.Count - 1 do
     begin
       Subscription := Subscriptions[I];
-      if Subscription.IsMatch(Message.Tokens) then
+      if CheckTopicMatchesFilter(Message.Tokens,Subscription.Tokens) then
         begin
           Subscription.Age := 0;
           if Message.QOS = qtAT_MOST_ONCE then
