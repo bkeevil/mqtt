@@ -11,6 +11,7 @@ uses
 type
   TMQTTClient = class;
   TMQTTClientSubscription = class;
+  TMQTTClientSubscriptions = class;
 
   TMQTTClientSendDataEvent = procedure (AClient: TMQTTClient) of object;
   TMQTTClientReceiveMessageEvent = procedure (AClient: TMQTTClient; Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean) of object;
@@ -146,28 +147,46 @@ type
 
   { TMQTTClientSubscription }
 
-  TMQTTClientSubscription = class(TComponent)
+  TMQTTClientSubscription = class(TCollectionItem)
     private
       FFilter: UTF8String;
       FTokenizer: TMQTTTokenizer;
       FQOS: TMQTTQOSType;
-      FClient: TMQTTClient;
       FOnMessage: TMQTTClientSubscriptionReceiveMessageEvent;
-      procedure SetClient(AValue: TMQTTClient);
+      function GetClient: TMQTTClient;
       procedure SetFilter(AValue: UTF8String);
     protected
-      procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-      procedure HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean); virtual;
+      function GetDisplayName: String; override;
+      procedure SetDisplayName(const Value: String); override;
+      //procedure HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean); virtual;
     public
-      constructor Create(AOwner: TComponent); override;
+      constructor Create(ACollection: TCollection); override;
       destructor Destroy; override;
-      property Tokens: TMQTTTokenizer read FTokenizer;
+      procedure Assign(Source: TPersistent); override;
     published
       property Filter: UTF8String read FFilter write SetFilter;
       property QOS: TMQTTQOSType read FQOS write FQOS default qtAT_MOST_ONCE;
-      property Client: TMQTTClient read FClient write SetClient;
+      property Client: TMQTTClient read GetClient;
+      property Tokens: TMQTTTokenizer read FTokenizer;
       //
       property OnMessage: TMQTTClientSubscriptionReceiveMessageEvent read FOnMessage write FOnMessage;
+  end;
+
+  { TMQTTClientSubscriptions }
+
+  TMQTTClientSubscriptions = class(TCollection)
+    private
+      FClient: TMQTTClient;
+      function GetItems(Index: Integer): TMQTTClientSubscription;
+      procedure SetItems(Index: Integer; AValue: TMQTTClientSubscription);
+    public
+      constructor Create(AClient: TMQTTClient);
+      function GetOwner: TPersistent; override;
+      function Add: TMQTTClientSubscription;
+      function Insert(Index: Integer): TMQTTClientSubscription;
+      function FindItemID(ID: Integer): TMQTTClientSubscription;
+      property Client: TMQTTClient read FClient;
+      property Items[Index: Integer]: TMQTTClientSubscription read GetItems write SetItems; default;
   end;
 
 implementation
@@ -781,7 +800,8 @@ begin
           begin
             Subscription := TMQTTClientSubscription(FClientSubscriptions[I]);
             if CheckTopicMatchesFilter(Tokens,Subscription.Tokens) then
-              Subscription.HandleMessage(Topic,Data,QOS,Retained);
+              if Assigned(Subscription.OnMessage) then
+                Subscription.OnMessage(Subscription,Topic,Data,QOS,Retained);
           end;
       finally
         Tokens.Free;
@@ -948,9 +968,10 @@ end;
 
 { TMQTTClientSubscription }
 
-constructor TMQTTClientSubscription.Create(AOwner: TComponent);
+constructor TMQTTClientSubscription.Create(ACollection: TCollection);
 begin
-  inherited Create(AOwner);
+  if Assigned(ACollection) then
+    inherited Create(ACollection);
   FQOS := qtAT_MOST_ONCE;
 end;
 
@@ -958,28 +979,19 @@ destructor TMQTTClientSubscription.Destroy;
 begin
   if Assigned(FTokenizer) then
     FreeAndNil(FTokenizer);
-  if Assigned(FClient) then
-    begin
-      FClient.FClientSubscriptions.Remove(Self);
-      FClient.RemoveFreeNotification(Self);
-    end;
   inherited Destroy;
 end;
 
-procedure TMQTTClientSubscription.SetClient(AValue: TMQTTClient);
+procedure TMQTTClientSubscription.Assign(Source: TPersistent);
 begin
-  if FClient=AValue then Exit;
-  if Assigned(FClient) then
+  if (Source is TMQTTClientSubscription) then
     begin
-      FClient.FClientSubscriptions.Remove(Self);
-      FClient.RemoveFreeNotification(Self);
-    end;
-  FClient:=AValue;
-  if Assigned(FClient) then
-    begin
-      FClient.FClientSubscriptions.Add(Self);
-      FClient.FreeNotification(Self);
-    end;
+      SetFilter((Source as TMQTTClientSubscription).Filter);
+      FQOS := (Source as TMQTTClientSubscription).QOS;
+      FOnMessage := (Source as TMQTTClientSubscription).OnMessage;
+    end
+  else
+    inherited Assign(Source);
 end;
 
 procedure TMQTTClientSubscription.SetFilter(AValue: UTF8String);
@@ -991,17 +1003,64 @@ begin
     FTokenizer := TMQTTTokenizer.Create(AValue,True);
 end;
 
-procedure TMQTTClientSubscription.Notification(AComponent: TComponent; Operation: TOperation);
+function TMQTTClientSubscription.GetDisplayName: String;
 begin
-  if (AComponent = FClient) and (Operation = opRemove) then
-    FClient := nil;
-  inherited Notification(AComponent, Operation);
+  Result := FFilter;
+  end;
+
+procedure TMQTTClientSubscription.SetDisplayName(const Value: String);
+begin
+  FFilter := Value;
 end;
 
-procedure TMQTTClientSubscription.HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean);
+function TMQTTClientSubscription.GetClient: TMQTTClient;
+begin
+  Result := (Collection as TMQTTClientSubscriptions).Client;
+end;
+
+{procedure TMQTTClientSubscription.HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean);
 begin
   if Assigned(FOnMessage) then
     FOnMessage(Self,Topic,Data,QOS,Retained);
+end; }
+
+{ TMQTTClientSubscriptions }
+
+constructor TMQTTClientSubscriptions.Create(AClient: TMQTTClient);
+begin
+  inherited Create(TMQTTClientSubscription);
+  FClient := AClient;
+  PropName := 'Subscriptions';
+end;
+
+function TMQTTClientSubscriptions.GetOwner: TPersistent;
+begin
+  Result := FClient;
+end;
+
+function TMQTTClientSubscriptions.Add: TMQTTClientSubscription;
+begin
+  Result := inherited Add as TMQTTClientSubscription;
+end;
+
+function TMQTTClientSubscriptions.Insert(Index: Integer): TMQTTClientSubscription;
+begin
+  Result := inherited Insert(Index) as TMQTTClientSubscription;
+end;
+
+function TMQTTClientSubscriptions.FindItemID(ID: Integer): TMQTTClientSubscription;
+begin
+  Result := inherited FindItemID(ID) as TMQTTClientSubscription;
+end;
+
+function TMQTTClientSubscriptions.GetItems(Index: Integer): TMQTTClientSubscription;
+begin
+  Result := TMQTTClientSubscription(inherited Items[Index]);
+end;
+
+procedure TMQTTClientSubscriptions.SetItems(Index: Integer; AValue: TMQTTClientSubscription);
+begin
+  Items[Index].Assign(AValue);
 end;
 
 end.
