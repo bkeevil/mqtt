@@ -440,17 +440,28 @@ procedure TMQTTClient.InitSession;
 var
   X: Integer;
   S: TMQTTClientSubscription;
+  L: TMQTTSubscriptionList;
 begin
   FSubscriptions.Clear;
   FWaitingForAck.Clear;
   FPendingReceive.Clear;
   if Assigned(FOnInitSession) then
     FOnInitSession(Self);
-  for X := 0 to Subscriptions.Count - 1 do
+  if Subscriptions.Count > 0 then
     begin
-      S := Subscriptions[X];
-      if Assigned(S) then
-
+      L := TMQTTSubscriptionList.Create;
+      try
+        for X := 0 to Subscriptions.Count - 1 do
+          begin
+            S := Subscriptions[X];
+            if Assigned(S) then
+              L.New(S.Filter,S.QOS);
+          end;
+        if not Subscribe(L) then
+          Log.Send(mtError,'Could not register mqtt subscriptions');
+      finally
+        L.Free;
+      end;
     end;
 end;
 
