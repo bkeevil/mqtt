@@ -37,8 +37,7 @@ type
       FSocket              : TObject;
       FState               : TMQTTConnectionState;
       FPacketIDManager     : TMQTTPacketIDManager;
-      FSubscriptions       : TMQTTSubscriptionList;
-      FClientSubscriptions : TList;
+      FSubscriptions       : TMQTTClientSubscriptions;
       FSendBuffer          : TBuffer;
       FRecvBuffer          : TBuffer;
       FResendPacketTimeout : Word;
@@ -66,7 +65,6 @@ type
       FOnError                : TMQTTClientErrorEvent;
       FOnSendData             : TMQTTClientSendDataEvent;
       FOnReceiveMessage       : TMQTTClientReceiveMessageEvent;
-      FOnSubscriptionsChanged : TNotifyEvent;
       // Timer Methods
       procedure HandleTimer;
       procedure HandleConnectTimer;
@@ -93,6 +91,7 @@ type
       procedure SetPingInterval(AValue: Word);
       // Methods to send packets
       procedure Ping;
+      procedure SetSubscriptions(AValue: TMQTTClientSubscriptions);
       procedure SetWillMessage(AValue: TMQTTWillMessage);
     protected
       // Event Handlers
@@ -123,13 +122,13 @@ type
       property RecvBuffer: TBuffer read FRecvBuffer;
       property Socket: TObject read FSocket write FSocket;
       property State: TMQTTConnectionState read FState;
-      property Subscriptions: TMQTTSubscriptionList read FSubscriptions;
     published
       property ResendPacketTimeout: Word read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
       property MaxResendAttmpts: Byte read FMaxResendAttempts write FMaxResendAttempts default 3;
       property ClientID: UTF8String read FClientID write SetClientID;
       property Username: UTF8String read FUsername write FUsername;
       property Password: AnsiString read FPassword write FPassword;
+      property Subscriptions: TMQTTClientSubscriptions read FSubscriptions write SetSubscriptions;
       property WillMessage: TMQTTWillMessage read FWillMessage write SetWillMessage;
       property CleanSession: Boolean read FCleanSession write FCleanSession default True;
       property KeepAlive: Word read FKeepAlive write SetKeepAlive default 30;
@@ -142,7 +141,6 @@ type
       property OnError: TMQTTClientErrorEvent read FOnError write FOnError;
       property OnSendData: TMQTTClientSendDataEvent read FOnSendData write FOnSendData;
       property OnReceiveMessage: TMQTTClientReceiveMessageEvent read FOnReceiveMessage write FOnReceiveMessage;
-      property OnSubscriptionsChanged: TNotifyEvent read FOnSubscriptionsChanged write FOnSubscriptionsChanged;
   end;
 
   { TMQTTClientSubscription }
@@ -235,8 +233,7 @@ begin
   FSendBuffer          := TBuffer.Create;
   FRecvBuffer          := TBuffer.Create;
   FPacketIDManager     := TMQTTPacketIDManager.Create;
-  FSubscriptions       := TMQTTSubscriptionList.Create;
-  FClientSubscriptions := TList.Create;
+  FSubscriptions       := TMQTTClientSubscriptions.Create(Self);
   FWaitingForAck       := TMQTTPacketQueue.Create;
   FPendingReceive      := TMQTTPacketQueue.Create;
   FWillMessage         := TMQTTWillMessage.Create;
@@ -257,7 +254,6 @@ begin
   FWillMessage.Free;
   FWaitingForAck.Free;
   FPendingReceive.Free;
-  FClientSubscriptions.Free;
   FSubscriptions.Free;
   FPacketIDManager.Free;
   FSendBuffer.Free;
@@ -441,12 +437,21 @@ begin
 end;
 
 procedure TMQTTClient.InitSession;
+var
+  X: Integer;
+  S: TMQTTClientSubscription;
 begin
   FSubscriptions.Clear;
   FWaitingForAck.Clear;
   FPendingReceive.Clear;
   if Assigned(FOnInitSession) then
     FOnInitSession(Self);
+  for X := 0 to Subscriptions.Count - 1 do
+    begin
+      S := Subscriptions[X];
+      if Assigned(S) then
+
+    end;
 end;
 
 procedure TMQTTClient.Disconnect;
@@ -609,6 +614,11 @@ begin
     end;
 end;
 
+procedure TMQTTClient.SetSubscriptions(AValue: TMQTTClientSubscriptions);
+begin
+  FSubscriptions.Assign(AValue);
+end;
+
 procedure TMQTTClient.HandlePINGRESPPacket;
 begin
   Log.Send(mtDebug,'Received PINGRESP');
@@ -652,9 +662,10 @@ begin
             begin
               FWaitingForAck.Delete(I);
               ProcessReturnCodes((Packet as TMQTTSUBSCRIBEPacket).Subscriptions,APacket.ReturnCodes);
-              Subscriptions.MergeList((Packet as TMQTTSUBSCRIBEPacket).Subscriptions);
+              // Deprecated:
+              {Subscriptions.MergeList((Packet as TMQTTSUBSCRIBEPacket).Subscriptions);
               if Assigned(FOnSubscriptionsChanged) then
-                FOnSubscriptionsChanged(Self);
+                FOnSubscriptionsChanged(Self);}
               PacketIDManager.ReleaseID(Packet.PacketID);
               Packet.Free;
             end;
@@ -775,9 +786,10 @@ begin
           if (Packet.PacketType = ptUNSUBSCRIBE) and (Packet.PacketID = APacket.PacketID) then
             begin
               FWaitingForAck.Delete(I);
-              Subscriptions.DeleteList((Packet as TMQTTUNSUBSCRIBEPacket).Subscriptions);
+              // Deprecated:
+              {Subscriptions.DeleteList((Packet as TMQTTUNSUBSCRIBEPacket).Subscriptions);
               if Assigned(FOnSubscriptionsChanged) then
-                FOnSubscriptionsChanged(Self);
+                FOnSubscriptionsChanged(Self);}
               PacketIDManager.ReleaseID(Packet.PacketID);
               Packet.Free;
               Break;
@@ -792,13 +804,13 @@ var
   I: Integer;
   Subscription: TMQTTClientSubscription;
 begin
-  if FClientSubscriptions.Count > 0 then
+  if FSubscriptions.Count > 0 then
     begin
       Tokens := TMQTTTokenizer.Create(Topic,False);
       try
-        for I := 0 to FClientSubscriptions.Count - 1 do
+        for I := 0 to FSubscriptions.Count - 1 do
           begin
-            Subscription := TMQTTClientSubscription(FClientSubscriptions[I]);
+            Subscription := TMQTTClientSubscription(FSubscriptions[I]);
             if CheckTopicMatchesFilter(Tokens,Subscription.Tokens) then
               if Assigned(Subscription.OnMessage) then
                 Subscription.OnMessage(Subscription,Topic,Data,QOS,Retained);

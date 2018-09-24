@@ -36,7 +36,6 @@
         <CompilerMessages>
           <IgnoredMessages idx5024="True"/>
         </CompilerMessages>
-        <CreateMakefileOnBuild Value="True"/>
       </Other>
     </CompilerOptions>
     <Description Value="MQTT client and server components that are independent of a specific network technology"/>
