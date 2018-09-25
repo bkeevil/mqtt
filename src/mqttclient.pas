@@ -241,7 +241,6 @@ begin
   FPingInterval        := 15;
   FPingIntRemaining    := FPingInterval;
   FCleanSession        := True;
-
   FThread                 := TMQTTClientThread.Create(False);
   FThread.FreeOnTerminate := True;
   FThread.FClient         := Self;
@@ -442,7 +441,6 @@ var
   S: TMQTTClientSubscription;
   L: TMQTTSubscriptionList;
 begin
-  FSubscriptions.Clear;
   FWaitingForAck.Clear;
   FPendingReceive.Clear;
   if Assigned(FOnInitSession) then
@@ -1053,7 +1051,6 @@ constructor TMQTTClientSubscriptions.Create(AClient: TMQTTClient);
 begin
   inherited Create(TMQTTClientSubscription);
   FClient := AClient;
-  PropName := 'Subscriptions';
 end;
 
 function TMQTTClientSubscriptions.GetOwner: TPersistent;
