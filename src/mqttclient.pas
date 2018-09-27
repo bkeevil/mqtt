@@ -117,6 +117,7 @@ type
       // Event Handlers
       procedure DataAvailable; virtual;
       // Properties
+      property Subscriptions: TMQTTClientSubscriptionList read FSubscriptions;
       property SendBuffer: TBuffer read FSendBuffer;
       property RecvBuffer: TBuffer read FRecvBuffer;
       property Socket: TObject read FSocket write FSocket;
@@ -127,7 +128,6 @@ type
       property ClientID: UTF8String read FClientID write SetClientID;
       property Username: UTF8String read FUsername write FUsername;
       property Password: AnsiString read FPassword write FPassword;
-      property Subscriptions: TMQTTClientSubscriptionList read FSubscriptions;
       property WillMessage: TMQTTWillMessage read FWillMessage write SetWillMessage;
       property CleanSession: Boolean read FCleanSession write FCleanSession default True;
       property KeepAlive: Word read FKeepAlive write SetKeepAlive default 30;
@@ -177,11 +177,11 @@ type
       constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
       procedure Assign(Source: TPersistent); override;
+      property Tokens: TMQTTTokenizer read FTokenizer;
     published
       property Filter: UTF8String read FFilter write SetFilter;
       property QOS: TMQTTQOSType read FQOS write FQOS default qtAT_MOST_ONCE;
       property Broker: TMQTTClient read GetBroker write SetBroker;
-      property Tokens: TMQTTTokenizer read FTokenizer;
       //
       property OnMessage: TMQTTClientSubscriptionReceiveMessageEvent read FOnMessage write FOnMessage;
   end;
@@ -1065,14 +1065,14 @@ begin
     begin
       if Assigned(FBroker) then
         begin
-          Broker.Subscriptions.Remove(Self);
-          Broker.RemoveFreeNotification(Self);
+          FBroker.FSubscriptions.Remove(Self);
+          FBroker.RemoveFreeNotification(Self);
         end;
       FBroker := AValue;
       if Assigned(FBroker) then
         begin
-          Broker.Subscriptions.Add(Self);
-          Broker.FreeNotification(Self);
+          FBroker.FSubscriptions.Add(Self);
+          FBroker.FreeNotification(Self);
         end;
     end;
 end;
