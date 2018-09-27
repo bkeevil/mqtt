@@ -5,13 +5,13 @@ unit mqttclient;
 interface
 
 uses
-  Classes, SysUtils, Buffers, Logging, MQTTTokenizer,
+  Classes, SysUtils, Contnrs, Buffers, Logging, MQTTTokenizer,
   MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions;
 
 type
   TMQTTClient = class;
   TMQTTClientSubscription = class;
-  TMQTTClientSubscriptions = class;
+  TMQTTClientSubscriptionList = class;
 
   TMQTTClientSendDataEvent = procedure (AClient: TMQTTClient) of object;
   TMQTTClientReceiveMessageEvent = procedure (AClient: TMQTTClient; Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean) of object;
@@ -37,7 +37,7 @@ type
       FSocket              : TObject;
       FState               : TMQTTConnectionState;
       FPacketIDManager     : TMQTTPacketIDManager;
-      FSubscriptions       : TMQTTClientSubscriptions;
+      FSubscriptions       : TMQTTClientSubscriptionList;
       FSendBuffer          : TBuffer;
       FRecvBuffer          : TBuffer;
       FResendPacketTimeout : Word;
@@ -91,7 +91,6 @@ type
       procedure SetPingInterval(AValue: Word);
       // Methods to send packets
       procedure Ping;
-      procedure SetSubscriptions(AValue: TMQTTClientSubscriptions);
       procedure SetWillMessage(AValue: TMQTTWillMessage);
     protected
       // Event Handlers
@@ -128,7 +127,7 @@ type
       property ClientID: UTF8String read FClientID write SetClientID;
       property Username: UTF8String read FUsername write FUsername;
       property Password: AnsiString read FPassword write FPassword;
-      property Subscriptions: TMQTTClientSubscriptions read FSubscriptions write SetSubscriptions;
+      property Subscriptions: TMQTTClientSubscriptionList read FSubscriptions;
       property WillMessage: TMQTTWillMessage read FWillMessage write SetWillMessage;
       property CleanSession: Boolean read FCleanSession write FCleanSession default True;
       property KeepAlive: Word read FKeepAlive write SetKeepAlive default 30;
@@ -143,51 +142,87 @@ type
       property OnReceiveMessage: TMQTTClientReceiveMessageEvent read FOnReceiveMessage write FOnReceiveMessage;
   end;
 
+  { TMQTTClientSubscriptionList }
+
+  TMQTTClientSubscriptionList = class(TObject)
+    private
+      FList: TObjectList;
+      function GetCount: Integer;
+      function GetItem(Index: Integer): TMQTTClientSubscription;
+    public
+      constructor Create;
+      destructor Destroy; override;
+      procedure Add(ASubscription: TMQTTClientSubscription);
+      procedure Remove(ASubscription: TMQTTClientSubscription);
+      property Count: Integer read GetCount;
+      property Items[Index: Integer]: TMQTTClientSubscription read GetItem; default;
+  end;
+
   { TMQTTClientSubscription }
 
-  TMQTTClientSubscription = class(TCollectionItem)
+  TMQTTClientSubscription = class(TComponent)
     private
+      FBroker: TMQTTClient;
       FFilter: UTF8String;
       FTokenizer: TMQTTTokenizer;
       FQOS: TMQTTQOSType;
       FOnMessage: TMQTTClientSubscriptionReceiveMessageEvent;
-      function GetClient: TMQTTClient;
+      function GetBroker: TMQTTClient;
+      procedure SetBroker(AValue: TMQTTClient);
       procedure SetFilter(AValue: UTF8String);
     protected
-      function GetDisplayName: String; override;
-      procedure SetDisplayName(const Value: String); override;
-      //procedure HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean); virtual;
+      procedure HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean); virtual;
+      procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     public
-      constructor Create(ACollection: TCollection); override;
+      constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
       procedure Assign(Source: TPersistent); override;
     published
       property Filter: UTF8String read FFilter write SetFilter;
       property QOS: TMQTTQOSType read FQOS write FQOS default qtAT_MOST_ONCE;
-      property Client: TMQTTClient read GetClient;
+      property Broker: TMQTTClient read GetBroker write SetBroker;
       property Tokens: TMQTTTokenizer read FTokenizer;
       //
       property OnMessage: TMQTTClientSubscriptionReceiveMessageEvent read FOnMessage write FOnMessage;
   end;
 
-  { TMQTTClientSubscriptions }
-
-  TMQTTClientSubscriptions = class(TCollection)
-    private
-      FClient: TMQTTClient;
-      function GetItems(Index: Integer): TMQTTClientSubscription;
-      procedure SetItems(Index: Integer; AValue: TMQTTClientSubscription);
-    public
-      constructor Create(AClient: TMQTTClient);
-      function GetOwner: TPersistent; override;
-      function Add: TMQTTClientSubscription;
-      function Insert(Index: Integer): TMQTTClientSubscription;
-      function FindItemID(ID: Integer): TMQTTClientSubscription;
-      property Client: TMQTTClient read FClient;
-      property Items[Index: Integer]: TMQTTClientSubscription read GetItems write SetItems; default;
-  end;
-
 implementation
+
+{ TMQTTClientSubscriptionList }
+
+constructor TMQTTClientSubscriptionList.Create;
+begin
+  inherited Create;
+  FList := TObjectList.Create(False);
+end;
+
+destructor TMQTTClientSubscriptionList.Destroy;
+begin
+  FList.Free;
+  inherited Destroy;
+end;
+
+function TMQTTClientSubscriptionList.GetItem(Index: Integer): TMQTTClientSubscription;
+begin
+  Result := FList[Index] as TMQTTClientSubscription;
+end;
+
+function TMQTTClientSubscriptionList.GetCount: Integer;
+begin
+  Result := FList.Count;
+end;
+
+procedure TMQTTClientSubscriptionList.Add(ASubscription: TMQTTClientSubscription);
+begin
+  // Ensure this is the only copy of this object in the list
+  if FList.IndexOf(ASubscription) = -1 then
+    FList.Add(ASubscription);
+end;
+
+procedure TMQTTClientSubscriptionList.Remove(ASubscription: TMQTTClientSubscription);
+begin
+  FList.Remove(ASubscription);
+end;
 
 { TMQTTClientThread }
 
@@ -233,7 +268,7 @@ begin
   FSendBuffer          := TBuffer.Create;
   FRecvBuffer          := TBuffer.Create;
   FPacketIDManager     := TMQTTPacketIDManager.Create;
-  FSubscriptions       := TMQTTClientSubscriptions.Create(Self);
+  FSubscriptions       := TMQTTClientSubscriptionList.Create;
   FWaitingForAck       := TMQTTPacketQueue.Create;
   FPendingReceive      := TMQTTPacketQueue.Create;
   FWillMessage         := TMQTTWillMessage.Create;
@@ -623,11 +658,6 @@ begin
     end;
 end;
 
-procedure TMQTTClient.SetSubscriptions(AValue: TMQTTClientSubscriptions);
-begin
-  FSubscriptions.Assign(AValue);
-end;
-
 procedure TMQTTClient.HandlePINGRESPPacket;
 begin
   Log.Send(mtDebug,'Received PINGRESP');
@@ -989,15 +1019,15 @@ end;
 
 { TMQTTClientSubscription }
 
-constructor TMQTTClientSubscription.Create(ACollection: TCollection);
+constructor TMQTTClientSubscription.Create(AOwner: TComponent);
 begin
-  if Assigned(ACollection) then
-    inherited Create(ACollection);
+  inherited Create(AOwner);
   FQOS := qtAT_MOST_ONCE;
 end;
 
 destructor TMQTTClientSubscription.Destroy;
 begin
+  Broker := nil;
   if Assigned(FTokenizer) then
     FreeAndNil(FTokenizer);
   inherited Destroy;
@@ -1024,63 +1054,40 @@ begin
     FTokenizer := TMQTTTokenizer.Create(AValue,True);
 end;
 
-function TMQTTClientSubscription.GetDisplayName: String;
+function TMQTTClientSubscription.GetBroker: TMQTTClient;
 begin
-  Result := FFilter;
-  end;
-
-procedure TMQTTClientSubscription.SetDisplayName(const Value: String);
-begin
-  FFilter := Value;
+  Result := FBroker as TMQTTClient;
 end;
 
-function TMQTTClientSubscription.GetClient: TMQTTClient;
+procedure TMQTTClientSubscription.SetBroker(AValue: TMQTTClient);
 begin
-  Result := (Collection as TMQTTClientSubscriptions).Client;
+  if (AValue <> FBroker) then
+    begin
+      if Assigned(FBroker) then
+        begin
+          Broker.Subscriptions.Remove(Self);
+          Broker.RemoveFreeNotification(Self);
+        end;
+      FBroker := AValue;
+      if Assigned(FBroker) then
+        begin
+          Broker.Subscriptions.Add(Self);
+          Broker.FreeNotification(Self);
+        end;
+    end;
 end;
 
-{procedure TMQTTClientSubscription.HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean);
+procedure TMQTTClientSubscription.HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean);
 begin
   if Assigned(FOnMessage) then
     FOnMessage(Self,Topic,Data,QOS,Retained);
-end; }
-
-{ TMQTTClientSubscriptions }
-
-constructor TMQTTClientSubscriptions.Create(AClient: TMQTTClient);
-begin
-  inherited Create(TMQTTClientSubscription);
-  FClient := AClient;
 end;
 
-function TMQTTClientSubscriptions.GetOwner: TPersistent;
+procedure TMQTTClientSubscription.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-  Result := FClient;
-end;
-
-function TMQTTClientSubscriptions.Add: TMQTTClientSubscription;
-begin
-  Result := inherited Add as TMQTTClientSubscription;
-end;
-
-function TMQTTClientSubscriptions.Insert(Index: Integer): TMQTTClientSubscription;
-begin
-  Result := inherited Insert(Index) as TMQTTClientSubscription;
-end;
-
-function TMQTTClientSubscriptions.FindItemID(ID: Integer): TMQTTClientSubscription;
-begin
-  Result := inherited FindItemID(ID) as TMQTTClientSubscription;
-end;
-
-function TMQTTClientSubscriptions.GetItems(Index: Integer): TMQTTClientSubscription;
-begin
-  Result := TMQTTClientSubscription(inherited Items[Index]);
-end;
-
-procedure TMQTTClientSubscriptions.SetItems(Index: Integer; AValue: TMQTTClientSubscription);
-begin
-  Items[Index].Assign(AValue);
+  if (Operation = opRemove) and (AComponent = Broker) then
+    Broker := nil;
+  inherited Notification(AComponent, Operation);
 end;
 
 end.
