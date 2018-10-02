@@ -44,6 +44,7 @@ type
 procedure TMQTTClockApplication.DoRun;
 var
   I: Integer;
+  N: TDateTime;
   CurrentTime: TSystemTime;
 begin
   I := 0;
@@ -60,19 +61,10 @@ begin
           inc(I);
           if I >= 9 then
             begin
-              DateTimeToSystemTime(Now,CurrentTime);
-              if CurrentTime.Day <> LastTime.Day then
-                begin
-                  Client.Publish('Clock/Year',IntToStr(CurrentTime.Year),qtAT_LEAST_ONCE,True);
-                  Client.Publish('Clock/Month',IntToStr(CurrentTime.Month),qtAT_LEAST_ONCE,True);
-                  Client.Publish('Clock/DayOfWeek',IntToStr(CurrentTime.DayOfWeek),qtAT_LEAST_ONCE,True);
-                  Client.Publish('Clock/Day',IntToStr(CurrentTime.Day),qtAT_LEAST_ONCE,True);
-                end;
+              N := Now;
+              DateTimeToSystemTime(N,CurrentTime);
               if CurrentTime.Minute <> LastTime.Minute then
-                begin
-                  Client.Publish('Clock/Hour',IntToStr(CurrentTime.Hour),qtAT_LEAST_ONCE,True);
-                  Client.Publish('Clock/Minute',IntToStr(CurrentTime.Minute),qtAT_LEAST_ONCE,True);
-                end;
+                Client.Publish('Clock/Timestamp',FormatDateTime('yyyy-mm-dd"T"hh:mm:ss',N),qtAT_MOST_ONCE,True);
               LastTime := CurrentTime;
               I := 0;
             end;
@@ -181,7 +173,6 @@ begin
   TCP.OnReceive := @TCPReceive;
   Client := TMQTTClient.Create(Self);
   Client.ClientID := 'Clock';
-  Client.PingInterval := 45;
   Client.CleanSession := True;
   Client.WillMessage.Enabled := True;
   Client.WillMessage.Topic := 'Clock/Active';
