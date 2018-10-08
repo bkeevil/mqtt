@@ -48,6 +48,7 @@ type
       procedure Delete(Index: Integer);
       procedure MergeList(AList: TMQTTSubscriptionList);
       procedure DeleteList(AList: TMQTTSubscriptionList);
+      function RemoveDuplicates: Integer;
       function RemoveInvalidSubscriptions: Integer;
       property Count: Integer read GetCount;
       property Items[Index: Integer]: TMQTTSubscription read GetItem; default;
@@ -170,11 +171,6 @@ begin
     end;
 end;
 
-{procedure TMQTTSubscriptionList.Add(ASubscription: TMQTTSubscription);
-begin
-  FList.Add(ASubscription);
-end;}
-
 procedure TMQTTSubscriptionList.Update(ASubscription: TMQTTSubscription);
 var
   O: TMQTTSubscription;
@@ -238,7 +234,7 @@ begin
           if not Assigned(S2) then
             S2 := New(S1.Filter,S1.QOS)
           else
-            S2.Assign(S1);
+            S1.Assign(S2);
         end;
     end;
 end;
@@ -265,6 +261,32 @@ begin
                 end;
           end
       end;
+end;
+
+function TMQTTSubscriptionList.RemoveDuplicates: Integer;
+var
+  X,Y,N: Integer;
+  S,R: TMQTTSubscription;
+begin
+  N := 0;
+  for X := Count - 1 downto 1 do
+    begin
+      S := Items[X];
+      for Y := X - 1 downto 0 do
+        begin
+          R := Items[Y];
+          if (S.Filter = R.Filter) then
+            begin
+              if ord(S.QOS) > ord(R.QOS) then
+                R.QOS := S.QOS;
+              S.Free;
+              Delete(X);
+              inc(N);
+              Break;
+            end;
+        end;
+    end;
+  Result := N;
 end;
 
 function TMQTTSubscriptionList.RemoveInvalidSubscriptions: Integer;

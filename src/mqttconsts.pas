@@ -4,7 +4,9 @@ unit mqttconsts;
 
 interface
 
-{ This file contains strings and a basic mechanism for localizing the component }
+{ This file contains strings and a basic mechanism for localizing the component.
+  If anyone wants error messages in another language they ought to be able to do
+  so by customizing this file. }
 
 uses
   Classes, SysUtils;
@@ -13,14 +15,10 @@ type
   TMQTTLanguagePack = (lpEnglish); // Add additional languages here
 
 var
-  MQTTLanguagePack: TMQTTLanguagePack = lpEnglish;
+  MQTTLanguagePack: TMQTTLanguagePack = lpEnglish; // The Default language pack
 
 type
   TMQTTConnectionState = (csNew,csConnecting,csConnected,csDisconnecting,csDisconnected);
-
-const
-  MQTT_CONNECTION_STATE_NAMES_ENG: array[TMQTTConnectionState] of String =
-    ('New','Connecting','Connected','Disconnecting','Disconnected');
 
 type
   //  Packet type
@@ -45,27 +43,6 @@ type
     ptReserved15      //        15
   );
 
-const
-  MQTT_PACKET_TYPE_NAMES_ENG : array [TMQTTPacketType] of string =
-  (
-    'BROKERCONNECT',	//      0	Broker request to connect to Broker
-    'CONNECT',          //	1	Client request to connect to Broker
-    'CONNACK',          //	2	Connect Acknowledgment
-    'PUBLISH',          //	3	Publish Packet
-    'PUBACK',           //	4	Publish Acknowledgment
-    'PUBREC',           //	5	Publish Received (assured delivery part 1)
-    'PUBREL',           //	6	Publish Release (assured delivery part 2)
-    'PUBCOMP',          //	7	Publish Complete (assured delivery part 3)
-    'SUBSCRIBE',        //	8	Client Subscribe request
-    'SUBACK',           //	9	Subscribe Acknowledgment
-    'UNSUBSCRIBE',      //      10	Client Unsubscribe request
-    'UNSUBACK',         //      11	Unsubscribe Acknowledgment
-    'PINGREQ',          //      12	PING Request
-    'PINGRESP',         //      13	PING Response
-    'DISCONNECT',       //      14	Client is Disconnecting
-    'Reserved15'        //      15
-  );
-
 type
   TMQTTQOSType =
   (
@@ -76,21 +53,13 @@ type
   );
 
 const
-  MQTT_QOS_TYPE_NAMES_ENG : array [TMQTTQOSType] of string =
-  (
-    'AT MOST ONCE (QOS0)',   //  0 At most once Fire and Forget        <=1
-    'AT LEAST ONCE (QOS1)',  //  1 At least once Acknowledged delivery >=1
-    'EXACTLY ONCE (QOS2)',   //  2 Exactly once Assured delivery       =1
-    'RESERVED'	             //  3	Reserved
-  );
-
   // CONNACK RETURN CODES
-  MQTT_CONNACK_SUCCESS                  = 0;
-  MQTT_CONNACK_UNACCEPTABLE_PROTOCOL    = 1;
-  MQTT_CONNACK_CLIENTID_REJECTED        = 2;
-  MQTT_CONNACK_SERVER_UNAVAILABLE       = 3;
-  MQTT_CONNACK_BAD_USERNAME_PASSWORD    = 4;
-  MQTT_CONNACK_NOT_AUTHORIZED           = 5;
+  MQTT_CONNACK_SUCCESS                    = 0;
+  MQTT_CONNACK_UNACCEPTABLE_PROTOCOL      = 1;
+  MQTT_CONNACK_CLIENTID_REJECTED          = 2;
+  MQTT_CONNACK_SERVER_UNAVAILABLE         = 3;
+  MQTT_CONNACK_BAD_USERNAME_PASSWORD      = 4;
+  MQTT_CONNACK_NOT_AUTHORIZED             = 5;
 
   // ERROR CODES
   MQTT_ERROR_NONE                         = 0;
@@ -124,12 +93,51 @@ const
   MQTT_ERROR_NOSUBSCRIPTIONSINSUBSCRIBE   = 200;
   MQTT_ERROR_UNKNOWN                      = 1000;
 
+{ Log Message ID Codes - Numbers are arbitrary but must be unique }
+
+const
+  LM_INVALID_SUBSCRIPTION_REMOVED         = 100;
+  LM_DUPLICATE_SUBSCRIPTION_REMOVED       = 101;
+  LM_COULD_NOT_REGISTER_SUBSCRIPTIONS     = 102;
+  LM_CLIENT_HAS_CONNECTED                 = 103;
+  LM_PACKET_UNACKNOWLEDGED_BY_SERVER      = 104;
+  LM_RESENDING_PACKET                     = 105;
+  LM_CLIENT_RESET                         = 106;
+
+function GetMQTTLogMessage(MessageCode: Word): String;
 function GetMQTTErrorMessage(ErrCode: Word): String;
 function GetConnectionStateName(ConnectionState: TMQTTConnectionState): String;
 function GetPacketTypeName(PacketType: TMQTTPacketType): String;
 function GetQOSTypeName(QOSType: TMQTTQOSType): String;
 
 implementation
+
+const
+  MQTT_CONNECTION_STATE_NAMES_ENG: array[TMQTTConnectionState] of String =
+    ('New','Connecting','Connected','Disconnecting','Disconnected');
+
+  MQTT_QOS_TYPE_NAMES_ENG: array[TMQTTQOSType] of String =
+    ('At most once (QoS0)','At least once (QoS1)','Exactly once (QoS2)','Reserved3');
+
+  MQTT_PACKET_TYPE_NAMES : array [TMQTTPacketType] of string =
+  (
+    'BROKERCONNECT',	//      0	Broker request to connect to Broker
+    'CONNECT',          //	1	Client request to connect to Broker
+    'CONNACK',          //	2	Connect Acknowledgment
+    'PUBLISH',          //	3	Publish Packet
+    'PUBACK',           //	4	Publish Acknowledgment
+    'PUBREC',           //	5	Publish Received (assured delivery part 1)
+    'PUBREL',           //	6	Publish Release (assured delivery part 2)
+    'PUBCOMP',          //	7	Publish Complete (assured delivery part 3)
+    'SUBSCRIBE',        //	8	Client Subscribe request
+    'SUBACK',           //	9	Subscribe Acknowledgment
+    'UNSUBSCRIBE',      //      10	Client Unsubscribe request
+    'UNSUBACK',         //      11	Unsubscribe Acknowledgment
+    'PINGREQ',          //      12	PING Request
+    'PINGRESP',         //      13	PING Response
+    'DISCONNECT',       //      14	Client is Disconnecting
+    'Reserved15'        //      15
+  );
 
 function GetMQTTErrorMessage_ENG(ErrCode: Word): String;
 begin
@@ -175,6 +183,26 @@ begin
   end;
 end;
 
+function GetMQTTLogMessage_ENG(MessageCode: Word): String;
+begin
+  case MessageCode of
+    LM_INVALID_SUBSCRIPTION_REMOVED: Result := '%d invalid subscriptions removed from subscription list';
+    LM_DUPLICATE_SUBSCRIPTION_REMOVED: Result := '%d duplicate subscriptions removed from subscription list';
+    LM_COULD_NOT_REGISTER_SUBSCRIPTIONS: Result := 'Could not register mqtt subscriptions';
+    LM_CLIENT_HAS_CONNECTED: Result := 'Client has connected';
+    LM_PACKET_UNACKNOWLEDGED_BY_SERVER: Result := 'A %s packet went unacknowledged by the server';
+    LM_RESENDING_PACKET: Result := 'Resending %s packet';
+    LM_CLIENT_RESET: Result := 'Client has been reset';
+  end;
+end;
+
+function GetMQTTLogMessage(MessageCode: Word): String;
+begin
+  case MQTTLanguagePack of
+    lpEnglish: Result := GetMQTTLogMessage_ENG(MessageCodE);
+  end;
+end;
+
 function GetConnectionStateName(ConnectionState: TMQTTConnectionState): String;
 begin
   case MQTTLanguagePack of
@@ -184,9 +212,7 @@ end;
 
 function GetPacketTypeName(PacketType: TMQTTPacketType): String;
 begin
-  case MQTTLanguagePack of
-    lpEnglish: Result := MQTT_PACKET_TYPE_NAMES_ENG[PacketType];
-  end;
+  Result := MQTT_PACKET_TYPE_NAMES[PacketType];
 end;
 
 function GetQOSTypeName(QOSType: TMQTTQOSType): String;

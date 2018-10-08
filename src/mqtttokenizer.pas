@@ -40,6 +40,7 @@ type
     public
       constructor Create(Str: UTF8String; Filter: Boolean = True);
       destructor Destroy; override;
+      function AsString: String;
       property Valid: Boolean read FValid;
       property Count: Integer read GetCount;
       property Items[Index: Integer]: TMQTTToken read GetItem; default;
@@ -154,6 +155,27 @@ begin
   Clear;
   FList.Free;
   inherited Destroy;
+end;
+
+function TMQTTTokenizer.AsString: String;
+var
+  I: Integer;
+  T: TMQTTToken;
+  S: String;
+begin
+  S := '';
+  for I := 0 to FList.Count - 1 do
+    begin
+      T := Items[I];
+      case T.Kind of
+        tkSingleLevel: S := S + '+';
+        tkMultiLevel: S := S + '#';
+        tkValid: S := S + T.Text;
+      end;
+      if I < FList.Count - 1 then
+        S := S + '/';
+    end;
+  Result := S;
 end;
 
 function TMQTTTokenizer.GetCount: Integer;
