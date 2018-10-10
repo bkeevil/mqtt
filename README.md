@@ -52,6 +52,7 @@ The file is read in using the Lazarus IniFile unit.
 
 Valid options and default values are:
 
+```
 [Server]
 RequireAuthentication=False
 AllowNullClientIDs=True
@@ -63,5 +64,6 @@ MaxSessionAge=1080
 MaximumQOS=2
 Host="0.0.0.0"
 Port=1883
+```
 
 On Linux, the command line server application was crashing after several days of running. I have fixed one thing that might cause this problem but it needs to be verified that it is stable. 
