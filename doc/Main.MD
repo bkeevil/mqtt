@@ -43,7 +43,7 @@ Document | Description
 [MQTTConsts.pas](MQTTConsts.MD) | Global types, error messages and string constants
 [TMQTTClient](TMQTTClient.MD) | The main MQTT client component
 [TMQTTClientSubscriptionList](TMQTTClientSubscriptionList.MD) | Maintains the list of client subscriptions 
-[TMQTTClientSubscription](TMQTTClientSubscription) | A component that represents a client subscription
+[TMQTTClientSubscription](TMQTTClientSubscription.MD) | A component that represents a client subscription
 [TMQTTClientPublisherList](TMQTTClientPublisherList.MD) | Maintains the list of client publishers
 [TMQTTClientPublisher](TMQTTClientPublisher.MD) | A component that represents a client publisher
 [TMQTTTokenizer](TMQTTTokenizer.MD) | The topic name/filter parser and validator.
