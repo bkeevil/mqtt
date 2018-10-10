@@ -1,4 +1,4 @@
-# mqtt
+# Bond Keevil's MQTT Component Pack for Lazarus
 
 MQTT component pack and Client/Server demo applications in FPC/Lazarus
 
