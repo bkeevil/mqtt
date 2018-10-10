@@ -86,7 +86,19 @@ uses
   MQTTPackets, MQTTPacketDefs, ConnectFM, PublishFM, SubscribeFM, LNetSSL, OpenSSL;
 
 type
-  TLSSLSocketHack = class(TLSSLSocket);  // Need to access some protected properties
+
+  { TLSSLSocketHelper }
+
+  TLSSLSocketHelper = class helper for TLSSLSocket
+    function GetSSLPointer: PSSL;
+  end;
+
+{ TLSSLSocketHelper }
+
+function TLSSLSocketHelper.GetSSLPointer: PSSL;
+begin
+  Result := FSSL;
+end;
 
 { TClientForm }
 
@@ -336,29 +348,23 @@ end;
 
 procedure TClientForm.SSLSSLConnect(aSocket: TLSocket);
 var
-  SSLSocket: TLSSLSocket;
   PeerCertificate: PX509;
-  PSubjectName: PX509_NAME;
-  PIssuerName: PX509_NAME;
-  SSubjectName: String;
-  SIssuerName: String;
+  P: PX509_NAME;
+  S: String;
 begin
   Log.Send(mtInfo,'SSL/TLS Session Established');
   if (aSocket is TLSSLSocket) then
     begin
-      SSLSocket := aSocket as TLSSLSocket;
-      PeerCertificate := SslGetPeerCertificate(TLSSLSocketHack(SSLSocket).FSSL);
-      PSubjectName := X509GetSubjectName(PeerCertificate);
-      PIssuerName := X509GetSubjectName(PeerCertificate);
-      SetLength(SSubjectName,255);
-      SetLength(SIssuerName,255);
-      X509NameOneline(PSubjectName,SSubjectName,255);
-      X509NameOneline(PIssuerName,SIssuerName,255);
-      Log.Send(mtInfo,'Subject Name: ' + Trim(SSubjectName));
-      Log.Send(mtInfo,'Issuer Name: ' + Trim(SIssuerName));
-      //function X509NameOneline(a: PX509_NAME; var buf: String; size: cInt):String;
-      //function X509GetSubjectName(a: PX509):PX509_NAME;
-      //function X509GetIssuerName(a: PX509):PX509_NAME;
+      PeerCertificate := SslGetPeerCertificate((aSocket as TLSSLSocket).GetSSLPointer);
+      P := X509GetSubjectName(PeerCertificate);
+      SetLength(S,255);
+      X509NameOneline(P,S,255);
+      Log.Send(mtInfo,'Subject Name: ' + Trim(S));
+      S := '';
+      P := X509GetSubjectName(PeerCertificate);
+      SetLength(S,255);
+      X509NameOneline(P,S,255);
+      Log.Send(mtInfo,'Issuer Name: ' + Trim(S));
     end;
 end;
 

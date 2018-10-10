@@ -209,7 +209,7 @@ object ClientForm: TClientForm
           item
             ReadOnly = True
             Title.Caption = 'Message'
-            Width = 365
+            Width = 363
           end>
         DefaultRowHeight = 18
         ExtendedSelect = False
@@ -220,7 +220,7 @@ object ClientForm: TClientForm
         ColWidths = (
           80
           120
-          365
+          363
         )
       end
     end

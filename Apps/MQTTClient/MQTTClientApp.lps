@@ -10,7 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="50" Y="15"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="67"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\..\Forms\clientfm.pas"/>
@@ -18,12 +18,13 @@
         <ComponentName Value="ClientForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="333"/>
-        <CursorPos X="60" Y="362"/>
-        <UsageCount Value="65"/>
+        <TopLine Value="73"/>
+        <CursorPos X="3" Y="89"/>
+        <UsageCount Value="67"/>
         <Bookmarks Count="1">
-          <Item0 X="9" Y="362" ID="1"/>
+          <Item0 X="9" Y="368" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -36,7 +37,7 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="5"/>
         <CursorPos X="32" Y="9"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="67"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit2>
@@ -45,14 +46,14 @@
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="67"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\Forms\subscribefm.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="67"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\Forms\clientfm.lfm"/>
@@ -241,141 +242,140 @@
         <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
         <UnitName Value="lNetSSL"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="11"/>
-        <CursorPos X="3" Y="70"/>
+        <TopLine Value="49"/>
+        <CursorPos Y="78"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit29>
       <Unit30>
         <Filename Value="..\..\..\..\..\..\..\usr\share\fpcsrc\3.0.4\packages\openssl\src\openssl.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="1021"/>
-        <CursorPos X="22" Y="1021"/>
+        <TopLine Value="999"/>
+        <CursorPos X="51" Y="1028"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit30>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="..\..\Forms\connectfm.pas"/>
-        <Caret Line="12" Column="38"/>
+        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
+        <Caret Line="99" Column="14" TopLine="85"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\Forms\connectfm.pas"/>
-        <Caret Line="9" Column="32"/>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="337" Column="17" TopLine="330"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="137" Column="65" TopLine="113"/>
+        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
+        <Caret Line="100" Column="14" TopLine="86"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="298" TopLine="290"/>
+        <Filename Value="..\..\..\..\..\..\..\usr\share\fpcsrc\3.0.4\packages\openssl\src\openssl.pas"/>
+        <Caret Line="132" Column="3" TopLine="118"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="424" TopLine="424"/>
+        <Filename Value="..\..\..\..\..\..\..\usr\share\fpcsrc\3.0.4\packages\openssl\src\openssl.pas"/>
+        <Caret Line="994" Column="3" TopLine="965"/>
       </Position5>
       <Position6>
         <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="45" Column="21" TopLine="34"/>
+        <Caret Line="337" Column="7" TopLine="330"/>
       </Position6>
       <Position7>
         <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="280" TopLine="260"/>
+        <Caret Line="36" Column="5" TopLine="19"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="10" Column="50"/>
+        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lazaruspackage\lnetcomponents.pas"/>
+        <Caret Line="171" Column="3" TopLine="156"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="337" Column="3" TopLine="335"/>
+        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
+        <Caret Line="82" Column="20" TopLine="65"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="331" Column="5" TopLine="331"/>
+        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
+        <Caret Line="588" Column="3" TopLine="559"/>
       </Position10>
       <Position11>
-        <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="337" Column="27" TopLine="330"/>
+        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
+        <Caret Line="72" Column="21" TopLine="60"/>
       </Position11>
       <Position12>
         <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
-        <Caret Line="99" Column="14" TopLine="85"/>
+        <Caret Line="451" Column="2" TopLine="449"/>
       </Position12>
       <Position13>
-        <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="337" Column="17" TopLine="330"/>
+        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
+        <Caret Line="72" Column="31" TopLine="57"/>
       </Position13>
       <Position14>
         <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
-        <Caret Line="100" Column="14" TopLine="86"/>
+        <Caret Line="366" Column="44" TopLine="341"/>
       </Position14>
       <Position15>
-        <Filename Value="..\..\..\..\..\..\..\usr\share\fpcsrc\3.0.4\packages\openssl\src\openssl.pas"/>
-        <Caret Line="132" Column="3" TopLine="118"/>
+        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
+        <Caret Line="72" Column="15" TopLine="57"/>
       </Position15>
       <Position16>
-        <Filename Value="..\..\..\..\..\..\..\usr\share\fpcsrc\3.0.4\packages\openssl\src\openssl.pas"/>
-        <Caret Line="994" Column="3" TopLine="965"/>
+        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
+        <Caret Line="460" Column="51" TopLine="431"/>
       </Position16>
       <Position17>
         <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="337" Column="7" TopLine="330"/>
+        <Caret Line="345" Column="17" TopLine="331"/>
       </Position17>
       <Position18>
         <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="36" Column="5" TopLine="19"/>
+        <Caret Line="346" Column="81" TopLine="331"/>
       </Position18>
       <Position19>
-        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lazaruspackage\lnetcomponents.pas"/>
-        <Caret Line="171" Column="3" TopLine="156"/>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="86" Column="84" TopLine="80"/>
       </Position19>
       <Position20>
-        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
-        <Caret Line="82" Column="20" TopLine="65"/>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="362" Column="60" TopLine="333"/>
       </Position20>
       <Position21>
-        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
-        <Caret Line="588" Column="3" TopLine="559"/>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="358" Column="66" TopLine="333"/>
       </Position21>
       <Position22>
-        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
-        <Caret Line="72" Column="21" TopLine="60"/>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="351" Column="16" TopLine="336"/>
       </Position22>
       <Position23>
-        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
-        <Caret Line="451" Column="2" TopLine="449"/>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="349" TopLine="332"/>
       </Position23>
       <Position24>
-        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
-        <Caret Line="72" Column="31" TopLine="57"/>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="336" TopLine="321"/>
       </Position24>
       <Position25>
-        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
-        <Caret Line="366" Column="44" TopLine="341"/>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="352" Column="53" TopLine="337"/>
       </Position25>
       <Position26>
-        <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
-        <Caret Line="72" Column="15" TopLine="57"/>
+        <Filename Value="..\..\Forms\clientfm.pas"/>
+        <Caret Line="351" TopLine="337"/>
       </Position26>
       <Position27>
         <Filename Value="..\..\..\..\..\.lazarus\onlinepackagemanager\packages\lnet\lib\lnetssl.pp"/>
-        <Caret Line="460" Column="51" TopLine="431"/>
+        <Caret Line="71" Column="5" TopLine="42"/>
       </Position27>
       <Position28>
         <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="345" Column="17" TopLine="331"/>
+        <Caret Line="339" Column="3" TopLine="328"/>
       </Position28>
       <Position29>
         <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="346" Column="81" TopLine="331"/>
+        <Caret Line="350" Column="4" TopLine="347"/>
       </Position29>
       <Position30>
         <Filename Value="..\..\Forms\clientfm.pas"/>
-        <Caret Line="86" Column="84" TopLine="80"/>
+        <Caret Line="77" TopLine="67"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
