@@ -28,5 +28,4 @@ Delete | public | Delete the subscription at the indexth position in the list an
 MergeList | public | Merge's another subscription list into this list without creating duplicates. If two subscriptions share the same Filter text then the existing one is replaced by the one provided.
 DeleteList | public | Delete's a list of subscriptions from this subscription list. Any subscription with a matching Filter are removed and destroyed.
 RemoveDuplicates | public | Removes duplicate subscriptions, preserving the copy with the highes QoS value. Must be called after RemoveInvalidSubscriptions. Returns the number of duplicate subscriptions removed.
-RemoveInvalidSubscriptions | Remove any subscription that could not be parsed into tokens by the _TMQTTTokenizer_ or that contain invalid tokens according to the MQTT specifications. Returns the number of invalid subscriptions removed.
-
+RemoveInvalidSubscriptions | public | Remove any subscription that could not be parsed into tokens by the _TMQTTTokenizer_ or that contain invalid tokens according to the MQTT specifications. Returns the number of invalid subscriptions removed.

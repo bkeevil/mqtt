@@ -26,4 +26,4 @@ ValidateTopicFilter | private | An empty string is valid. Any token not containi
 
 ## See Also
 
-[TMQTTTokenizer][TMQTTTokenizer.MD]
+[TMQTTTokenizer](TMQTTTokenizer.MD)
