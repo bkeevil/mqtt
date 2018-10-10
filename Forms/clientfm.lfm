@@ -1,11 +1,11 @@
 object ClientForm: TClientForm
   Left = 549
-  Height = 381
+  Height = 357
   Top = 191
-  Width = 695
+  Width = 605
   Caption = 'MQTT Client'
-  ClientHeight = 381
-  ClientWidth = 695
+  ClientHeight = 357
+  ClientWidth = 605
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -48,76 +48,40 @@ object ClientForm: TClientForm
     OnClick = DisconnectBtnClick
     TabOrder = 3
   end
+  object ConnectBtn: TButton
+    Left = 16
+    Height = 27
+    Top = 8
+    Width = 89
+    Caption = '&Connect'
+    OnClick = ConnectBtnClick
+    TabOrder = 4
+  end
+  object StatusBar: TStatusBar
+    Left = 0
+    Height = 19
+    Top = 338
+    Width = 605
+    Panels = <>
+  end
   object PageControl: TPageControl
     Left = 16
-    Height = 296
+    Height = 274
     Top = 48
-    Width = 664
-    ActivePage = SubscriptionsTab
+    Width = 577
+    ActivePage = MessagesTab
     Anchors = [akTop, akLeft, akRight, akBottom]
     TabIndex = 0
-    TabOrder = 4
-    object SubscriptionsTab: TTabSheet
-      Caption = 'Subscriptions'
-      ClientHeight = 265
-      ClientWidth = 654
-      object SubscriptionsGrid: TStringGrid
-        Left = 0
-        Height = 265
-        Top = 0
-        Width = 654
-        Align = alClient
-        Anchors = [akTop, akLeft, akBottom]
-        AutoEdit = False
-        AutoFillColumns = True
-        ColCount = 4
-        Columns = <        
-          item
-            Title.Caption = 'Topic Filter'
-            Width = 448
-          end        
-          item
-            SizePriority = 0
-            Title.Caption = 'QOS'
-            Width = 140
-          end        
-          item
-            Alignment = taRightJustify
-            SizePriority = 0
-            Title.Alignment = taRightJustify
-            Title.Caption = 'Age'
-            Width = 64
-          end        
-          item
-            ButtonStyle = cbsCheckboxColumn
-            SizePriority = 0
-            Title.Alignment = taCenter
-            Title.Caption = 'Persistent'
-            Width = 0
-            Visible = False
-          end>
-        DefaultRowHeight = 20
-        ExtendedSelect = False
-        FixedCols = 0
-        PopupMenu = SubscriptionsPopup
-        TabOrder = 0
-        ColWidths = (
-          448
-          140
-          64
-          0
-        )
-      end
-    end
+    TabOrder = 6
     object MessagesTab: TTabSheet
       Caption = 'Messages'
-      ClientHeight = 265
-      ClientWidth = 654
+      ClientHeight = 243
+      ClientWidth = 567
       object MessagesGrid: TStringGrid
         Left = 0
-        Height = 265
+        Height = 243
         Top = 0
-        Width = 654
+        Width = 567
         Align = alClient
         Anchors = [akTop, akLeft, akBottom]
         AutoEdit = False
@@ -126,11 +90,11 @@ object ClientForm: TClientForm
         Columns = <        
           item
             Title.Caption = 'Topic'
-            Width = 245
+            Width = 202
           end        
           item
             Title.Caption = 'Data'
-            Width = 245
+            Width = 202
           end        
           item
             SizePriority = 0
@@ -151,8 +115,8 @@ object ClientForm: TClientForm
         RowCount = 1
         TabOrder = 0
         ColWidths = (
-          245
-          245
+          202
+          202
           100
           60
         )
@@ -160,17 +124,17 @@ object ClientForm: TClientForm
     end
     object LogTab: TTabSheet
       Caption = 'Log'
-      ClientHeight = 265
-      ClientWidth = 654
+      ClientHeight = 243
+      ClientWidth = 567
       object LogToolbarPanel: TPanel
         Left = 0
         Height = 50
         Top = 0
-        Width = 654
+        Width = 567
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 50
-        ClientWidth = 654
+        ClientWidth = 567
         TabOrder = 0
         object FilterText: TEdit
           Left = 8
@@ -190,7 +154,7 @@ object ClientForm: TClientForm
           TabOrder = 1
         end
         object CBEnabled: TCheckBox
-          Left = 231
+          Left = 239
           Height = 23
           Top = 12
           Width = 71
@@ -201,30 +165,29 @@ object ClientForm: TClientForm
           TabOrder = 2
         end
         object ClearBtn: TButton
-          Left = 308
-          Height = 25
+          Left = 483
+          Height = 29
           Top = 9
           Width = 75
-          Anchors = [akTop, akRight]
           Caption = '&Clear'
           OnClick = ClearBtnClick
           TabOrder = 3
         end
         object cbShowDebugMessages: TCheckBox
-          Left = 392
+          Left = 320
           Height = 23
           Top = 12
-          Width = 156
-          Caption = 'Show Debug Messages'
+          Width = 123
+          Caption = 'Debug Messages'
           OnChange = cbShowDebugMessagesChange
           TabOrder = 4
         end
       end
       object LogGrid: TStringGrid
         Left = 0
-        Height = 215
+        Height = 193
         Top = 50
-        Width = 654
+        Width = 567
         Align = alClient
         AutoAdvance = aaNone
         AutoEdit = False
@@ -246,7 +209,7 @@ object ClientForm: TClientForm
           item
             ReadOnly = True
             Title.Caption = 'Message'
-            Width = 450
+            Width = 365
           end>
         DefaultRowHeight = 18
         ExtendedSelect = False
@@ -257,68 +220,17 @@ object ClientForm: TClientForm
         ColWidths = (
           80
           120
-          450
+          365
         )
       end
     end
-    object PacketsInMemTab: TTabSheet
-      Caption = 'PacketsInMem'
-      ClientHeight = 265
-      ClientWidth = 654
-      OnContextPopup = PacketsInMemTabContextPopup
-      object PacketsMemo: TMemo
-        Left = 0
-        Height = 240
-        Top = 25
-        Width = 654
-        Align = alClient
-        ScrollBars = ssVertical
-        TabOrder = 0
-      end
-      object RefreshPacketsBtn: TButton
-        Left = 0
-        Height = 25
-        Top = 0
-        Width = 654
-        Align = alTop
-        Caption = 'Refresh'
-        OnClick = RefreshPacketsBtnClick
-        TabOrder = 1
-      end
-    end
-  end
-  object ConnectBtn: TButton
-    Left = 16
-    Height = 27
-    Top = 8
-    Width = 89
-    Caption = '&Connect'
-    OnClick = ConnectBtnClick
-    TabOrder = 5
-  end
-  object StatusBar: TStatusBar
-    Left = 0
-    Height = 19
-    Top = 362
-    Width = 695
-    Panels = <>
   end
   object Client: TMQTTClient
-    OnConnected = RefreshSubscriptionsItmClick
     OnDisconnected = ClientDisconnected
     OnSendData = ClientSendData
     OnReceiveMessage = ClientReceiveMessage
-    OnSubscriptionsChanged = RefreshSubscriptionsItmClick
     left = 56
     top = 248
-  end
-  object SubscriptionsPopup: TPopupMenu
-    left = 196
-    top = 250
-    object RefreshSubscriptionsItm: TMenuItem
-      Caption = '&Refresh'
-      OnClick = RefreshSubscriptionsItmClick
-    end
   end
   object TCP: TLTCPComponent
     Port = 0
@@ -329,7 +241,16 @@ object ClientForm: TClientForm
     OnCanSend = TCPCanSend
     Timeout = 0
     ReuseAddress = False
+    Session = SSL
     left = 336
     top = 248
+  end
+  object SSL: TLSSLSessionComponent
+    CAFile = 'cert'
+    KeyFile = 'pkey'
+    Method = msTLSv1
+    OnSSLConnect = SSLSSLConnect
+    left = 432
+    top = 249
   end
 end
