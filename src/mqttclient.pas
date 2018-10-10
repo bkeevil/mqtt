@@ -159,7 +159,6 @@ type
   TMQTTClientSubscription = class(TComponent)
     private
       FClient             : TMQTTClient;
-      FTokenizer: TMQTTTokenizer;
       FTokens             : TMQTTTokenizer;
       FQOS                : TMQTTQOSType;
       FModified           : Boolean;
@@ -177,12 +176,14 @@ type
       procedure Notification(AComponent: TComponent; Operation: TOperation); override;
       procedure Changed; virtual;
       procedure SendSubscription; virtual;
-      property Tokens: TMQTTTokenizer read FTokenizer;
+      property Tokens: TMQTTTokenizer read FTokens;
     public
       constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
       procedure Assign(Source: TPersistent); override;
       procedure Clear;
+      procedure Subscribe;
+      procedure Unsubscribe;
       property Modified: Boolean read FModified write FModified;
     published
       property Enabled: Boolean read FEnabled write FEnabled default true;
@@ -1141,6 +1142,38 @@ begin
   FEnabled := True;
   FQOS := qtAT_LEAST_ONCE;
   FModified := False;
+end;
+
+procedure TMQTTClientSubscription.Subscribe;
+var
+  L: TMQTTSubscriptionList;
+begin
+  if Assigned(FClient) then
+    begin
+      L := TMQTTSubscriptionList.Create;
+      try
+        L.New(Filter,QOS);
+        FClient.Subscribe(L);
+      finally
+        L.Free;
+      end;
+    end;
+end;
+
+procedure TMQTTClientSubscription.Unsubscribe;
+var
+  L: TMQTTSubscriptionList;
+begin
+  if Assigned(FClient) then
+    begin
+      L := TMQTTSubscriptionList.Create;
+      try
+        L.New(Filter,QOS);
+        FClient.Unsubscribe(L);
+      finally
+        L.Free;
+      end;
+    end;
 end;
 
 procedure TMQTTClientSubscription.Notification(AComponent: TComponent; Operation: TOperation);
