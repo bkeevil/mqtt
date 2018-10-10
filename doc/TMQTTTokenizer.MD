@@ -28,4 +28,4 @@ AsString | public | Reconstructs a text representation of a topic or a filter st
 
 ## See Also
 
-[TMQTTToken][TMQTTToken.MD]
+[TMQTTToken](TMQTTToken.MD)
