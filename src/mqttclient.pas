@@ -43,7 +43,7 @@ type
 
   TMQTTClient = class(TComponent)
     private
-      FSocket              : TObject;
+      //FSocket              : TObject;
       FState               : TMQTTConnectionState;
       FPacketIDManager     : TMQTTPacketIDManager;
       FPublishers          : TMQTTClientPublisherList;
@@ -132,7 +132,7 @@ type
       property Subscriptions: TMQTTClientSubscriptionList read FSubscriptions;
       property SendBuffer: TBuffer read FSendBuffer;
       property RecvBuffer: TBuffer read FRecvBuffer;
-      property Socket: TObject read FSocket write FSocket;
+      //property Socket: TObject read FSocket write FSocket;
       property State: TMQTTConnectionState read FState;
     published
       property ResendPacketTimeout: Word read FResendPacketTimeout write FResendPacketTimeout default MQTT_DEFAULT_RESEND_PACKET_TIMEOUT;
