@@ -21,7 +21,7 @@ Create | public | Creates the component and sets its default values
 Destroy | public | Destroys the component and removes it from the Client's _Subscriptions_ list if the _Client_ property has been assigned.
 Clear | public | Clears the properties of data and resets it to default values. After a call to _Clear_, the component will be in almost the same state it was as when it was created. The _Client_ property is NOT cleared. The _Modified_ property is set to *false*.
 Subscribe | public | Sends a SUBSCRIBE packet to the server based on the properties of this object
-Unsubscribe | public Sends an UNSUBSCRIBE packet to the server based on the properties of this object
+Unsubscribe | public | Sends an UNSUBSCRIBE packet to the server based on the properties of this object
 Changed | protected | Virtual method that can be overridden. In this class this method calls the _OnChanged_ event handler.
 Assign | public | Assign the properties and events from another object of class _TMQTTClientSubscription_
 
