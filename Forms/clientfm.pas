@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Grids, ComCtrls, Menus, ExtCtrls, Buffers, Logging, lNetComponents,
-  MQTTConsts, MQTTClient, MQTTSubscriptions, lNet, Types;
+  MQTTConsts, MQTTClient, MQTTSubscriptions, lNet;
 
 type
   TDebugMessage = record
@@ -20,7 +20,6 @@ type
   { TClientForm }
 
   TClientForm = class(TForm)
-    RefreshPacketsBtn: TButton;
     CBEnabled: TCheckBox;
     CBFiltered: TCheckBox;
     cbShowDebugMessages: TCheckBox;
@@ -30,19 +29,14 @@ type
     ConnectBtn: TButton;
     FilterText: TEdit;
     LogGrid: TStringGrid;
-    LogToolbarPanel: TPanel;
-    PacketsMemo: TMemo;
-    StatusBar: TStatusBar;
     LogTab: TTabSheet;
-    PacketsInMemTab: TTabSheet;
-    TCP: TLTCPComponent;
-    RefreshSubscriptionsItm: TMenuItem;
-    PageControl: TPageControl;
-    SubscriptionsPopup: TPopupMenu;
-    SubscriptionsGrid: TStringGrid;
+    LogToolbarPanel: TPanel;
+    SSL: TLSSLSessionComponent;
     MessagesGrid: TStringGrid;
-    SubscriptionsTab: TTabSheet;
     MessagesTab: TTabSheet;
+    PageControl: TPageControl;
+    StatusBar: TStatusBar;
+    TCP: TLTCPComponent;
     PublishBtn: TButton;
     SubscribeBtn: TButton;
     UnsubscribeBtn: TButton;
@@ -61,10 +55,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure PublishBtnClick(Sender: TObject);
-    procedure RefreshPacketsBtnClick(Sender: TObject);
-    procedure RefreshSubscriptionsItmClick(Sender: TObject);
+    procedure SSLSSLConnect(aSocket: TLSocket);
     procedure SubscribeBtnClick(Sender: TObject);
-    procedure PacketsInMemTabContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure TCPCanSend(aSocket: TLSocket);
     procedure TCPConnect(aSocket: TLSocket);
     procedure TCPDisconnect(aSocket: TLSocket);
@@ -91,7 +83,22 @@ implementation
 {$R *.lfm}
 
 uses
-  MQTTPackets, MQTTPacketDefs, ConnectFM, PublishFM, SubscribeFM;
+  MQTTPackets, MQTTPacketDefs, ConnectFM, PublishFM, SubscribeFM, LNetSSL, OpenSSL;
+
+type
+
+  { TLSSLSocketHelper }
+
+  TLSSLSocketHelper = class helper for TLSSLSocket
+    function GetSSLPointer: PSSL;
+  end;
+
+{ TLSSLSocketHelper }
+
+function TLSSLSocketHelper.GetSSLPointer: PSSL;
+begin
+  Result := FSSL;
+end;
 
 { TClientForm }
 
@@ -127,21 +134,26 @@ end;
 
 procedure TClientForm.ConnectBtnClick(Sender: TObject);
 begin
-  ConnectDlg.ActiveControl := ConnectDlg.edClientID;
-  if ConnectDlg.ShowModal = mrOK then
+  MQTTConnectDlg.ActiveControl := MQTTConnectDlg.edClientID;
+  if MQTTConnectDlg.ShowModal = mrOK then
     begin
-      TCP.Host                   := ConnectDlg.edIPAddress.Text;
-      TCP.Port                   := ConnectDlg.sePort.Value;
-      Client.ClientID            := ConnectDlg.edClientID.Text;
-      Client.Username            := ConnectDlg.edUsername.Text;
-      Client.Password            := ConnectDlg.edPassword.Text;
-      Client.CleanSession        := ConnectDlg.cbClean.Checked;
-      Client.KeepAlive           := ConnectDlg.edKeepAlive.Value;
-      Client.WillMessage.Enabled := ConnectDlg.cbEnabled.Checked;
-      Client.WillMessage.Topic   := ConnectDlg.edTopic.Text;
-      Client.WillMessage.Message := ConnectDlg.edMessage.Text;
-      Client.WillMessage.QOS     := TMQTTQOSType(ConnectDlg.cbQOS.ItemIndex);
-      Client.WillMessage.Retain  := ConnectDlg.cbRetain.Checked;
+      TCP.Host                   := MQTTConnectDlg.edServer.Text;
+      TCP.Port                   := MQTTConnectDlg.sePort.Value;
+      SSL.CAFile                 := MQTTConnectDlg.edCertificateFile.Filename;
+      SSL.KeyFile                := MQTTConnectDlg.edPrivateKeyFile.Filename;
+      SSL.Method                 := MQTTConnectDlg.getSSLMethod;
+      SSL.Password               := MQTTConnectDlg.edPrivateKeyPassword.Text;
+      SSL.SSLActive              := MQTTConnectDlg.cbUseSSL.Checked;
+      Client.ClientID            := MQTTConnectDlg.edClientID.Text;
+      Client.Username            := MQTTConnectDlg.edUsername.Text;
+      Client.Password            := MQTTConnectDlg.edPassword.Text;
+      Client.CleanSession        := MQTTConnectDlg.cbClean.Checked;
+      Client.KeepAlive           := MQTTConnectDlg.edKeepAlive.Value;
+      Client.WillMessage.Enabled := MQTTConnectDlg.cbWillMessageEnabled.Checked;
+      Client.WillMessage.Topic   := MQTTConnectDlg.edTopic.Text;
+      Client.WillMessage.Message := MQTTConnectDlg.edMessage.Text;
+      Client.WillMessage.QOS     := TMQTTQOSType(MQTTConnectDlg.cbQOS.ItemIndex);
+      Client.WillMessage.Retain  := MQTTConnectDlg.cbRetain.Checked;
 
       if TCP.Connect then
         Log.Send(mtInfo,'Connecting to %s on port %d',[TCP.Host,TCP.Port])
@@ -280,12 +292,6 @@ begin
     end;
 end;
 
-procedure TClientForm.PacketsInMemTabContextPopup(Sender: TObject; MousePos: TPoint;
-  var Handled: Boolean);
-begin
-
-end;
-
 procedure TClientForm.UnsubscribeBtnClick(Sender: TObject);
 var
   LSubscriptions: TMQTTSubscriptionList;
@@ -298,12 +304,6 @@ begin
   SubscribeForm.TestDataBtn.Visible := False;
   SubscribeForm.SelectAllBtn.Visible := True;
   SubscribeForm.Grid.RowCount := 1;
-  for X := 0 to Client.Subscriptions.Count - 1 do
-    begin
-      LSubscription := Client.Subscriptions[X];
-      S := SubscribeForm.Grid.Columns[2].Picklist[ord(LSubscription.QOS)];
-      SubscribeForm.Grid.InsertRowWithValues(X+1,['0',LSubscription.Filter,S]);
-    end;
   if SubscribeForm.ShowModal = mrOK then
     begin
       SubscribeForm.ValidateRows;
@@ -339,22 +339,6 @@ begin
     end;
 end;
 
-procedure TClientForm.RefreshSubscriptionsItmClick(Sender: TObject);
-var
-  X: Integer;
-  S: TMQTTSubscription;
-begin
-  SubscriptionsGrid.RowCount := 1;
-  for X := 0 to Client.Subscriptions.Count - 1 do
-    begin
-      S := Client.Subscriptions[X];
-      SubscriptionsGrid.RowCount := SubscriptionsGrid.RowCount + 1;
-      SubscriptionsGrid.Cells[0,X+1] := S.Filter;
-      SubscriptionsGrid.Cells[1,X+1] := GetQOSTypeName(S.QOS);
-      SubscriptionsGrid.Cells[2,X+1] := IntToStr(S.Age);
-    end;
-end;
-
 procedure TClientForm.PublishBtnClick(Sender: TObject);
 begin
   PublishForm.ActiveControl := PublishForm.edTopic;
@@ -362,10 +346,26 @@ begin
     Client.Publish(PublishForm.edTopic.Text,PublishForm.edMessage.Text,TMQTTQOSType(PublishForm.cbQOS.ItemIndex),PublishForm.cbRetain.Checked);
 end;
 
-procedure TClientForm.RefreshPacketsBtnClick(Sender: TObject);
+procedure TClientForm.SSLSSLConnect(aSocket: TLSocket);
+var
+  PeerCertificate: PX509;
+  P: PX509_NAME;
+  S: String;
 begin
-  PacketsMemo.Clear;
-  PacketList.Dump(PacketsMemo.Lines);
+  Log.Send(mtInfo,'SSL/TLS Session Established');
+  if (aSocket is TLSSLSocket) then
+    begin
+      PeerCertificate := SslGetPeerCertificate((aSocket as TLSSLSocket).GetSSLPointer);
+      P := X509GetSubjectName(PeerCertificate);
+      SetLength(S,255);
+      X509NameOneline(P,S,255);
+      Log.Send(mtInfo,'Subject Name: ' + Trim(S));
+      S := '';
+      P := X509GetSubjectName(PeerCertificate);
+      SetLength(S,255);
+      X509NameOneline(P,S,255);
+      Log.Send(mtInfo,'Issuer Name: ' + Trim(S));
+    end;
 end;
 
 procedure TClientForm.ClearRecords;
@@ -447,7 +447,6 @@ begin
       Client.Log.Filter := DEFAULT_LOG_MESSAGE_TYPES;
     end;
 end;
-
 
 procedure TClientForm.CBEnabledChange(Sender: TObject);
 begin
