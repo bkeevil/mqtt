@@ -7,7 +7,7 @@ The goal of this project is to create a Lazarus/FPC component package that
 1. Implements the MQTT protocol completely and accurately
 2. Is not dependent on a specific networking component or transport mechanism 
 3. Has good documentation
-4. Supports SSL/TLS
+4. Supports SSL/TLS and MQTT Broker Connections
 
 For the client and server demo applications I have been using the LNet components because they seem to run well on both Windows and Linux.
 
