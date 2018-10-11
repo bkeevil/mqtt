@@ -1,20 +1,4 @@
-# Bond Keevil's MQTT Package
-
-Implements the MQTT protocol version 3.1.1 in a way that is transport mechanism and authentication mechanism agnostic.
-
-## License
-
-This component is being released under the GNU GPL license agreement. You may share it, extend it, or use it for any commercial purposes provided you share any improvements you make to the code.
-
-## Dependencies
-
-This package depends on the logging.pas and buffers.pas units in my bkUtils package. 
-
-The logging framework can be used to obtain and filter error, warning, info and debug messages sent by this component package. The TBuffer object provides FIFO buffers that are used to buffer communications to/from from your transport mechanism and this component set. 
-
-## Status
-
-All components are believed to be stable and tested and I am using them in projects. There were some interface changes between versions 0.8x and version 1.0 that may break some people's code.
+# Documentation Main Page
 
 ## General Client Useage
 
