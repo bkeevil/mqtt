@@ -1,13 +1,13 @@
 # Bond Keevil's MQTT Component Pack for Lazarus
 
-MQTT component pack and Client/Server demo applications in FPC/Lazarus
+MQTT client and server component pack with demo applications written in Lazarus/FPC.
 
-The goal of this project is to create a Lazarus/FPC component package that: 
+Project Goals: 
 
-1. Implements the MQTT protocol completely and accurately
+1. Implements the MQTT protocol version 3.1.1 completely and accurately
 2. Implements all QoS levels
 3. Is not dependent on a specific networking component or transport mechanism 
-4. Has good documentation
+4. Has good [documentation](docs/Main.MD)
 
 For the client and server demo applications I have been using the LNet components because they seem to run well on both Windows and Linux.
 
@@ -42,30 +42,4 @@ To build the demo applications you will also need to install LNet. For me, the o
 
 ## Documentation
 
-The documentation is being rewritten in markdown and is available in the docs directory in the development branch.
-
-## Command line server demo application
-
-For help with command line options, run the program with the --help switch.
-
-Values specified in command line options override values loaded from configuration file.
-
-The server first looks for the file 'mqttservercli.ini' in the current working directory. If that is not found then it looks for a file '/etc/mqttservercli.ini'.
-
-The file is read in using the Lazarus IniFile unit. 
-
-Valid options and default values are:
-
-```
-[Server]
-RequireAuthentication=False
-AllowNullClientIDs=True
-StrictClientIDValidation=False
-ResetPAcketTimeout=2
-MaxResendAttempts=3
-MaxSubscriptionAge=1080
-MaxSessionAge=1080
-MaximumQOS=2
-Host="0.0.0.0"
-Port=1883
-```
+The documentation is being rewritten in markdown and is [available in the docs directory](docs/Main.MD).
