@@ -7,7 +7,7 @@ Project Goals:
 1. Implements the MQTT protocol version 3.1.1 completely and accurately
 2. Implements all QoS levels
 3. Is not dependent on a specific networking component or transport mechanism 
-4. Has good [documentation](docs/Main.MD)
+4. Has good [documentation](https://github.com/bkeevil/mqtt/blob/master/doc/Main.MD)
 
 For the client and server demo applications I have been using the LNet components because they seem to run well on both Windows and Linux.
 
@@ -22,7 +22,7 @@ MQTT Brokers are not implemented and there is no security authentication provide
  
 **Version 0.95 is in progress and will add:**
  * Rough draft of documentation written in markdown (i.e. available on the Github Wiki pages for this project).
- * I am presently adding two new palette bar components, [TMQTTClientSubscription](docs/TMQTTClientSubscription.MD) and [TMQTTClientPublisher](docs/TMQTTClientPublisher.MD).
+ * I am presently adding two new palette bar components, [TMQTTClientSubscription](https://github.com/bkeevil/mqtt/blob/master/doc/TMQTTClientSubscription.MD) and [TMQTTClientPublisher](https://github.com/bkeevil/mqtt/blob/master/doc/TMQTTClientPublisher.MD).
  * Added SSL/TLS support to the demo applications.
  * Remove the dependencies on my other packages.
  
