@@ -18,7 +18,9 @@ procedure Register;
 begin
   {$I mqttserver_icon.lrs}
   {$I mqttclient_icon.lrs}
-  RegisterComponents('MQTT',[TMQTTClient, TMQTTServer]);
+  {$I mqttclientsubscription_icon.lrs}
+  {$I mqttclientpublisher_icon.lrs}
+  RegisterComponents('MQTT',[TMQTTClient, TMQTTClientSubscription, TMQTTClientPublisher, TMQTTServer]);
 end;
 
 end.

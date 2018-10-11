@@ -40,12 +40,56 @@ type
     public
       constructor Create(Str: UTF8String; Filter: Boolean = True);
       destructor Destroy; override;
+      function AsString: String;
       property Valid: Boolean read FValid;
       property Count: Integer read GetCount;
       property Items[Index: Integer]: TMQTTToken read GetItem; default;
   end;
 
+function CheckTopicMatchesFilter(Topic: TMQTTTokenizer; Filter: TMQTTTokenizer): Boolean;
+
 implementation
+
+function CheckTopicMatchesFilter(Topic: TMQTTTokenizer; Filter: TMQTTTokenizer): Boolean;
+var
+  I: Integer;
+  FilterToken: TMQTTToken;
+  TopicToken: TMQTTToken;
+begin
+  Result := False;
+  for I := 0 to Filter.Count - 1 do
+    begin
+      FilterToken := Filter[I];
+      if I >= Topic.Count then
+        begin
+          Result := Result and (FilterToken.Kind = tkMultiLevel);
+          Exit;
+        end;
+      TopicToken  := Topic[I];
+      if FilterToken.Kind = tkInvalid then
+        begin
+          Result := False;
+          Exit;
+        end
+      else
+      if FilterToken.Kind = tkValid then
+        begin
+          Result := FilterToken.Text = TopicToken.Text;
+          if not Result then Exit;
+        end
+      else
+      if FilterToken.Kind = tkMultilevel then
+        begin
+          Result := True;
+          Exit;
+        end
+      else
+      if FilterToken.Kind = tkSingleLevel then
+        Result := True;
+    end;
+  if Filter.Count < Topic.Count then
+    Result := Result and (Filter[Filter.Count-1].Kind = tkMultiLevel);
+end;
 
 { TMQTTToken }
 
@@ -111,6 +155,27 @@ begin
   Clear;
   FList.Free;
   inherited Destroy;
+end;
+
+function TMQTTTokenizer.AsString: String;
+var
+  I: Integer;
+  T: TMQTTToken;
+  S: String;
+begin
+  S := '';
+  for I := 0 to FList.Count - 1 do
+    begin
+      T := Items[I];
+      case T.Kind of
+        tkSingleLevel: S := S + '+';
+        tkMultiLevel: S := S + '#';
+        tkValid: S := S + T.Text;
+      end;
+      if I < FList.Count - 1 then
+        S := S + '/';
+    end;
+  Result := S;
 end;
 
 function TMQTTTokenizer.GetCount: Integer;

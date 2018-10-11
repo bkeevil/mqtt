@@ -5,15 +5,27 @@ unit mqttclient;
 interface
 
 uses
-  Classes, SysUtils, Buffers, Logging,
+  Classes, SysUtils, {Contnrs, }Buffers, Logging, MQTTTokenizer,
   MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions;
+
+const
+  MQTT_DEFAULT_PING_INTERVAL         = 15; // Number of seconds between PINGREQ packets being sent to the server
+  MQTT_DEFAULT_KEEPALIVE             = 30; // If the server has not been heard from in this number of seconds, assume the connection has been lost and disconnect.
+  MQTT_CONNECT_TIMEOUT               = 2;  // Number of seconds until a connection attempts times out.
+  MQTT_DEFAULT_RESEND_PACKET_TIMEOUT = 2;  // Default number of seconds until a packet is deemed lost and resent.
+  MQTT_DEFAULT_MAX_RESEND_ATTEMPTS   = 3;  // Default maximum number of times to resend a packet before giving up.
 
 type
   TMQTTClient = class;
+  TMQTTClientSubscription = class;
+  TMQTTClientSubscriptionList = class;
+  TMQTTClientPublisher = class;
+  TMQTTClientPublisherList = class;
 
   TMQTTClientSendDataEvent = procedure (AClient: TMQTTClient) of object;
   TMQTTClientReceiveMessageEvent = procedure (AClient: TMQTTClient; Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean) of object;
   TMQTTClientErrorEvent = procedure (AClient: TMQTTClient; ErrCode: Word; ErrMsg: String) of object;
+  TMQTTClientSubscriptionReceiveMessageEvent = procedure (Subscription: TMQTTClientSubscription; Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean) of object;
 
   { TMQTTClientThread }
 
@@ -34,15 +46,16 @@ type
       FSocket              : TObject;
       FState               : TMQTTConnectionState;
       FPacketIDManager     : TMQTTPacketIDManager;
-      FSubscriptions       : TMQTTSubscriptionList;
+      FPublishers          : TMQTTClientPublisherList;
+      FSubscriptions       : TMQTTClientSubscriptionList;
       FSendBuffer          : TBuffer;
       FRecvBuffer          : TBuffer;
       FResendPacketTimeout : Word;
       FMaxResendAttempts   : Byte;
       // Packet Queues
-      //FPendingTransmission : TMQTTMessageList; // QoS 1 and QoS 2 messages pending transmission to the Server.
       FWaitingForAck       : TMQTTPacketQueue; // QoS 1 and QoS 2 messages which have been sent to the Server, but have not been completely acknowledged.
       FPendingReceive      : TMQTTPacketQueue; // QoS 2 messages which have been received from the Server, but have not been completely acknowledged.       // Attributes
+      // Properties
       FWillMessage         : TMQTTWillMessage;
       FCleanSession        : Boolean;
       FClientID            : UTF8String;
@@ -55,15 +68,14 @@ type
       FThread              : TMQTTClientThread;
       // State Fields
       FInsufficientData    : Byte;
-      //
-      FOnInitSession          : TNotifyEvent;
-      FOnConnected            : TNotifyEvent;
-      FOnDisconnect           : TNotifyEvent;
-      FOnDisconnected         : TNotifyEvent;
-      FOnError                : TMQTTClientErrorEvent;
-      FOnSendData             : TMQTTClientSendDataEvent;
-      FOnReceiveMessage       : TMQTTClientReceiveMessageEvent;
-      FOnSubscriptionsChanged : TNotifyEvent;
+      // Events
+      FOnInitSession       : TNotifyEvent;
+      FOnConnected         : TNotifyEvent;
+      FOnDisconnect        : TNotifyEvent;
+      FOnDisconnected      : TNotifyEvent;
+      FOnError             : TMQTTClientErrorEvent;
+      FOnSendData          : TMQTTClientSendDataEvent;
+      FOnReceiveMessage    : TMQTTClientReceiveMessageEvent;
       // Timer Methods
       procedure HandleTimer;
       procedure HandleConnectTimer;
@@ -98,7 +110,7 @@ type
       procedure Loaded; override;
       procedure InitSession; virtual;
       procedure SendData; virtual;
-      procedure ReceiveMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean); virtual;
+      procedure ReceiveMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean); virtual;
       property PacketIDManager: TMQTTPacketIDManager read FPacketIDManager;
     public
       Log: TLogDispatcher;
@@ -116,21 +128,22 @@ type
       // Event Handlers
       procedure DataAvailable; virtual;
       // Properties
+      property Publishers: TMQTTClientPublisherList read FPublishers;
+      property Subscriptions: TMQTTClientSubscriptionList read FSubscriptions;
       property SendBuffer: TBuffer read FSendBuffer;
       property RecvBuffer: TBuffer read FRecvBuffer;
       property Socket: TObject read FSocket write FSocket;
       property State: TMQTTConnectionState read FState;
-      property Subscriptions: TMQTTSubscriptionList read FSubscriptions;
     published
-      property ResendPacketTimeout: Word read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
-      property MaxResendAttmpts: Byte read FMaxResendAttempts write FMaxResendAttempts default 3;
+      property ResendPacketTimeout: Word read FResendPacketTimeout write FResendPacketTimeout default MQTT_DEFAULT_RESEND_PACKET_TIMEOUT;
+      property MaxResendAttmpts: Byte read FMaxResendAttempts write FMaxResendAttempts default MQTT_DEFAULT_MAX_RESEND_ATTEMPTS;
       property ClientID: UTF8String read FClientID write SetClientID;
       property Username: UTF8String read FUsername write FUsername;
       property Password: AnsiString read FPassword write FPassword;
       property WillMessage: TMQTTWillMessage read FWillMessage write SetWillMessage;
       property CleanSession: Boolean read FCleanSession write FCleanSession default True;
-      property KeepAlive: Word read FKeepAlive write SetKeepAlive default 30;
-      property PingInterval: Word read FPingInterval write SetPingInterval default 15;
+      property KeepAlive: Word read FKeepAlive write SetKeepAlive default MQTT_DEFAULT_KEEPALIVE;
+      property PingInterval: Word read FPingInterval write SetPingInterval default MQTT_DEFAULT_PING_INTERVAL;
       // Events
       property OnConnected: TNotifyEvent read FOnConnected write FOnConnected;
       property OnDisconnect: TNotifyEvent read FOnDisconnect write FOnDisconnect;
@@ -139,7 +152,123 @@ type
       property OnError: TMQTTClientErrorEvent read FOnError write FOnError;
       property OnSendData: TMQTTClientSendDataEvent read FOnSendData write FOnSendData;
       property OnReceiveMessage: TMQTTClientReceiveMessageEvent read FOnReceiveMessage write FOnReceiveMessage;
-      property OnSubscriptionsChanged: TNotifyEvent read FOnSubscriptionsChanged write FOnSubscriptionsChanged;
+  end;
+
+  { TMQTTClientSubscription }
+
+  TMQTTClientSubscription = class(TComponent)
+    private
+      FClient             : TMQTTClient;
+      FTokens             : TMQTTTokenizer;
+      FQOS                : TMQTTQOSType;
+      FModified           : Boolean;
+      FEnabled            : Boolean;
+      FOnMessage          : TMQTTClientSubscriptionReceiveMessageEvent;
+      FOnChanged          : TNotifyEvent;
+      FOnSendSubscription : TNotifyEvent;
+      function GetClient: TMQTTClient;
+      procedure SetClient(AValue: TMQTTClient);
+      function GetFilter: UTF8String;
+      procedure SetFilter(AValue: UTF8String);
+      procedure SetQOS(AValue: TMQTTQOSType);
+    protected
+      procedure HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean); virtual;
+      procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+      procedure Changed; virtual;
+      procedure SendSubscription; virtual;
+      property Tokens: TMQTTTokenizer read FTokens;
+    public
+      constructor Create(AOwner: TComponent); override;
+      destructor Destroy; override;
+      procedure Assign(Source: TPersistent); override;
+      procedure Clear;
+      procedure Subscribe;
+      procedure Unsubscribe;
+      property Modified: Boolean read FModified write FModified;
+    published
+      property Enabled: Boolean read FEnabled write FEnabled default true;
+      property Filter: UTF8String read GetFilter write SetFilter;
+      property QOS: TMQTTQOSType read FQOS write SetQOS default qtAT_MOST_ONCE;
+      property Client: TMQTTClient read GetClient write SetClient;
+      //
+      property OnMessage: TMQTTClientSubscriptionReceiveMessageEvent read FOnMessage write FOnMessage;
+      property OnSendSubscription: TNotifyEvent read FOnSendSubscription write FOnSendSubscription;
+      property OnChanged: TNotifyEvent read FOnChanged write FOnChanged;
+  end;
+
+  { TMQTTClientSubscriptionList }
+
+  TMQTTClientSubscriptionList = class(TObject)
+    private
+      FList: TList;
+      function GetCount: Integer;
+      function GetItem(Index: Integer): TMQTTClientSubscription;
+    public
+      constructor Create;
+      destructor Destroy; override;
+      procedure Add(AItem: TMQTTClientSubscription);
+      procedure Remove(AItem: TMQTTClientSubscription);
+      property Count: Integer read GetCount;
+      property Items[Index: Integer]: TMQTTClientSubscription read GetItem; default;
+  end;
+
+  { TMQTTClientPublisher }
+
+  TMQTTClientPublisher = class(TComponent)
+    private
+      FEnabled     : Boolean;
+      FAutoPublish : Boolean;
+      FClient      : TMQTTClient;
+      FModified    : Boolean;
+      FTokens      : TMQTTTokenizer;
+      FData        : String;
+      FQOS         : TMQTTQOSType;
+      FRetain      : Boolean;
+      FOnChanged   : TNotifyEvent;
+      FOnPublish   : TNotifyEvent;
+      function GetTopic: String;
+      procedure SetClient(AValue: TMQTTClient);
+      procedure SetData(AValue: String);
+      procedure SetQOS(AValue: TMQTTQOSType);
+      procedure SetRetained(AValue: Boolean);
+      procedure SetTopic(AValue: String);
+    protected
+      procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+      procedure Changed; virtual;
+      property Tokens: TMQTTTokenizer read FTokens;
+    public
+      constructor Create(AOwner: TComponent); override;
+      destructor Destroy; override;
+      procedure Assign(Source: TPersistent); override;
+      procedure Publish;
+      procedure Clear;
+      property Modified: Boolean read FModified write FModified;
+    published
+      property Enabled: Boolean read FEnabled write FEnabled default True;
+      property AutoPublish: Boolean read FAutoPublish write FAutoPublish default False;
+      property Client: TMQTTClient read FClient write SetClient;
+      property Topic: String read GetTopic write SetTopic;
+      property Data: String read FData write SetData;
+      property QOS: TMQTTQOSType read FQOS write SetQOS default qtAT_LEAST_ONCE;
+      property Retain: Boolean read FRetain write SetRetained default False;
+      property OnChanged: TNotifyEvent read FOnChanged write FOnChanged;
+      property OnPublish: TNotifyEvent read FOnPublish write FOnPublish;
+  end;
+
+  { TMQTTClientPublisherList }
+
+  TMQTTClientPublisherList = class(TObject)
+    private
+      FList: TList;
+      function GetCount: Integer;
+      function GetItem(Index: Integer): TMQTTClientPublisher;
+    public
+      constructor Create;
+      destructor Destroy; override;
+      procedure Add(AItem: TMQTTClientPublisher);
+      procedure Remove(AItem: TMQTTClientPublisher);
+      property Count: Integer read GetCount;
+      property Items[Index: Integer]: TMQTTClientPublisher read GetItem; default;
   end;
 
 implementation
@@ -165,7 +294,7 @@ begin
         if FClient.State = csConnecting then
           begin
             inc(FConnect);
-            if (FConnect >= 2) then
+            if (FConnect > MQTT_CONNECT_TIMEOUT) then
               begin
                 Synchronize(@OnConnectTimer);
                 FConnect := 0;
@@ -182,22 +311,21 @@ end;
 constructor TMQTTClient.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  Log                  := TLogDispatcher.Create('Client');
-  FResendPacketTimeout := 2;
-  FMaxResendAttempts   := 3;
-  FSendBuffer          := TBuffer.Create;
-  FRecvBuffer          := TBuffer.Create;
-  FPacketIDManager     := TMQTTPacketIDManager.Create;
-  FSubscriptions       := TMQTTSubscriptionList.Create;
-  //FPendingTransmission := TMQTTMessageList.Create;
-  FWaitingForAck       := TMQTTPacketQueue.Create;
-  FPendingReceive      := TMQTTPacketQueue.Create;
-  FWillMessage         := TMQTTWillMessage.Create;
-  FKeepAlive           := 30;
-  FPingInterval        := 15;
-  FPingIntRemaining    := FPingInterval;
-  FCleanSession        := True;
-
+  Log                     := TLogDispatcher.Create('Client');
+  FResendPacketTimeout    := MQTT_DEFAULT_RESEND_PACKET_TIMEOUT;
+  FMaxResendAttempts      := MQTT_DEFAULT_MAX_RESEND_ATTEMPTS;
+  FSendBuffer             := TBuffer.Create;
+  FRecvBuffer             := TBuffer.Create;
+  FPacketIDManager        := TMQTTPacketIDManager.Create;
+  FSubscriptions          := TMQTTClientSubscriptionList.Create;
+  FPublishers             := TMQTTClientPublisherList.Create;
+  FWaitingForAck          := TMQTTPacketQueue.Create;
+  FPendingReceive         := TMQTTPacketQueue.Create;
+  FWillMessage            := TMQTTWillMessage.Create;
+  FKeepAlive              := MQTT_DEFAULT_KEEPALIVE;
+  FPingInterval           := MQTT_DEFAULT_PING_INTERVAL;
+  FPingIntRemaining       := FPingInterval;
+  FCleanSession           := True;
   FThread                 := TMQTTClientThread.Create(False);
   FThread.FreeOnTerminate := True;
   FThread.FClient         := Self;
@@ -209,8 +337,8 @@ begin
   FThread.Terminate;
   FWillMessage.Free;
   FWaitingForAck.Free;
-  //FPendingTransmission.Free;
   FPendingReceive.Free;
+  FPublishers.Free;
   FSubscriptions.Free;
   FPacketIDManager.Free;
   FSendBuffer.Free;
@@ -222,7 +350,6 @@ end;
 
 procedure TMQTTClient.Reset;
 begin
-  //FPendingTransmission.Clear;
   FPendingReceive.Clear;
   FWaitingForAck.Clear;
   FPacketIDManager.Reset;
@@ -235,7 +362,7 @@ begin
   FCleanSession := False;
   FPingIntRemaining := FPingInterval;
   FPingCount := 0;
-  Log.Send(mtInfo,'Client has been reset');
+  Log.Send(mtInfo,GetMQTTLogMessage(LM_CLIENT_RESET));
 end;
 
 procedure TMQTTClient.HandleTimer;
@@ -274,7 +401,7 @@ begin
                 if Packet.PacketType = ptPUBLISH then
                   (Packet as TMQTTPUBLISHPacket).Duplicate := True;
                 Packet.WriteToBuffer(SendBuffer);
-                Log.Send(mtWarning,'Resending %s packet',[Packet.PacketTypeName]);
+                Log.Send(mtWarning,GetMQTTLogMessage(LM_RESENDING_PACKET),[Packet.PacketTypeName]);
                 SendData;
                 Packet.SecondsInQueue := 0;
                 Packet.ResendCount := Packet.ResendCount + 1;
@@ -284,7 +411,7 @@ begin
                 FWaitingForAck.Delete(I);
                 if Packet.PacketType in [ptSUBACK,ptUNSUBACK,ptPUBACK,ptPUBCOMP] then
                   PacketIDManager.ReleaseID(Packet.PacketID);
-                Log.Send(mtWarning,'A %s packet went unacknowledged by the server',[Packet.PacketTypeName]);
+                Log.Send(mtWarning,GetMQTTLogMessage(LM_PACKET_UNACKNOWLEDGED_BY_SERVER),[Packet.PacketTypeName]);
                 Packet.Free;
               end;
           end;
@@ -381,7 +508,7 @@ begin
   Assert(State = csConnecting);
   if (State = csConnecting) then
     begin
-      Log.Send(mtInfo,'Client has connected');
+      Log.Send(mtInfo,GetMQTTLogMessage(LM_CLIENT_HAS_CONNECTED));
       FState := csConnected;
       if Assigned(FOnConnected) then
         FOnConnected(Self);
@@ -395,13 +522,38 @@ begin
 end;
 
 procedure TMQTTClient.InitSession;
+var
+  X,N: Integer;
+  S: TMQTTClientSubscription;
+  L: TMQTTSubscriptionList;
 begin
-  FSubscriptions.Clear;
   FWaitingForAck.Clear;
-  //FPendingTransmission.Clear;
   FPendingReceive.Clear;
   if Assigned(FOnInitSession) then
     FOnInitSession(Self);
+  if Subscriptions.Count > 0 then
+    begin
+      L := TMQTTSubscriptionList.Create;
+      try
+        for X := 0 to Subscriptions.Count - 1 do
+          begin
+            S := Subscriptions[X];
+            if Assigned(S) and S.Enabled then
+              L.New(S.Filter,S.QOS);
+          end;
+        // Invalid subscriptions must be removed before duplicate subscriptions
+        N := L.RemoveInvalidSubscriptions;
+        if N > 0 then
+          Log.Send(mtWarning,GetMQTTLogMessage(LM_INVALID_SUBSCRIPTION_REMOVED),[N]);
+        N := L.RemoveDuplicates;
+        if N > 0 then
+          Log.Send(mtDebug,GetMQTTLogMessage(LM_DUPLICATE_SUBSCRIPTION_REMOVED),[N]);
+        if not Subscribe(L) then
+          Log.Send(mtError,GetMQTTLogMessage(LM_COULD_NOT_REGISTER_SUBSCRIPTIONS));
+      finally
+        L.Free;
+      end;
+    end;
 end;
 
 procedure TMQTTClient.Disconnect;
@@ -607,9 +759,6 @@ begin
             begin
               FWaitingForAck.Delete(I);
               ProcessReturnCodes((Packet as TMQTTSUBSCRIBEPacket).Subscriptions,APacket.ReturnCodes);
-              Subscriptions.MergeList((Packet as TMQTTSUBSCRIBEPacket).Subscriptions);
-              if Assigned(FOnSubscriptionsChanged) then
-                FOnSubscriptionsChanged(Self);
               PacketIDManager.ReleaseID(Packet.PacketID);
               Packet.Free;
             end;
@@ -730,9 +879,6 @@ begin
           if (Packet.PacketType = ptUNSUBSCRIBE) and (Packet.PacketID = APacket.PacketID) then
             begin
               FWaitingForAck.Delete(I);
-              Subscriptions.DeleteList((Packet as TMQTTUNSUBSCRIBEPacket).Subscriptions);
-              if Assigned(FOnSubscriptionsChanged) then
-                FOnSubscriptionsChanged(Self);
               PacketIDManager.ReleaseID(Packet.PacketID);
               Packet.Free;
               Break;
@@ -741,23 +887,29 @@ begin
     end;
 end;
 
-{procedure TMQTTClient.SendPendingMessages;
+procedure TMQTTClient.ReceiveMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean);
 var
+  Tokens: TMQTTTokenizer;
   I: Integer;
-  M: TMQTTMessage;
+  Subscription: TMQTTClientSubscription;
 begin
-  for I := 0 to FPendingTransmission.Count - 1 do
+  if FSubscriptions.Count > 0 then
     begin
-      M := FPendingTransmission[I];
-      Publish(M.Topic,M.Data,M.QOS,M.Retain);
+      Tokens := TMQTTTokenizer.Create(Topic,False);
+      try
+        for I := 0 to FSubscriptions.Count - 1 do
+          begin
+            Subscription := TMQTTClientSubscription(FSubscriptions[I]);
+            if CheckTopicMatchesFilter(Tokens,Subscription.Tokens) then
+              if Assigned(Subscription.OnMessage) then
+                Subscription.OnMessage(Subscription,Topic,Data,QOS,Retained);
+          end;
+      finally
+        Tokens.Free;
+      end;
     end;
-  FPendingTransmission.Clear;
-end;}
-
-procedure TMQTTClient.ReceiveMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean);
-begin
   if Assigned(FOnReceiveMessage) then
-    FOnReceiveMessage(Self,Topic,Data,QOS,Retain);
+    FOnReceiveMessage(Self,Topic,Data,QOS,Retained);
 end;
 
 procedure TMQTTClient.Publish(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean; Duplicate: Boolean);
@@ -800,8 +952,6 @@ begin
         qtAT_LEAST_ONCE : HandlePUBLISHPacket1(APacket);
         qtEXACTLY_ONCE  : HandlePUBLISHPacket2(APacket);
       end;
-      {if APacket.QOS in [qtAT_LEAST_ONCE,qtEXACTLY_ONCE] then
-        SendPendingMessages;}
     end;
 end;
 
@@ -913,6 +1063,361 @@ begin
       FPacketIDManager.ReleaseID(APacket.PacketID);
       FWaitingForAck.Remove(ptPUBREL,APacket.PacketID);
     end;
+end;
+
+{ TMQTTClientSubscriptionList }
+
+constructor TMQTTClientSubscriptionList.Create;
+begin
+  inherited Create;
+  FList := TList.Create;
+end;
+
+destructor TMQTTClientSubscriptionList.Destroy;
+begin
+  FList.Free;
+  inherited Destroy;
+end;
+
+function TMQTTClientSubscriptionList.GetItem(Index: Integer): TMQTTClientSubscription;
+begin
+  Result := TMQTTClientSubscription(FList[Index]);
+end;
+
+function TMQTTClientSubscriptionList.GetCount: Integer;
+begin
+  Result := FList.Count;
+end;
+
+procedure TMQTTClientSubscriptionList.Add(AItem: TMQTTClientSubscription);
+begin
+  // Ensure this is the only copy of this object in the list
+  if FList.IndexOf(AItem) = -1 then
+    FList.Add(AItem);
+end;
+
+procedure TMQTTClientSubscriptionList.Remove(AItem: TMQTTClientSubscription);
+begin
+  FList.Remove(AItem);
+end;
+
+{ TMQTTClientSubscription }
+
+constructor TMQTTClientSubscription.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FEnabled := True;
+  FQOS := qtAT_LEAST_ONCE;
+end;
+
+destructor TMQTTClientSubscription.Destroy;
+begin
+  Client := nil;
+  if Assigned(FTokens) then
+    FreeAndNil(FTokens);
+  inherited Destroy;
+end;
+
+procedure TMQTTClientSubscription.Assign(Source: TPersistent);
+begin
+  if (Source is TMQTTClientSubscription) then
+    begin
+      Enabled            := (Source as TMQTTClientSubscription).Enabled;
+      Client             := (Source as TMQTTClientSubscription).Client;
+      Filter             := (Source as TMQTTClientSubscription).Filter;
+      QOS                := (Source as TMQTTClientSubscription).QOS;
+      OnMessage          := (Source as TMQTTClientSubscription).OnMessage;
+      OnChanged          := (Source as TMQTTClientSubscription).OnChanged;
+      OnSendSubscription := (Source as TMQTTClientSubscription).OnSendSubscription;
+      Changed;
+    end
+  else
+    inherited Assign(Source);
+end;
+
+procedure TMQTTClientSubscription.Clear;
+begin
+  if Assigned(FTokens) then
+    FreeAndNil(FTokens);
+  FEnabled := True;
+  FQOS := qtAT_LEAST_ONCE;
+  FModified := False;
+end;
+
+procedure TMQTTClientSubscription.Subscribe;
+var
+  L: TMQTTSubscriptionList;
+begin
+  if Assigned(FClient) then
+    begin
+      L := TMQTTSubscriptionList.Create;
+      try
+        L.New(Filter,QOS);
+        FClient.Subscribe(L);
+      finally
+        L.Free;
+      end;
+    end;
+end;
+
+procedure TMQTTClientSubscription.Unsubscribe;
+var
+  L: TMQTTSubscriptionList;
+begin
+  if Assigned(FClient) then
+    begin
+      L := TMQTTSubscriptionList.Create;
+      try
+        L.New(Filter,QOS);
+        FClient.Unsubscribe(L);
+      finally
+        L.Free;
+      end;
+    end;
+end;
+
+procedure TMQTTClientSubscription.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+  if (Operation = opRemove) and (AComponent = FClient) then
+    begin
+      Client := nil;
+      Changed;
+    end;
+  inherited Notification(AComponent, Operation);
+end;
+
+procedure TMQTTClientSubscription.Changed;
+begin
+  FModified := True;
+  if Assigned(FOnChanged) then
+    FOnChanged(Self);
+end;
+
+procedure TMQTTClientSubscription.SendSubscription;
+begin
+  if Enabled and Assigned(FOnSendSubscription) then
+    FOnSendSubscription(Self);
+end;
+
+procedure TMQTTClientSubscription.HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean);
+begin
+  if Enabled and Assigned(FOnMessage) then
+    FOnMessage(Self,Topic,Data,QOS,Retained);
+end;
+
+function TMQTTClientSubscription.GetFilter: UTF8String;
+begin
+  if Assigned(FTokens) then
+    Result := FTokens.AsString
+  else
+    Result := '';
+end;
+
+procedure TMQTTClientSubscription.SetFilter(AValue: UTF8String);
+begin
+  if GetFilter = AValue then Exit;
+  if Assigned(FTokens) then
+    FreeAndNil(FTokens);
+  if AValue > '' then
+    FTokens := TMQTTTokenizer.Create(AValue,True);
+  Changed;
+end;
+
+procedure TMQTTClientSubscription.SetQOS(AValue: TMQTTQOSType);
+begin
+  if FQOS=AValue then Exit;
+  FQOS:=AValue;
+  Changed;
+end;
+
+function TMQTTClientSubscription.GetClient: TMQTTClient;
+begin
+  Result := FClient as TMQTTClient;
+end;
+
+procedure TMQTTClientSubscription.SetClient(AValue: TMQTTClient);
+begin
+  if AValue = FClient then Exit;
+  if Assigned(FClient) then
+    begin
+      FClient.Subscriptions.Remove(Self);
+      FClient.RemoveFreeNotification(Self);
+    end;
+  FClient := AValue;
+  if Assigned(FClient) then
+    begin
+      FClient.FSubscriptions.Add(Self);
+      FClient.FreeNotification(Self);
+    end;
+  Changed;
+end;
+
+{ TMQTTClientPublisherList }
+
+constructor TMQTTClientPublisherList.Create;
+begin
+  inherited Create;
+  FList := TList.Create;
+end;
+
+destructor TMQTTClientPublisherList.Destroy;
+begin
+  // This list should already have been cleared by the FreeNotification system
+  FList.Free;
+  inherited Destroy;
+end;
+
+function TMQTTClientPublisherList.GetCount: Integer;
+begin
+  Result := FList.Count;
+end;
+
+function TMQTTClientPublisherList.GetItem(Index: Integer): TMQTTClientPublisher;
+begin
+  Result := TMQTTClientPublisher(FList[Index]);
+end;
+
+procedure TMQTTClientPublisherList.Add(AItem: TMQTTClientPublisher);
+begin
+  // Prevent duplicates
+  if FList.IndexOf(AItem) = -1 then
+    FList.Add(AItem);
+end;
+
+procedure TMQTTClientPublisherList.Remove(AItem: TMQTTClientPublisher);
+begin
+  FList.Remove(AItem);
+end;
+
+{ TMQTTClientPublisher }
+
+constructor TMQTTClientPublisher.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FEnabled := True;
+  FQOS := qtAT_LEAST_ONCE;
+end;
+
+destructor TMQTTClientPublisher.Destroy;
+begin
+  Client := nil; // Remove self from client's FreeNotification and Publishers lists
+  FreeAndNil(FTokens);
+  inherited Destroy;
+end;
+
+procedure TMQTTClientPublisher.Assign(Source: TPersistent);
+begin
+  if Source is TMQTTClientPublisher then
+    begin
+      FAutoPublish := (Source as TMQTTClientPublisher).AutoPublish;
+      FData := (Source as TMQTTClientPublisher).Data;
+      FQOS := (Source as TMQTTClientPublisher).QOS;
+      FRetain := (Source as TMQTTClientPublisher).Retain;
+      Client := (Source as TMQTTClientPublisher).Client;
+      Topic := (Source as TMQTTClientPublisher).Topic;
+      Changed;
+    end
+  else
+    inherited Assign(Source);
+end;
+
+procedure TMQTTClientPublisher.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+  if (AComponent = FClient) and (Operation = opRemove) then
+    FClient := nil;
+  inherited Notification(AComponent, Operation);
+end;
+
+procedure TMQTTClientPublisher.Publish;
+begin
+  try
+    if Enabled and Assigned(FOnPublish) then
+      FOnPublish(Self);
+    if Enabled and Assigned(FClient) then
+      begin
+        if AutoPublish then
+          FClient.Log.Send(mtDebug,'Topic %s automatically published due to change in data');
+        FClient.Publish(Topic,Data,QOS,Retain);
+      end;
+  except
+    on E: EAbort do begin
+      // Suppress the exception
+    end;
+  end;
+end;
+
+procedure TMQTTClientPublisher.Clear;
+begin
+  FAutoPublish := False;
+  if Assigned(FTokens) then
+    FreeAndNil(FTokens);
+  FData := '';
+  FQOS := qtAT_LEAST_ONCE;
+  FRetain := False;
+  FModified := False;
+end;
+
+procedure TMQTTClientPublisher.SetClient(AValue: TMQTTClient);
+begin
+  if FClient = AValue then Exit;
+  if Assigned(FClient) then
+    begin
+      FClient.Publishers.Remove(Self);
+      FClient.RemoveFreeNotification(Self);
+    end;
+  FClient := AValue;
+  if Assigned(FClient) then
+    begin
+      FClient.Publishers.Add(Self);
+      FClient.FreeNotification(Self);
+    end;
+end;
+
+procedure TMQTTClientPublisher.SetData(AValue: String);
+begin
+  if FData = AValue then Exit;
+  FData := AValue;
+  Changed;
+  if AutoPublish then
+    Publish;
+end;
+
+procedure TMQTTClientPublisher.Changed;
+begin
+  FModified := True;
+  if Assigned(FOnChanged) then
+    FOnChanged(Self);
+end;
+
+procedure TMQTTClientPublisher.SetQOS(AValue: TMQTTQOSType);
+begin
+  if FQOS = AValue then Exit;
+  FQOS := AValue;
+  Changed;
+end;
+
+procedure TMQTTClientPublisher.SetRetained(AValue: Boolean);
+begin
+  if FRetain = AValue then Exit;
+  FRetain := AValue;
+  Changed;
+end;
+
+function TMQTTClientPublisher.GetTopic: String;
+begin
+  if Assigned(FTokens) then
+    Result := FTokens.AsString
+  else
+    Result := '';
+end;
+
+procedure TMQTTClientPublisher.SetTopic(AValue: String);
+begin
+  if AValue = FTokens.AsString then Exit;
+  FreeAndNil(FTokens);
+  if AValue > '' then
+    FTokens := TMQTTTokenizer.Create(AValue,False);
+  Changed;
 end;
 
 end.

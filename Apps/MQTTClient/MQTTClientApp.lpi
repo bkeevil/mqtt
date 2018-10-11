@@ -126,7 +126,7 @@
       <Unit2>
         <Filename Value="..\..\Forms\connectfm.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="ConnectDlg"/>
+        <ComponentName Value="MQTTConnectDlg"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit2>

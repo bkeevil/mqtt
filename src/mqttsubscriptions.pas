@@ -23,7 +23,6 @@ type
       constructor Create(AFilter: UTF8String = ''; AQOS: TMQTTQOSType = qtAT_MOST_ONCE);
       destructor Destroy; override;
       procedure Assign(ASource: TMQTTSubscription);
-      function IsMatch(ATokens: TMQTTTokenizer): Boolean;
       property QOS: TMQTTQOSType read FQOS write FQOS;
       property Filter: UTF8String read FFilter write SetFilter;
       property Tokens: TMQTTTokenizer read GetTokens;
@@ -49,6 +48,7 @@ type
       procedure Delete(Index: Integer);
       procedure MergeList(AList: TMQTTSubscriptionList);
       procedure DeleteList(AList: TMQTTSubscriptionList);
+      function RemoveDuplicates: Integer;
       function RemoveInvalidSubscriptions: Integer;
       property Count: Integer read GetCount;
       property Items[Index: Integer]: TMQTTSubscription read GetItem; default;
@@ -98,49 +98,6 @@ begin
       if Assigned(FTokens) then
         FreeAndNil(FTokens);
     end;
-end;
-
-function TMQTTSubscription.IsMatch(ATokens: TMQTTTokenizer): Boolean;
-var
-  I: Integer;
-  FilterToken: TMQTTToken;
-  TopicToken: TMQTTToken;
-begin
-  Result := False;
-  for I := 0 to Tokens.Count - 1 do
-    begin
-      FilterToken := Tokens[I];
-      if I >= ATokens.Count then
-        begin
-          Result := Result and (FilterToken.Kind = tkMultiLevel);
-          Exit;
-        end;
-      TopicToken  := ATokens[I];
-      if FilterToken.Kind = tkInvalid then
-        begin
-          Result := False;
-          Exit;
-        end
-      else
-      if FilterToken.Kind = tkValid then
-        begin
-          Result := FilterToken.Text = TopicToken.Text;
-          if not Result then Exit;
-        end
-      else
-      if FilterToken.Kind = tkMultilevel then
-        begin
-          Result := True;
-          Exit;
-        end
-      else
-      if FilterToken.Kind = tkSingleLevel then
-        begin
-          Result := True;
-        end;
-    end;
-  if Tokens.Count < ATokens.Count then
-    Result := Result and (Tokens[Tokens.Count-1].Kind = tkMultiLevel);
 end;
 
 { TMQTTSubscriptionList }
@@ -214,11 +171,6 @@ begin
     end;
 end;
 
-{procedure TMQTTSubscriptionList.Add(ASubscription: TMQTTSubscription);
-begin
-  FList.Add(ASubscription);
-end;}
-
 procedure TMQTTSubscriptionList.Update(ASubscription: TMQTTSubscription);
 var
   O: TMQTTSubscription;
@@ -282,7 +234,7 @@ begin
           if not Assigned(S2) then
             S2 := New(S1.Filter,S1.QOS)
           else
-            S2.Assign(S1);
+            S1.Assign(S2);
         end;
     end;
 end;
@@ -309,6 +261,32 @@ begin
                 end;
           end
       end;
+end;
+
+function TMQTTSubscriptionList.RemoveDuplicates: Integer;
+var
+  X,Y,N: Integer;
+  S,R: TMQTTSubscription;
+begin
+  N := 0;
+  for X := Count - 1 downto 1 do
+    begin
+      S := Items[X];
+      for Y := X - 1 downto 0 do
+        begin
+          R := Items[Y];
+          if (S.Filter = R.Filter) then
+            begin
+              if ord(S.QOS) > ord(R.QOS) then
+                R.QOS := S.QOS;
+              S.Free;
+              Delete(X);
+              inc(N);
+              Break;
+            end;
+        end;
+    end;
+  Result := N;
 end;
 
 function TMQTTSubscriptionList.RemoveInvalidSubscriptions: Integer;
