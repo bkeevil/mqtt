@@ -1,4 +1,6 @@
-# Description
+# TMQTTClientPublisher
+
+[Back to Documentation Index](Main.MD)
 
 _MQTTClientPublisher_ stores the parameters and data of an MQTT PUBLISH command sent from a client. The same functionality can be obtained by calling the _Publish_ method of a _TMQTTClient_ object. This component stores the parameters for such a command in the application's resource file as a convenience.
 
