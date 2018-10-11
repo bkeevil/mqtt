@@ -43,3 +43,7 @@ To build the demo applications you will also need to install LNet. For me, the o
 ## Documentation
 
 The documentation is being rewritten in markdown and is [available in the docs directory](docs/Main.MD).
+
+## License
+
+This component is released under the GNU LGPL license agreement. You may share it, extend it, or use it for any commercial purposes provided you share any improvements you make to the code. It is not necessary to distribute this source code with your binaries.
