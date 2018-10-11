@@ -117,6 +117,12 @@ Bail | public | Called interally to drop the connection in the event of a protoc
 Subscribe | public | Pass a TMQTTSubscriptionList object containing subscriptions to this method. Multiple subscriptions can be sent in one SUBSCRIBE packet. Or you can place a TMQTTClientSubscription component on your form or datamodule and it will subscribe itself at the appropriate time.
 Unsubscribe | public | Pass a TMQTTSubscriptionList object containing topics to unsubscribe from.
 DataAvailable | public | This virtual method should be called by your application **after** data that has been received from the transport mechanism and has been copied into RecvBuffer.
+Connected | protected | Virtual method that is the equivelant of the OnConnected event handler.
+SendData | protected | Virtual method that is the equivelant of the OnSendData event handler.
+InitSession | protected | Virtual method that is the equivelant of the OnInitSession event handler.
+ReceiveMessage | protected | Virtual method that is the equivelant of the OnReceiveMessage event handler.
+
+Descendant classes designed to work with specific transport mechanisms can be created by overriding Connected, SendData, InitSession and ReceiveMessage.
 
 ## Events
 
