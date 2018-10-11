@@ -2,30 +2,36 @@
 
 MQTT component pack and Client/Server demo applications in FPC/Lazarus
 
-The goal of this project is to create a Lazarus/FPC component package that 
+The goal of this project is to create a Lazarus/FPC component package that: 
 
 1. Implements the MQTT protocol completely and accurately
-2. Is not dependent on a specific networking component or transport mechanism 
-3. Has good documentation
-4. Supports SSL/TLS and MQTT Broker Connections
+2. Implements all QoS levels
+3. Is not dependent on a specific networking component or transport mechanism 
+4. Has good documentation
 
 For the client and server demo applications I have been using the LNet components because they seem to run well on both Windows and Linux.
 
-There is a GUI client application and server application as well as a server command line application.
+There is a GUI client application and server application as well as a server command line application. These demonstrate the features of the component set and are useful for testing MQTT based applications.
 
 MQTT Brokers are not implemented and there is no security authentication provided by this component. You must provide your own authentication methods by implementing appropriate event handlers
 
-## Project Status
+## Project Milestones
 
- * The components set is complete and ready for use in projects 
- * There are mostly complete FPDocs available in the Docs directory but they are out of date
+**Version 0.9 (CURRENT RELEASE)**
+ * First release of the code that can be considered stable.
  
-## Current Development Efforts
- * I am in the process of redoing the docs in Markdown.
- * I am presently adding two new components, TMQTTClientSubscription and TMQTTClientPublisher. These changes will break the code from v0.9
- * I have tested the component set with LNet's SSL implementation and it works. I am adding SSL support to the demo applications.
- * I would like to develop the demo applications into a full featured set of applications to aid in MQTT protocol debugging.
+**Version 0.95 is in progress and will add:**
+ * Rough draft of documentation written in markdown (i.e. available on the Github Wiki pages for this project).
+ * I am presently adding two new palette bar components, [TMQTTClientSubscription](docs/TMQTTClientSubscription.MD) and [TMQTTClientPublisher](docs/TMQTTClientPublisher.MD).
+ * Added SSL/TLS support to the demo applications.
+ * Remove the dependencies on my other packages.
+ 
+**Version 1.0 will be the first major release of this component set. In this release I want to have:**
 
+1. Figure out how to include the component set in the online package manager.
+2. Go through the MQTT 3.1.1 specs one final time to verify everything has been implemented correctly.
+3. Final draft of documentation
+ 
 ## Installation
 
 To build this package you will need to check out and install my "bkutils" package on which this package depends. This is my general utilities package. This package provides my TBuffer class which this component set uses extensively. I hope to remove this dependency in a future release
@@ -36,11 +42,9 @@ To build the demo applications you will also need to install LNet. For me, the o
 
 ## Documentation
 
-The documentation is being rewritten in markdown. Check out the docs directory in the development branch. 
+The documentation is being rewritten in markdown and is available in the docs directory in the development branch.
 
 ## Command line server demo application
-
-The username/password database is not implemented. This is considered outside the scope of the component.
 
 For help with command line options, run the program with the --help switch.
 
@@ -65,5 +69,3 @@ MaximumQOS=2
 Host="0.0.0.0"
 Port=1883
 ```
-
-On Linux, the command line server application was crashing after several days of running. I have fixed one thing that might cause this problem but it needs to be verified that it is stable. 
