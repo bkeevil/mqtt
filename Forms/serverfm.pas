@@ -151,6 +151,7 @@ var
   S: String;
 begin
   Log := TLogDispatcher.Create('ServerForm');
+  Log.Filter := ALL_LOG_MESSAGE_TYPES;
   CRT := TLogCRTListener.Create;
   FRecords := TList.Create;
   FListener := TLogListener.Create;
@@ -363,13 +364,14 @@ end;
 
 procedure TServerForm.SSLSSLAccept(aSocket: TLSocket);
 var
+  Conn: TMQTTServerConnection;
   PeerCertificate: PX509;
   P: PX509_NAME;
   S: String;
 begin
-  Log.Send(mtInfo,'SSL/TLS Session Established');
   if (aSocket is TLSSLSocket) then
     begin
+      Log.Send(mtInfo,'SSL/TLS connection accepted from %s on port %d',[aSocket.PeerAddress,aSocket.PeerPort]);
       PeerCertificate := SslGetPeerCertificate((aSocket as TLSSLSocket).GetSSLPointer);
       if Assigned(PeerCertificate) then
         begin
@@ -389,6 +391,9 @@ begin
               Log.Send(mtInfo,'Issuer Name: ' + Trim(S));
             end;
         end;
+      Conn := Server.StartConnection;
+      aSocket.UserData := Conn;
+      Conn.Socket := aSocket;
     end;
 end;
 
@@ -453,6 +458,7 @@ var
   Conn: TMQTTServerConnection;
 begin
   Conn := Server.StartConnection;
+  //Log.Send(mtDebug,'TCPAccept.ClassName=%s',[aSocket.ClassName]);
   Log.Send(mtInfo,'TCP connection accepted from %s on port %d',[aSocket.PeerAddress,aSocket.PeerPort]);
   aSocket.UserData := Conn;
   Conn.Socket := aSocket;
