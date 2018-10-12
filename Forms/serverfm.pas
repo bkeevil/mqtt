@@ -25,6 +25,9 @@ type
   { TServerForm }
 
   TServerForm = class(TForm)
+    RestartServerItm: TMenuItem;
+    SSL: TLSSLSessionComponent;
+    SSLTCP: TLTCPComponent;
     PacketListMemo: TMemo;
     RefreshPacketListBtn: TButton;
     CBEnabled: TCheckBox;
@@ -73,6 +76,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure ListenTimerTimer(Sender: TObject);
     procedure LoadConfigurationItmClick(Sender: TObject);
+    procedure RestartServerItmClick(Sender: TObject);
+    procedure SSLSSLAccept(aSocket: TLSocket);
     procedure PropertiesItmClick(Sender: TObject);
     procedure RefreshConnectionsItmClick(Sender: TObject);
     procedure RefreshPacketListBtnClick(Sender: TObject);
@@ -108,6 +113,8 @@ type
   public
     Log: TLogDispatcher;
     Crt: TLogCrtListener;
+    StartNormalListener: Boolean;
+    StartSSLListener: Boolean;
   end;
 
 var
@@ -119,7 +126,21 @@ implementation
 {$R *.lfm}
 
 uses
-  MQTTPackets, MQTTPacketDefs, IniFiles, HelpFM, ServerPropertiesFM;
+  MQTTPackets, MQTTPacketDefs, IniFiles, HelpFM, ServerPropertiesFM, LNetSSL, OpenSSL;
+
+{ TLSSLSocketHelper }
+
+type
+  TLSSLSocketHelper = class helper for TLSSLSocket
+    function GetSSLPointer: PSSL;
+  end;
+
+{ TLSSLSocketHelper }
+
+function TLSSLSocketHelper.GetSSLPointer: PSSL;
+begin
+  Result := FSSL;
+end;
 
 { TServerForm }
 
@@ -132,6 +153,8 @@ begin
   FRecords := TList.Create;
   FListener := TLogListener.Create;
   FListener.OnMessage := @HandleMessage;
+  StartNormalListener := True;
+  StartSSLListener := False;
 
   S := Application.CheckOptions('i:p:dansc:','interface: port: disabled authenticate null-clientid strict-clientid help config:');
   if S > '' then
@@ -171,7 +194,10 @@ end;
 
 procedure TServerForm.FormDestroy(Sender: TObject);
 begin
-  TCP.Disconnect;
+  if StartNormalListener then
+    TCP.Disconnect;
+  if StartSSLListener then
+    SSLTCP.Disconnect;
   if SaveConfigurationItm.Enabled then
     try
       SaveConfiguration(FConfigFilename);
@@ -191,24 +217,44 @@ begin
 end;
 
 procedure TServerForm.ListenTimerTimer(Sender: TObject);
+var
+  Retry: Boolean = False;
 begin
   ListenTimer.Enabled := False;
   if Server.Enabled then
-    if TCP.Listen then
-      begin
-        Log.Send(mtInfo,'Server listening on port %d',[TCP.Port]);
-        ConnectionsGrid.Enabled := True;
-        SubscriptionsGrid.Enabled := True;
-        SessionsGrid.Enabled := True;
-        RetainedMessagesGrid.Enabled := True;
-        RefreshAll;
-      end
-    else
-      begin
-        ListenTimer.Interval := LISTEN_RETRY_DELAY;
-        Log.Send(mtError,'Server could not enter listening state.  Trying again in %d seconds.',[ListenTimer.Interval div 1000]);
-        ListenTimer.Enabled := True;
-      end;
+    begin
+      if StartNormalListener then
+        if (not (Assigned(TCP.Session) and TCP.Session.Active)) and TCP.Listen then
+          begin
+            Log.Send(mtInfo,'Server listening on port %d',[TCP.Port]);
+            ConnectionsGrid.Enabled := True;
+            SubscriptionsGrid.Enabled := True;
+            SessionsGrid.Enabled := True;
+            RetainedMessagesGrid.Enabled := True;
+            RefreshAll;
+          end
+        else
+          Retry := True;
+      if StartSSLListener then
+        if (not (Assigned(SSLTCP.Session) and SSLTCP.Session.Active)) and SSLTCP.Listen then
+          begin
+            Log.Send(mtInfo,'SSL/TLS Server listening on port %d',[SSLTCP.Port]);
+            ConnectionsGrid.Enabled := True;
+            SubscriptionsGrid.Enabled := True;
+            SessionsGrid.Enabled := True;
+            RetainedMessagesGrid.Enabled := True;
+            RefreshAll;
+          end
+        else
+          Retry := True;
+
+      if Retry then
+        begin
+          ListenTimer.Interval := LISTEN_RETRY_DELAY;
+          Log.Send(mtError,'Server could not enter listening state.  Trying again in %d seconds.',[ListenTimer.Interval div 1000]);
+          ListenTimer.Enabled := True;
+        end;
+    end;
 end;
 
 procedure TServerForm.LoadCommandLineOptions;
@@ -291,7 +337,7 @@ end;
 
 procedure TServerForm.PropertiesItmClick(Sender: TObject);
 begin
-  if ServerPropertiesDlg(Server,TCP) then
+  if ServerPropertiesDlg(Server,StartNormalListener,StartSSLListener,TCP,SSLTCP,SSL) then
     begin
       SaveConfiguration(SaveDialog.Filename);
       RefreshAll;
@@ -304,6 +350,35 @@ begin
     begin
       LoadConfiguration(OpenDialog.Filename);
       RefreshAll;
+    end;
+end;
+
+procedure TServerForm.RestartServerItmClick(Sender: TObject);
+begin
+  TCP.Disconnect;
+  SSLTCP.Disconnect;
+  ListenTimer.Enabled := True;
+end;
+
+procedure TServerForm.SSLSSLAccept(aSocket: TLSocket);
+var
+  PeerCertificate: PX509;
+  P: PX509_NAME;
+  S: String;
+begin
+  Log.Send(mtInfo,'SSL/TLS Session Established');
+  if (aSocket is TLSSLSocket) then
+    begin
+      PeerCertificate := SslGetPeerCertificate((aSocket as TLSSLSocket).GetSSLPointer);
+      P := X509GetSubjectName(PeerCertificate);
+      SetLength(S,255);
+      X509NameOneline(P,S,255);
+      Log.Send(mtInfo,'Subject Name: ' + Trim(S));
+      S := '';
+      P := X509GetSubjectName(PeerCertificate);
+      SetLength(S,255);
+      X509NameOneline(P,S,255);
+      Log.Send(mtInfo,'Issuer Name: ' + Trim(S));
     end;
 end;
 
@@ -480,30 +555,6 @@ begin
     FreeMem(Data,Size);
   end;
 end;
-{var
-  Conn: TMQTTServerConnection;
-  Data: Pointer;
-  Size,Sent: Integer;
-begin
-  Conn := TMQTTServerConnection(aSocket.UserData);
-  if Conn.SendBuffer.Size > 0 then
-    begin
-      GetMem(Data,32);
-      try
-        repeat
-          Size := Conn.SendBuffer.Peek(Data,32);
-          if Size > 0 then
-            begin
-              Sent := TCP.Send(Data^,Size);
-              if Sent > 0 then
-                Conn.SendBuffer.Read(Data,Sent);
-            end;
-        until (Size = 0) or (Sent < Size) or (Size < 32);
-      finally
-        FreeMem(Data,32);
-      end;
-    end;
-end;}
 
 procedure TServerForm.RefreshAll;
 begin
