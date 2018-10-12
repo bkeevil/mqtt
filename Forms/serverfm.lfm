@@ -1,7 +1,7 @@
 object ServerForm: TServerForm
   Left = 504
   Height = 371
-  Top = 158
+  Top = 186
   Width = 817
   ActiveControl = PageControl
   Caption = 'MQTT Server'
@@ -351,6 +351,10 @@ object ServerForm: TServerForm
         Caption = '&Save Configuration...'
         OnClick = SaveConfigurationItmClick
       end
+      object RestartServerItm: TMenuItem
+        Caption = '&Restart Server'
+        OnClick = RestartServerItmClick
+      end
       object PropertiesItm: TMenuItem
         Caption = '&Properties...'
         OnClick = PropertiesItmClick
@@ -427,6 +431,7 @@ object ServerForm: TServerForm
     OnError = TCPError
     OnDisconnect = TCPDisconnect
     OnAccept = TCPAccept
+    OnCanSend = TCPCanSend
     Timeout = 0
     ReuseAddress = True
     left = 80
@@ -444,5 +449,27 @@ object ServerForm: TServerForm
       Caption = '&Refresh'
       OnClick = RefreshRetainedMessagesItmClick
     end
+  end
+  object SSLTCP: TLTCPComponent
+    Host = '0.0.0.0'
+    Port = 8883
+    OnReceive = TCPReceive
+    OnError = TCPError
+    OnDisconnect = TCPDisconnect
+    OnAccept = TCPAccept
+    OnCanSend = TCPCanSend
+    Timeout = 0
+    ReuseAddress = True
+    Session = SSL
+    left = 80
+    top = 248
+  end
+  object SSL: TLSSLSessionComponent
+    CAFile = 'cert'
+    KeyFile = 'pkey'
+    Method = msTLSv1
+    OnSSLAccept = SSLSSLAccept
+    left = 160
+    top = 248
   end
 end
