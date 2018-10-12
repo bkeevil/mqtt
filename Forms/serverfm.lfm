@@ -93,7 +93,7 @@ object ServerForm: TServerForm
           end        
           item
             Title.Caption = 'Topic Filter'
-            Width = 501
+            Width = 499
           end        
           item
             SizePriority = 0
@@ -117,7 +117,7 @@ object ServerForm: TServerForm
         TabOrder = 0
         ColWidths = (
           120
-          501
+          499
           120
           64
         )
