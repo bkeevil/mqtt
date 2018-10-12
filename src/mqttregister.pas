@@ -20,7 +20,7 @@ begin
   {$I mqttclient_icon.lrs}
   {$I mqttclientsubscription_icon.lrs}
   {$I mqttclientpublisher_icon.lrs}
-  RegisterComponents('MQTT',[TMQTTClient, TMQTTClientSubscription, TMQTTClientPublisher, TMQTTServer]);
+  RegisterComponents('MQTT',[TMQTTClient, TMQTTClientSubscription, TMQTTClientPublisher, TMQTTServer, TMQTTRetainedMessagesDatastore]);
 end;
 
 end.
