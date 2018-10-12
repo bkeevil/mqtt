@@ -1,10 +1,10 @@
 # Bond Keevil's MQTT Component Pack for Lazarus
 
-MQTT client and server component pack with demo applications written in Lazarus/FPC.
+Message Queue Telemetry Transport (MQTT) client and server component pack for Lazarus/FPC with demo applications.
 
-Project Goals: 
+## Project Goals: 
 
-1. Implements the MQTT protocol version 3.1.1 completely and accurately
+1. Implements the [MQTT protocol specification 3.1.1](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html) completely and accurately
 2. Implements all QoS levels
 3. Is not dependent on a specific networking component or transport mechanism 
 4. Has good [documentation](https://github.com/bkeevil/mqtt/blob/master/doc/Main.MD)
