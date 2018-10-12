@@ -1,7 +1,7 @@
 object ClientForm: TClientForm
   Left = 549
   Height = 357
-  Top = 191
+  Top = 219
   Width = 605
   Caption = 'MQTT Client'
   ClientHeight = 357
@@ -69,9 +69,9 @@ object ClientForm: TClientForm
     Height = 274
     Top = 48
     Width = 577
-    ActivePage = MessagesTab
+    ActivePage = LogTab
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 6
     object MessagesTab: TTabSheet
       Caption = 'Messages'
@@ -209,7 +209,7 @@ object ClientForm: TClientForm
           item
             ReadOnly = True
             Title.Caption = 'Message'
-            Width = 363
+            Width = 365
           end>
         DefaultRowHeight = 18
         ExtendedSelect = False
@@ -220,7 +220,7 @@ object ClientForm: TClientForm
         ColWidths = (
           80
           120
-          363
+          365
         )
       end
     end

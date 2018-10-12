@@ -25,6 +25,7 @@ type
   { TServerForm }
 
   TServerForm = class(TForm)
+    cbEnableDebugMessages: TCheckBox;
     RestartServerItm: TMenuItem;
     SSL: TLSSLSessionComponent;
     SSLTCP: TLTCPComponent;
@@ -68,6 +69,7 @@ type
     SessionsTab: TTabSheet;
     ListenTimer: TTimer;
     procedure CBEnabledChange(Sender: TObject);
+    procedure cbEnableDebugMessagesChange(Sender: TObject);
     procedure CBFilteredChange(Sender: TObject);
     procedure ClearBtnClick(Sender: TObject);
     procedure ExitItmClick(Sender: TObject);
@@ -247,7 +249,6 @@ begin
           end
         else
           Retry := True;
-
       if Retry then
         begin
           ListenTimer.Interval := LISTEN_RETRY_DELAY;
@@ -370,15 +371,24 @@ begin
   if (aSocket is TLSSLSocket) then
     begin
       PeerCertificate := SslGetPeerCertificate((aSocket as TLSSLSocket).GetSSLPointer);
-      P := X509GetSubjectName(PeerCertificate);
-      SetLength(S,255);
-      X509NameOneline(P,S,255);
-      Log.Send(mtInfo,'Subject Name: ' + Trim(S));
-      S := '';
-      P := X509GetSubjectName(PeerCertificate);
-      SetLength(S,255);
-      X509NameOneline(P,S,255);
-      Log.Send(mtInfo,'Issuer Name: ' + Trim(S));
+      if Assigned(PeerCertificate) then
+        begin
+          P := X509GetSubjectName(PeerCertificate);
+          if Assigned(P) then
+            begin
+              SetLength(S,255);
+              X509NameOneline(P,S,255);
+              Log.Send(mtInfo,'Subject Name: ' + Trim(S));
+              S := '';
+            end;
+          P := X509GetSubjectName(PeerCertificate);
+          if Assigned(P) then
+            begin
+              SetLength(S,255);
+              X509NameOneline(P,S,255);
+              Log.Send(mtInfo,'Issuer Name: ' + Trim(S));
+            end;
+        end;
     end;
 end;
 
@@ -726,6 +736,20 @@ end;
 procedure TServerForm.CBEnabledChange(Sender: TObject);
 begin
   FListener.Enabled := CBEnabled.Checked;
+end;
+
+procedure TServerForm.cbEnableDebugMessagesChange(Sender: TObject);
+begin
+  if cbEnableDebugMessages.Checked then
+    begin
+      FListener.TypeFilter := ALL_LOG_MESSAGE_TYPES;
+      Server.Log.Filter := ALL_LOG_MESSAGE_TYPES;
+    end
+  else
+    begin
+      FListener.TypeFilter := DEFAULT_LOG_MESSAGE_TYPES;
+      Server.Log.Filter := DEFAULT_LOG_MESSAGE_TYPES;
+    end;
 end;
 
 function TServerForm.PassesFilter(Filter: String; Rec: PDebugMessage): Boolean;

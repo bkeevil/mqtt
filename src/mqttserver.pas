@@ -303,6 +303,7 @@ constructor TMQTTServer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   Log                     := TLogDispatcher.Create(Name);
+  Log.Filter              := ALL_LOG_MESSAGE_TYPES;
   FMaximumQOS             := qtEXACTLY_ONCE;
   FEnabled                := True;
   FAllowNullClientIDs     := False;
@@ -545,6 +546,7 @@ begin
   Assert(Assigned(AServer));
   inherited Create;
   Log.Name := 'Connection';
+  Log.Filter := ALL_LOG_MESSAGE_TYPES;
   FServer  := AServer;
   FServer.Connections.Add(Self);
   FSendBuffer          := TBuffer.Create;
@@ -1338,6 +1340,7 @@ begin
   FClientID            := AClientID;
   FMaximumQOS          := qtEXACTLY_ONCE;
   Log.Name             := 'Session ('+FClientID+')';
+  Log.Filter           := ALL_LOG_MESSAGE_TYPES;
 end;
 
 destructor TMQTTSession.Destroy;

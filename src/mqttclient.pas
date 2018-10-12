@@ -312,6 +312,7 @@ constructor TMQTTClient.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   Log                     := TLogDispatcher.Create('Client');
+  Log.Filter              := ALL_LOG_MESSAGE_TYPES;
   FResendPacketTimeout    := MQTT_DEFAULT_RESEND_PACKET_TIMEOUT;
   FMaxResendAttempts      := MQTT_DEFAULT_MAX_RESEND_ATTEMPTS;
   FSendBuffer             := TBuffer.Create;
