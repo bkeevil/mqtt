@@ -922,6 +922,10 @@ begin
     end
   else
     Result := False;
+  {If the protocol name is incorrect the Server MAY disconnect the Client, or it
+  MAY continue processing the CONNECT packet in accordance with some other specification.
+  In the latter case, the Server MUST NOT continue to process the CONNECT packet
+  in line with this specification [MQTT-3.1.2-1]}
   if not Result then
     FReturnCode := MQTT_CONNACK_UNACCEPTABLE_PROTOCOL;
 end;
