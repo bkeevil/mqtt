@@ -253,6 +253,9 @@ type
 
 implementation
 
+uses
+  LazUTF8;
+
 { TMQTTWillMessage }
 
 procedure TMQTTWillMessage.Clear;
@@ -913,6 +916,15 @@ end;
 
 function TMQTTCONNECTPacket.ParseProtocolName(ABuffer: TBuffer): Boolean;
 var
+  Str: UTF8String;
+begin
+  Result := False;
+  if ReadUTF8StringFromBuffer(ABuffer,Str) then
+    Result := UTF8CompareStr(Str,'MQTT') = 0;
+  if not Result then
+    FReturnCode := MQTT_CONNACK_UNACCEPTABLE_PROTOCOL;
+end;
+{var
   B: array [1..6] of Char;
 begin
   if ABuffer.Read(@B,6) = 6 then
@@ -921,10 +933,7 @@ begin
                 and (B[5] = 'T') and (B[6] = 'T');
     end
   else
-    Result := False;
-  if not Result then
-    FReturnCode := MQTT_CONNACK_UNACCEPTABLE_PROTOCOL;
-end;
+    Result := False;}
 
 function TMQTTCONNECTPacket.SetConnectFlags(B: Byte): Boolean;
 begin
@@ -944,23 +953,29 @@ end;
 
 function TMQTTCONNECTPacket.ParseVarHeader(ABuffer: TBuffer): Boolean;
 var
-  B: Byte;
+  ProtocolLevel, ConnectFlags, B: Byte;
 begin
   Result := False;
   ParseProtocolName(ABuffer); // Ignore the return value.  Its stored in ReturnCode instead.
-  ABuffer.Read(@B,1);
-  if B = 4 then
+  ABuffer.Read(@ProtocolLevel,1);
+  if ProtocolLevel = $04 then
     begin
-      ABuffer.Read(@B,1);
-      if SetConnectFlags(B) then
+      ABuffer.Read(@ConnectFlags,1);
+      if SetConnectFlags(ConnectFlags) then
         begin
           ABuffer.Read(@B,1);
           FKeepAlive := B * 256;
           ABuffer.Read(@B,1);
           FKeepAlive := FKeepAlive + B;
           Result := True;
-        end;
-    end;
+        end
+      else
+        { The Server MUST validate that the reserved flag in the CONNECT Control
+        Packet is set to zero and disconnect the Client if it is not zero [MQTT-3.1.2-3] }
+        FReturnCode := MQTT_ERROR_INVALID_PACKET_FLAGS;
+    end
+  else
+    FReturnCode := MQTT_ERROR_UNACCEPTABLE_PROTOCOL;
 end;
 
 function TMQTTCONNECTPacket.ParsePayload(ABuffer: TBuffer): Boolean;
@@ -995,7 +1010,10 @@ begin
     else
       Result := MQTT_ERROR_PAYLOAD_INVALID
   else
-    Result := MQTT_ERROR_VARHEADER_INVALID;
+    if FReturnCode = MQTT_ERROR_INVALID_PACKET_FLAGS then
+      Result := FReturnCode
+    else
+      Result := MQTT_ERROR_VARHEADER_INVALID;
 end;
 
 function TMQTTCONNECTPacket.GetFlagsByte: Byte;
@@ -1094,7 +1112,8 @@ begin
       Len := Len - ABuffer.Size;
       Len := RemainingLength - Len;
       SetLength(FData,Len);
-      ABuffer.Read(PChar(FData),Len);
+      if (Len > 0) then
+        ABuffer.Read(PChar(FData),Len);
     end
   else
     Result := MQTT_ERROR_VARHEADER_INVALID;

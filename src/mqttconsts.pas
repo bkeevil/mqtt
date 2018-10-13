@@ -151,7 +151,7 @@ begin
     MQTT_ERROR_PACKET_INVALID               : Result := 'Packet was parsed successfully but failed final validation';
     MQTT_ERROR_PAYLOAD_INVALID              : Result := 'Invalid packet payload';
     MQTT_ERROR_VARHEADER_INVALID            : Result := 'Invalid variable header';
-    MQTT_ERROR_UNACCEPTABLE_PROTOCOL        : Result := 'Server says protocol version is unsupported';
+    MQTT_ERROR_UNACCEPTABLE_PROTOCOL        : Result := 'Protocol version unsupported by server';
     MQTT_ERROR_CLIENTID_REJECTED            : Result := 'Server rejected client identifier';
     MQTT_ERROR_SERVER_UNAVAILABLE           : Result := 'Server is temporarily offline';
     MQTT_ERROR_BAD_USERNAME_PASSWORD        : Result := 'Invalid username or password';
