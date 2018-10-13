@@ -1,5 +1,6 @@
+# TMQTTClientSubscription
 
-# Description
+[Back to Documentation Index](Main.MD)
 
 Represents a client's MQTT subscription. Subscriptions are automatically sent to the server by the _TMQTTClient_ component's _InitSession_ method that fires (if needed) during the Connection process. Duplicate topic filters are allowed. When a message is received by the client, all subscriptions with a matching topic _Filter_ have their _HandleMessage_ method called.
 
