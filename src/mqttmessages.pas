@@ -27,6 +27,8 @@ type
       destructor Destroy; override;
       //
       function Clone: TMQTTMessage;
+      procedure LoadFromStream(Stream: TStream);
+      procedure SaveToStream(Stream: TStream);
       //
       property ClientID: UTF8String read FClientID write FClientID;
       property Tokens: TMQTTTokenizer read GetTokens;
@@ -55,12 +57,17 @@ type
       procedure Remove(AMessage: TMQTTMessage);
       procedure Delete(Index: Integer);
       procedure DeleteByTopic(Topic: UTF8String);
+      procedure LoadFromStream(Stream: TStream);
+      procedure SaveToStream(Stream: TStream);
       //
       property Count: Integer read GetCount;
       property Items[Index: Integer]: TMQTTMessage read GetItem; default;
   end;
 
 implementation
+
+uses
+  StreamUtils;
 
 { TMQTTMessageList }
 
@@ -160,6 +167,41 @@ begin
     end;
 end;
 
+procedure TMQTTMessageList.LoadFromStream(Stream: TStream);
+var
+  I,C: Integer;
+  M: TMQTTMessage;
+begin
+  if Assigned(Stream) then
+    begin
+      Clear;
+      Stream.Read(C,SizeOf(C));
+      for I := 0 to C - 1 do
+        begin
+          M := TMQTTMessage.Create;
+          M.LoadFromStream(Stream);
+          FList.Add(M);
+        end;
+    end;
+end;
+
+procedure TMQTTMessageList.SaveToStream(Stream: TStream);
+var
+  I,C: Integer;
+  M: TMQTTMessage;
+begin
+  if Assigned(Stream) then
+    begin
+      C := Count;
+      Stream.Write(C,SizeOf(C));
+      for I := 0 to C - 1 do
+        begin
+          M := Items[I];
+          M.SaveToStream(Stream);
+        end;
+    end;
+end;
+
 procedure TMQTTMessageList.Remove(AMessage: TMQTTMessage);
 begin
   FList.Remove(AMessage);
@@ -187,6 +229,32 @@ begin
   Result.FData := FData;
   Result.FQOS := FQOS;
   Result.FRetain := FRetain;
+end;
+
+procedure TMQTTMessage.LoadFromStream(Stream: TStream);
+begin
+  if Assigned(Stream) then
+    begin
+      if Assigned(FTokens) then
+        FreeAndNil(FTokens);
+      FClientID := LoadStringFromStreamWord(Stream);
+      FTopic := LoadStringFromStreamWord(Stream);
+      FData := LoadStringFromStreamWord(Stream);
+      Stream.Read(FQOS,SizeOf(FQOS));
+      Stream.Read(FRetain,SizeOf(FRetain));
+    end;
+end;
+
+procedure TMQTTMessage.SaveToStream(Stream: TStream);
+begin
+  if Assigned(Stream) then
+    begin
+      SaveStringToStreamWord(FClientID,Stream);
+      SaveStringToStreamWord(FTopic,Stream);
+      SaveStringToStreamWord(FData,Stream);
+      Stream.Write(FQOS,SizeOf(FQOS));
+      Stream.Write(FRetain,SizeOf(FRetain));
+    end;
 end;
 
 function TMQTTMessage.GetTokens: TMQTTTokenizer;
