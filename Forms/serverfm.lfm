@@ -11,7 +11,7 @@ object ServerForm: TServerForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poScreenCenter
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '1.8.5.0'
   object PageControl: TPageControl
     Left = 0
     Height = 346
@@ -414,6 +414,7 @@ object ServerForm: TServerForm
   object Server: TMQTTServer
     RequireAuthentication = False
     AllowNullClientIDs = True
+    RetainedMessagesDatastore = RMDatastore
     OnAccepted = ServerAccepted
     OnDisconnect = ServerDisconnect
     OnDisconnected = ServerDisconnected
@@ -479,6 +480,11 @@ object ServerForm: TServerForm
     Method = msTLSv1
     OnSSLAccept = SSLSSLAccept
     left = 160
+    top = 248
+  end
+  object RMDatastore: TMQTTRetainedMessagesDatastore
+    Enabled = True
+    left = 256
     top = 248
   end
 end
