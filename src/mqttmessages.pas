@@ -237,8 +237,8 @@ begin
     begin
       if Assigned(FTokens) then
         FreeAndNil(FTokens);
-      FClientID := LoadStringFromStreamWord(Stream);
-      FTopic := LoadStringFromStreamWord(Stream);
+      FClientID := LoadUTF8StringFromStreamWord(Stream);
+      FTopic := LoadUTF8StringFromStreamWord(Stream);
       FData := LoadStringFromStreamWord(Stream);
       Stream.Read(FQOS,SizeOf(FQOS));
       Stream.Read(FRetain,SizeOf(FRetain));
@@ -249,8 +249,8 @@ procedure TMQTTMessage.SaveToStream(Stream: TStream);
 begin
   if Assigned(Stream) then
     begin
-      SaveStringToStreamWord(FClientID,Stream);
-      SaveStringToStreamWord(FTopic,Stream);
+      SaveUTF8StringToStreamWord(FClientID,Stream);
+      SaveUTF8StringToStreamWord(FTopic,Stream);
       SaveStringToStreamWord(FData,Stream);
       Stream.Write(FQOS,SizeOf(FQOS));
       Stream.Write(FRetain,SizeOf(FRetain));
