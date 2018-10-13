@@ -665,6 +665,7 @@ begin
         Result := MQTT_ERROR_REMAINING_LENGTH_ENCODING
     else
       Result := MQTT_ERROR_INVALID_PACKET_FLAGS;
+
     if Result <> MQTT_ERROR_NONE then
       begin
         ABuffer.Clear;

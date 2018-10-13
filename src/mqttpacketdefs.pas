@@ -964,7 +964,9 @@ begin
           FKeepAlive := FKeepAlive + B;
           Result := True;
         end;
-    end;
+    end
+  else
+    FReturnCode := MQTT_ERROR_UNACCEPTABLE_PROTOCOL;
 end;
 
 function TMQTTCONNECTPacket.ParsePayload(ABuffer: TBuffer): Boolean;
