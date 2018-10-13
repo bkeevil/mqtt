@@ -8,7 +8,8 @@ N/A | --title | *string* | Specify an alternate application title
 -a | --authenticate | (none) | When specified, clients are authenticated against the password database.  Default is no authentication
 -n | --null-clientid | (none) | When no ClientID is provided by a client, generate a unique one automatically.  Default rejects connection
 -s | --strict-clientid | (none) | Validate Client IDs to ensure they contain only letters and numbers. Default accepts any character
--d | --disabled | (none) | Starts the server in disabled state. Use to create a config ini file using the GUI
+N/A | --debug | (none) | Turn on logging of debug messages
+N/A | --disabled | (none) | Starts the server in disabled state. Use to create a config ini file using the GUI
 -t | --tls | (none) | Enable TLS connections. Requires --pkey and --cert to be specified
 N/A | --tls-only | (none) | Only listen for TLS connections
 -i | --interface | *IPAddress* | Specify an IP address to listen for normal unencrypted connections on. Default is all interfaces
