@@ -2,13 +2,15 @@
 
 Document | Description
 :--- | :---
+[Server_INI](Server_INI.MD) | Format of the MQTT Server INI file
+[Conformity Checklist](Checklist.MD) | A checklist of MQTT 3.1.1 specification requirements for validation purposes
 [MQTTConsts.pas](MQTTConsts.MD) | Global types, error messages and string constants
 [TMQTTClient](TMQTTClient.MD) | The main MQTT client component
 [TMQTTClientSubscriptionList](TMQTTClientSubscriptionList.MD) | Maintains the list of client subscriptions 
 [TMQTTClientSubscription](TMQTTClientSubscription.MD) | A component that represents a client subscription
 [TMQTTClientPublisherList](TMQTTClientPublisherList.MD) | Maintains the list of client publishers
 [TMQTTClientPublisher](TMQTTClientPublisher.MD) | A component that represents a client publisher
-[TMQTTTokenizer](TMQTTTokenizer.MD) | The topic name/filter parser and validator.
+[TMQTTTokenizer](TMQTTTokenizer.MD) | The topic name/filter parser and validator
 [TMQTTToken](TMQTTToken.MD) | A token used by the TMQTTTokenizer
 [TMQTTSubscriptionList](TMQTTSubscriptionList.MD) | A set of TMQTTSubscription objects
 [TMQTTSubscription](TMQTTSubscription.MD) | Represents a subscription on the server
