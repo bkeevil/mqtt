@@ -1,9 +1,13 @@
 # Documentation Index
 
+[Format of the MQTT Server INI file](Server_INI.MD)
+[Server command line parameters](Server_CMD.MD)
+[A checklist of MQTT 3.1.1 specification requirements](Checklist.MD)
+
+## Source Code Documentation
+
 Document | Description
 :--- | :---
-[Server_INI](Server_INI.MD) | Format of the MQTT Server INI file
-[Conformity Checklist](Checklist.MD) | A checklist of MQTT 3.1.1 specification requirements for validation purposes
 [MQTTConsts.pas](MQTTConsts.MD) | Global types, error messages and string constants
 [TMQTTClient](TMQTTClient.MD) | The main MQTT client component
 [TMQTTClientSubscriptionList](TMQTTClientSubscriptionList.MD) | Maintains the list of client subscriptions 
