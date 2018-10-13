@@ -131,7 +131,10 @@ implementation
 {$R *.lfm}
 
 uses
-  MQTTPackets, MQTTPacketDefs, IniFiles, HelpFM, ServerPropertiesFM, LNetSSL, OpenSSL;
+  MQTTPackets, MQTTPacketDefs, IniFiles, Crypto, Base32, HelpFM, ServerPropertiesFM, LNetSSL, OpenSSL;
+
+const
+  SYSTEM_PASSWORD = 'st5F2wrhXAaFVE9jzgKw';
 
 { TLSSLSocketHelper }
 
@@ -162,14 +165,17 @@ begin
   StartNormalListener := True;
   StartSSLListener := False;
 
-  S := Application.CheckOptions('i:p:dansc:','interface: port: disabled authenticate null-clientid strict-clientid help config:');
+  S := Application.CheckOptions('l:c:ansti:p:k:q:h','log-file: title: config: authenticate null-clientid strict-clientid '+
+                                'disabled debug tls tls-only interface: port: tls-interface: tls-port: pkey: cert: pkey-password: '+
+                                'keepalive: max-session-age: max-subs-age: max-qos: help');
+
   if S > '' then
     begin
       Log.Send(mtError,S);
       DisplayHelp;
     end;
   S := GetCurrentDir;
-  Log.Send(mtInfo,'Current working directory is "%s"',[S]);
+  Log.Send(mtDebug,'Current working directory is "%s"',[S]);
   if Application.HasOption('c','config') then
     FConfigFilename := Application.GetOptionValue('c','config')
   else
@@ -179,7 +185,7 @@ begin
       FConfigFilename := MQTT_DEFAULT_CONFIG_FILENAME2;
 
   FConfigFilename := ExpandFilename(FConfigFilename);
-  Log.Send(mtInfo,'DefaultINIFilename="%s"',[FConfigFilename]);
+  Log.Send(mtDebug,'ConfigFilename="%s"',[FConfigFilename]);
   OpenDialog.InitialDir := GetCurrentDir;
   SaveDialog.InitialDir := OpenDialog.InitialDir;
   OpenDialog.Filename := FConfigFilename;
@@ -189,9 +195,26 @@ begin
   else
     Log.Send(mtWarning,'Config file %s not found. Using default values.',[FConfigFilename]);
   LoadCommandLineOptions;
+  if Assigned(FLogFile) then
+    Log.Send(mtDebug,'LogFile=%s',[FLogFile.Filename]);
   Log.Send(mtDebug,'RequireAuthentication=%s',[BoolToStr(Server.RequireAuthentication,'True','False')]);
   Log.Send(mtDebug,'AllowNullClientIDs=%s',[BoolToStr(Server.AllowNullClientIDs,'True','False')]);
   Log.Send(mtDebug,'StrictClientIDValidation=%s',[BoolToStr(Server.StrictClientIDValidation,'true','false')]);
+  Log.Send(mtDebug,'KeepAlive=%d',[Server.KeepAlive]);
+  Log.Send(mtDebug,'MaxSessionAge=%d',[Server.MaxSessionAge]);
+  Log.Send(mtDebug,'MaxSubscriptionAge=%d',[Server.MaxSubscriptionAge]);
+  Log.Send(mtDebug,'MaximumQoS=%s',[getQOSTypeName(Server.MaximumQoS)]);
+  Log.Send(mtDebug,'StartNormalListener=%s',[BoolToStr(StartNormalListener)]);
+  Log.Send(mtDebug,'StartSSLListener=%s',[BoolToStr(StartSSLListener)]);
+  Log.Send(mtDebug,'ListenInterface=%s',[TCP.Host]);
+  Log.Send(mtDebug,'ListenPort=%d',[TCP.Port]);
+  Log.Send(mtDebug,'TLSInterface=%s',[SSLTCP.Host]);
+  Log.Send(mtDebug,'TLSPort=%d',[SSLTCP.Port]);
+  Log.Send(mtDebug,'PKeyFilename=%s',[SSL.KeyFile]);
+  Log.Send(mtDebug,'CertFilename=%s',[SSL.CAFile]);
+  Log.Send(mtDebug,'PasswordSupplied=%s',[BoolToStr(SSL.Password > '')]);
+  Log.Send(mtDebug,'MaxResendAttempts=%d',[Server.MaxResendAttempts]);
+  Log.Send(mtDebug,'ResendPacketTimeout=%d',[Server.ResendPacketTimeout]);
   if not Server.Enabled then
     Log.Send(mtWarning,'The server is being started in a disabled state');
   SaveConfigurationItm.Enabled := CheckConfigWriteAccess(FConfigFilename);
@@ -269,51 +292,175 @@ var
   S: String;
   I: Integer;
 begin
+  // log-file
+  if Application.HasOption('l','log-file') then
+    begin
+      S := Application.GetOptionValue('l','log-file');
+      if Assigned(FLogFile) and (FLogFile.Filename <> S) then
+        FLogFile.Free;
+      if S > '' then
+        FLogFile := TLogFileListener.Create(S,True);
+    end;
+  // title
+  if Application.HasOption('title') then
+    begin
+      S := Application.GetOptionValue('title');
+      if S > '' then
+        begin
+          Application.Title := S;
+          Caption := S;
+        end;
+    end;
+  // debug
+  if Application.HasOption('debug') then
+    begin
+      FLogFile.TypeFilter := ALL_LOG_MESSAGE_TYPES;
+      FCRTListener.TypeFilter := ALL_LOG_MESSAGE_TYPES;
+      FListener.TypeFilter := ALL_LOG_MESSAGE_TYPES;
+    end;
+  // disabled
+  if Application.HasOption('disabled') then
+    Server.Enabled := False;
+  // interface
   if Application.HasOption('i','interface') then
     TCP.Host := Application.GetOptionValue('i','interface');
-  if Application.HasOption('help') then
-    DisplayHelp;
+  // port
   if Application.HasOption('p','port') then
+      begin
+        S := Application.GetOptionValue('p','port');
+        if TryStrToInt(S,I) and (I > 80) and (I < 65535) then
+          TCP.Port := I
+        else
+          Log.Send(mtWarning,'Invalid port number on command line');
+      end;
+  // tls-interface
+  if Application.HasOption('tls-interface') then
+    SSLTCP.Host := Application.GetOptionValue('tls-interface');
+  // tls-port
+  if Application.HasOption('tls-port') then
+      begin
+        S := Application.GetOptionValue('tls-port');
+        if TryStrToInt(S,I) and (I > 80) and (I < 65535) then
+          TCP.Port := I
+        else
+          Log.Send(mtWarning,'Invalid TLS ort number on command line');
+      end;
+  // tls
+  if Application.HasOption('t','tls') then
+    StartSSLListener := True;
+  // tls-only
+  if Application.HasOption('tls-only') then
+    StartNormalListener := False;
+  // pkey
+  if Application.HasOption('pkey') then
     begin
-      S := Application.GetOptionValue('p','port');
-      if TryStrToInt(S,I) and (I > 80) and (I < 65535) then
-        TCP.Port := I;
+      S := Application.GetOptionValue('pkey');
+      if (S > '') and FileExists(S) then
+        SSL.KeyFile := S
+      else
+        begin
+          StartSSLListener := False;
+          Log.Send(mtWarning,'Private key file %s not found',[SSL.KeyFile]);
+        end;
     end;
-  if Application.HasOption('a','authenticate') then
-    Server.RequireAuthentication := True;
-  if Application.HasOption('n','null-clientid') then
-    Server.AllowNullClientIDs := True;
-  if Application.HasOption('s','strict-clientid') then
-    Server.StrictClientIDValidation := True;
-  if Application.HasOption('d','disabled') then
-    Server.Enabled := False;
+  // cert
+  if Application.HasOption('cert') then
+    begin
+      S := Application.GetOptionValue('cert');
+      if (S > '') and FileExists(S) then
+        SSL.CAFile := S
+      else
+        begin
+          StartSSLListener := False;
+          Log.Send(mtWarning,'TLS Certificate file %s not found',[SSL.CAFile]);
+        end;
+    end;
+  // pkey-password
+  if Application.HasOption('pkey-password') then
+    SSL.Password := Application.GetOptionValue('pkey-password');
+  // keepalive
+  if Application.HasOption('k','keepalive') then
+    begin
+      S := Application.GetOptionValue('k','keepalive');
+      if TryStrToInt(S,I) then
+        Server.KeepAlive := I
+      else
+        Log.Send(mtWarning,'keep-alive command line parameter not an integer');
+    end;
+  // max-session-age
+  if Application.HasOption('max-session-age') then
+    begin
+      S := Application.GetOptionValue('max-session-age');
+      if TryStrToInt(S,I) then
+        Server.MaxSessionAge := I
+      else
+        Log.Send(mtWarning,'max-session-age command line parameter not an integer');
+    end;
+  // max-subs-age
+  if Application.HasOption('max-subs-age') then
+    begin
+      S := Application.GetOptionValue('max-subs-age');
+      if TryStrToInt(S,I) then
+        Server.MaxSubscriptionAge := I
+      else
+        Log.Send(mtWarning,'max-subs-age command line parameter not an integer');
+    end;
+  // max-qos
+  if Application.HasOption('max-qos') then
+    begin
+      S := Application.GetOptionValue('max-qos');
+      if TryStrToInt(S,I) and (I >= 0) and (I < 3) then
+        Server.MaximumQoS := TMQTTQOSType(I)
+      else
+        Log.Send(mtWarning,'max-qos command line parameter not an integer');
+    end;
+  // help
+  if Application.HasOption('h','help') then
+    DisplayHelp;
 end;
 
 procedure TServerForm.DisplayHelp;
 begin
   if Application.ConsoleApplication then
     begin
-      writeln('mqttserver Version 1.0 Useage:');
+      writeln('mqttserver Version 1.1 Useage:');
       writeln;
-      writeln('  mqttserver --config <filename>');
-      writeln('  mqttserver -i <interface> -p port');
-      writeln('  mqttserver --authenticate --strict-clientid');
+      writeln('  mqttserver -l <filename> --title <title> -c <filename> -i <IPAddress> -p <port>');
+      writeln('  --tls-interface <IPAddress> -tls-port <port> --pkey <filename> --cert <filename>');
+      writeln('  --pkey-password <password> --tls --keepalive <integer> --debug');
       writeln;
+      writeln('  -l --log-file        Specify a log filename to use');
+      writeln('     --title           Specify an alternate application title');
       writeln('  -c --config          Sets the default configuration file.  Default is');
       writeln('                       /etc/mqtt/mqttserver.ini or mqttserver.ini in the');
       writeln('                       current working directory if that is not found.');
-      writeln('  -i --interface       Sets the IP address of the interface to listen on.');
-      writeln('                       Default is all interfaces.');
-      writeln('  -p --port            Sets the TCP port number to listen on.  Default 1883.');
       writeln('  -a --authenticate    When specified, clients are authenticated against the');
       writeln('                       password database.  Default is no authentication.');
       writeln('  -n --null-clientid   When no ClientID is provided by a client, generate a');
       writeln('                       unique one automatically.  Default rejects connection.');
       writeln('  -s --strict-clientid Validate Client IDs to ensure they contain only');
-      writeln('                       letters and numbers.  Default accepts any character.');
-      writeln('  -d --disabled        Starts the server in disabled state.  Use to create a');
+      writeln('                       letters and numbers.  Default accepts any character');
+      writeln('     --debug           Add verbose debugging info to the log');
+      writeln('     --disabled        Starts the server in disabled state.  Use to create a');
       writeln('                       config ini file using the GUI.');
-      writeln('     --help            Displays this help message');
+      writeln('  -t --tls             Enable tls connections. Requires pkey and cert to be specified');
+      writeln('     --tls-only        Only listen for TLS connections.');
+      writeln('  -i --interface       Sets the IP address of the interface to listen on.');
+      writeln('                       Default is all interfaces.');
+      writeln('  -p --port            Sets the TCP port number to listen on.  Default 1883.');
+      writeln('                       Applies to non-encrypted connections only.');
+      writeln('     --tls-interface   Specify an interface to listen for TLS connections on.');
+      writeln('     --tls-port        Sets the TCP port to accept TLS connections on. Default');
+      writeln('                       is 8883.');
+      writeln('     --pkey            Private key file to use for TLS connections in PEM format');
+      writeln('     --cert            Public certificate file to use for TLS connections in PEM');
+      writeln('                       format');
+      writeln('     --pkey-password   Provide a password');
+      writeln('  -k --keepalive       Specify an alternate keepalive value. Default 30 seconds');
+      writeln('     --max-session-age Specify a maximum session age. Default is 1080 minutes');
+      writeln('     --max-subs-age    Specify a maximum subscription age. Default is 1080 min');
+      writeln('  -q --max-qos         Specify a maximum QoS level. Default is 2 (QoS2)');
+      writeln('  -h --help            Displays this help message');
     end
   else
     begin
@@ -416,16 +563,32 @@ var
 begin
   Ini := TInifile.Create(Filename,[ifoStripComments,ifoStripInvalid,ifoFormatSettingsActive]);
   try
-    if Ini.ReadBool('General','Debug',False) then
-      FListener.TypeFilter := ALL_LOG_MESSAGE_TYPES
-    else
-      FListener.TypeFilter := DEFAULT_LOG_MESSAGE_TYPES;
     S := Ini.ReadString('General','LogFilename','');
     if S > '' then
       FLogFile := TLogFileListener.Create(S,True);
+    if Ini.ReadBool('General','Debug',False) then
+      begin
+        FListener.TypeFilter := ALL_LOG_MESSAGE_TYPES;
+        FCRTListener.TypeFilter := ALL_LOG_MESSAGE_TYPES;
+        if Assigned(FLogFile) then
+          FLogFile.TypeFilter := ALL_LOG_MESSAGE_TYPES;
+        cbEnableDebugMessages.Checked := True;
+      end
+    else
+      begin
+        FListener.TypeFilter := DEFAULT_LOG_MESSAGE_TYPES;
+        FCRTListener.TypeFilter := DEFAULT_LOG_MESSAGE_TYPES;
+        if Assigned(FLogFile) then
+          FLogFile.TypeFilter := DEFAULT_LOG_MESSAGE_TYPES;
+        cbEnableDebugMessages.Checked := False;
+      end;
     S := Ini.ReadString('General','Title','');
     if S > '' then
-      Caption := S;
+      begin
+        Caption := S;
+        Application.Title := S;
+      end;
+    Server.Enabled := Ini.ReadBool('MQTT','Enabled',True);
     Server.RequireAuthentication := Ini.ReadBool('MQTT','RequireAuthentication',False);
     Server.AllowNullClientIDs := Ini.ReadBool('MQTT','AllowNullClientIDs',True);
     Server.StrictClientIDValidation := Ini.ReadBool('MQTT','StrictClientIDValidation',False);
@@ -442,7 +605,7 @@ begin
     if I > 2 then
       I := 2;
     Server.MaximumQOS := TMQTTQOSType(I);
-    TCP.Host := Ini.ReadString('Server','BindAddress','0.0.0.0');
+    TCP.Host := Ini.ReadString('Server','Interface','0.0.0.0');
     I := Ini.ReadInteger('Server','Port',1883);
         if I < 81 then
       I := 81;
@@ -451,7 +614,7 @@ begin
     TCP.Port := I;
 
     StartSSLListener := Ini.ReadBool('SSL','Listen',False);
-    SSLTCP.Host := Ini.ReadString('SSL','BindAddress',TCP.Host);
+    SSLTCP.Host := Ini.ReadString('SSL','Interface',TCP.Host);
     I := Ini.ReadInteger('SSL','Port',8883);
         if I < 81 then
       I := 81;
@@ -461,7 +624,9 @@ begin
 
     SSL.CAFile := Ini.ReadString('SSL','Certificate','');
     SSL.KeyFile := Ini.ReadString('SSL','Key','');
-    SSL.Password := Ini.ReadString('SSL','Password','');
+    S := Ini.ReadString('SSL','EncPassword','');
+    if S > '' then
+      SSL.Password := DecryptString(DecodeBase32Str(S),SYSTEM_PASSWORD);
   finally
     Ini.Free;
   end;
@@ -474,14 +639,30 @@ var
 begin
   Ini := TInifile.Create(Filename,[ifoStripComments,ifoStripInvalid,ifoFormatSettingsActive]);
   try
-    Ini.WriteBool('Server','Enabled',Server.Enabled);
-    Ini.WriteBool('Server','RequireAuthentication',Server.RequireAuthentication);
-    Ini.WriteBool('Server','AllowNullClientIDs',Server.AllowNullClientIDs);
-    Ini.WriteBool('Server','StrictClientIDValidation',Server.StrictClientIDValidation);
+    if Assigned(FLogFile) then
+      Ini.WriteString('General','LogFilename',FLogFile.Filename);
+    Ini.WriteBool('General','Debug',cbEnableDebugMessages.Checked);
+    Ini.WriteString('General','Title',Caption);
+    Ini.WriteBool('MQTT','Enabled',Server.Enabled);
+    Ini.WriteBool('MQTT','RequireAuthentication',Server.RequireAuthentication);
+    Ini.WriteBool('MQTT','AllowNullClientIDs',Server.AllowNullClientIDs);
+    Ini.WriteBool('MQTT','StrictClientIDValidation',Server.StrictClientIDValidation);
+    Ini.WriteInteger('MQTT','KeepAlive',Server.KeepAlive);
+    Ini.WriteInteger('MQTT','MaxSessionAge',Server.MaxSessionAge);
+    Ini.WriteInteger('MQTT','MaxSubscriptionAge',Server.MaxSubscriptionAge);
+    Ini.WriteInteger('MQTT','MaxResendAttempts',Server.MaxResendAttempts);
+    Ini.WriteInteger('MQTT','ResendPacketTimeout',Server.ResendPacketTimeout);
     I := ord(Server.MaximumQOS);
-    Ini.WriteInteger('Server','MaximumQOS',I);
-    Ini.WriteString('Server','Host',TCP.Host);
+    Ini.WriteInteger('MQTT','MaximumQOS',I);
+    Ini.WriteBool('Server','Listen',StartNormalListener);
+    Ini.WriteString('Server','BindAddress',TCP.Host);
     Ini.WriteInteger('Server','Port',TCP.Port);
+    Ini.WriteBool('SSL','Listen',StartSSLListener);
+    Ini.WriteString('SSL','BindAddress',SSLTCP.Host);
+    Ini.WriteInteger('SSL','Port',SSLTCP.Port);
+    Ini.WriteString('SSL','Certificate',SSL.CAFile);
+    Ini.WriteString('SSL','Key',SSL.KeyFile);
+    Ini.WriteString('SSL','PasswordEnc',EncodeBase32Str(EncryptString(SSL.Password,SYSTEM_PASSWORD)));
   finally
     Ini.Free;
   end;
