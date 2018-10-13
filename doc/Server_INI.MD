@@ -19,6 +19,7 @@ Title | String | "" | Specify a title for the main application window or leave b
 
 Parameter | Datatype | Default | Description
 :--- | :---: | :--- | :---
+Enabled | Boolean | True | Set to 0 to start the server application in disabled mode. Used for using the application to create an INI file without starting the server.
 RequireAuthentication | Boolean | False | Set to 1 to require clients to authenticate using a username and password
 AllowNullClientIDs | Boolean | True | Set to 0 to prevent clients from connecting with null clientIDs
 StrictClientIDValidation | Boolean | False | Set to 1 to enable strict ClientID validation
