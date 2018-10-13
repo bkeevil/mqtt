@@ -1098,7 +1098,8 @@ begin
       Len := Len - ABuffer.Size;
       Len := RemainingLength - Len;
       SetLength(FData,Len);
-      ABuffer.Read(PChar(FData),Len);
+      if (Len > 0) then
+        ABuffer.Read(PChar(FData),Len);
     end
   else
     Result := MQTT_ERROR_VARHEADER_INVALID;
