@@ -26,6 +26,7 @@ type
 
   TServerForm = class(TForm)
     cbEnableDebugMessages: TCheckBox;
+    RMDatastore: TMQTTRetainedMessagesDatastore;
     RestartServerItm: TMenuItem;
     SSL: TLSSLSessionComponent;
     SSLTCP: TLTCPComponent;
@@ -100,6 +101,9 @@ type
   private
     FConfigFilename : String;
     FListener       : TLogListener;
+    FLogFile        : TLogFileListener;
+    FCRTListener    : TLogCRTListener;
+    //
     FRecords        : TList;
     procedure ClearRecords;
     procedure DisplayHelp;
@@ -114,7 +118,6 @@ type
     procedure SaveConfiguration(Filename: String);
   public
     Log: TLogDispatcher;
-    Crt: TLogCrtListener;
     StartNormalListener: Boolean;
     StartSSLListener: Boolean;
   end;
@@ -152,7 +155,7 @@ var
 begin
   Log := TLogDispatcher.Create('ServerForm');
   Log.Filter := ALL_LOG_MESSAGE_TYPES;
-  CRT := TLogCRTListener.Create;
+  FCRTListener := TLogCRTListener.Create;
   FRecords := TList.Create;
   FListener := TLogListener.Create;
   FListener.OnMessage := @HandleMessage;
@@ -207,9 +210,11 @@ begin
     except
     end;
   //Server.Free;
-  CRT.Free;
   Log.Free;
   FListener.Destroy;
+  FCRTListener.Free;
+  if Assigned(FLogFile) then
+    FLogFile.Free;
   ClearRecords;
   FRecords.Destroy;
 end;
@@ -406,28 +411,57 @@ end;
 procedure TServerForm.LoadConfiguration(Filename: String);
 var
   Ini: TInifile;
+  S: String;
   I: Integer;
 begin
   Ini := TInifile.Create(Filename,[ifoStripComments,ifoStripInvalid,ifoFormatSettingsActive]);
   try
-    Server.Enabled := Ini.ReadBool('Server','Enabled',True);
-    Server.RequireAuthentication := Ini.ReadBool('Server','RequireAuthentication',False);
-    Server.AllowNullClientIDs := Ini.ReadBool('Server','AllowNullClientIDs',True);
-    Server.StrictClientIDValidation := Ini.ReadBool('Server','StrictClientIDValidation',False);
+    if Ini.ReadBool('General','Debug',False) then
+      FListener.Filter := ALL_LOG_MESSAGE_TYPES
+    else
+      FListener.Filter := DEFAULT_LOG_MESSAGE_TYPES;
+    S := Ini.ReadString('General','LogFilename','');
+    if S > '' then
+      FLogListener := TLogFileListener.Create(S,True);
+    S := Ini.ReadString('General','Title','');
+    if S > '' then
+      Caption := S;
+    Server.RequireAuthentication := Ini.ReadBool('MQTT','RequireAuthentication',False);
+    Server.AllowNullClientIDs := Ini.ReadBool('MQTT','AllowNullClientIDs',True);
+    Server.StrictClientIDValidation := Ini.ReadBool('MQTT','StrictClientIDValidation',False);
+    Server.KeepAlive := Ini.ReadInteger('MQTT','KeepAlive',MQTT_DEFAULT_KEEPALIVE);
+    Server.MaxSessionAge := Ini.ReadInteger('MQTT','MaxSessionAge',MQTT_DEFAULT_MAX_SESSION_AGE);
+    Server.MaxSubscriptionAge := Ini.ReadInteger('MQTT','MaxSubscriptionAge',MQTT_DEFAULT_MAX_SUBSCRIPTION_AGE);
+    Server.MaxResendAttempts := Ini.ReadInteger('MQTT','MaxResendAttempts',MQTT_DEFAULT_MAX_RESEND_ATTEMPTS);
+    Server.ResendPacketTimeout := Ini.ReadInteger('MQTT','ResendPacketTimeout',MQTT_DEFAULT_RESEND_PACKET_TIMEOUT);
+    I := Ini.ReadInteger('MQTT','MaximumQOS',2);
 
-    I := Ini.ReadInteger('Server','MaximumQOS',2);
+    StartNormalListener = Ini.ReadBool('Server','Listen',True);
     if I < 0 then
       I := 0;
     if I > 2 then
       I := 2;
     Server.MaximumQOS := TMQTTQOSType(I);
-    TCP.Host := Ini.ReadString('Server','Host','0.0.0.0');
+    TCP.Host := Ini.ReadString('Server','BindAddress','0.0.0.0');
     I := Ini.ReadInteger('Server','Port',1883);
         if I < 81 then
       I := 81;
     if I > 65535 then
       I := 65535;
     TCP.Port := I;
+
+    StartSSLListener = Ini.ReadBool('SSL','Listen',False);
+    SSLTCP.Host := Ini.ReadString('SSL','BindAddress',TCP.Host);
+    I := Ini.ReadInteger('SSL','Port',8883);
+        if I < 81 then
+      I := 81;
+    if I > 65535 then
+      I := 65535;
+    SSLTCP.Port := I;
+
+    SSL.CAFile := Ini.ReadString('SSL','Certificate','');
+    SSL.KeyFile := Ini.ReadString('SSL','Key','');
+    SSL.Password := Ini.ReadString('SSL','Password','');
   finally
     Ini.Free;
   end;
@@ -770,7 +804,7 @@ begin
       Result := (Pos(Filter, Rec^.Module) > 0) or (Pos(Filter, Rec^.Module) > 0);
 end;
 
-procedure TServerForm.Filter(Filter: string);
+procedure TServerForm.Filter(Filter: String);
 var
   I: Integer;
   P: PDebugMessage;
