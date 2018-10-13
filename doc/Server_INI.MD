@@ -46,4 +46,4 @@ Interface | String | "0.0.0.0" | Specify an interface to listen on by IP address
 Port | Integer | 8883 | Specify a port to listen for incomming SSL/TLS encrypted connections
 Key | String | "" | Specify a filename that holds the server's private key. The key should be in PEM format.
 Certificate | String | "" | Specify a certificate that holds the server's certificate. This should be in PEM format.
-Password | String | "" | Specify the password for decrypting the private key. Use with caution! 
+PasswordEnc | String | "" | Specifies a password for decrypting the private key. Stored in encrypted form. Use the GUI to set it and save a configuration file
