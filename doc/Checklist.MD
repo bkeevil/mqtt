@@ -10,8 +10,6 @@ These are done in the implementation section of MQTTPackets.pas. The functions t
 
 When the client transmits any UTF8 String as part of a packet, it strips off all invalid control characters before sending the string. This is preferrable to failing.
 
-Someone with more experience the UTF8 Specs might want to take a look a better look at the last one [1.5.3-3]
-
 ## Section 2
 
 - [X] Where a flag bit is marked as “Reserved” in Table 2.2 - Flag Bits, it is reserved for future use and MUST be set to the value listed in that table [MQTT-2.2.2-1]
