@@ -8,6 +8,13 @@ uses
   Classes, SysUtils, Buffers, Logging, MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions,
   MQTTMessages;
 
+const
+  MQTT_DEFAULT_KEEPALIVE             = 30;   // Seconds
+  MQTT_DEFAULT_MAX_SESSION_AGE       = 1080; // Minutes
+  MQTT_DEFAULT_MAX_SUBSCRIPTION_AGE  = 1080; // Minutes
+  MQTT_DEFAULT_MAX_RESEND_ATTEMPTS   = 3;
+  MQTT_DEFAULT_RESEND_PACKET_TIMEOUT = 2;    // Seconds
+
 type
   TMQTTServer                     = class;
   TMQTTServerConnection           = class;
@@ -217,11 +224,11 @@ type
       property Sessions: TMQTTSessionList read FSessions;
       property RetainedMessages: TMQTTMessageList read FRetainedMessages;
     published
-      property ResendPacketTimeout: Byte read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
-      property MaxResendAttempts: Byte read FMaxResendAttempts write FMaxResendAttempts default 3;
-      property MaxSubscriptionAge: Word read FMaxSubscriptionAge write FMaxSubscriptionAge default 1080; // Minutes
-      property MaxSessionAge: Word read FMaxSessionAge write FMaxSessionAge default 1080; // Minutes
-      property DefaultKeepAlive: Integer read FDefaultKeepAlive write FDefaultKeepAlive default 30; // Seconds
+      property ResendPacketTimeout: Byte read FResendPacketTimeout write FResendPacketTimeout default MQTT_DEFAULT_RESEND_PACKET_TIMEOUT;
+      property MaxResendAttempts: Byte read FMaxResendAttempts write FMaxResendAttempts default MQTT_DEFAULT_MAX_RESEND_ATTEMPTS;
+      property MaxSubscriptionAge: Word read FMaxSubscriptionAge write FMaxSubscriptionAge default MQTT_DEFAULT_MAX_SUBSCRIPTION_AGE;
+      property MaxSessionAge: Word read FMaxSessionAge write FMaxSessionAge default MQTT_DEFAULT_MAX_SESSION_AGE;
+      property KeepAlive: Integer read FDefaultKeepAlive write FDefaultKeepAlive default MQTT_DEFAULT_KEEPALIVE;
       property Enabled: Boolean read FEnabled write FEnabled default true;
       property MaximumQOS: TMQTTQOSType read FMaximumQOS write FMaximumQOS default qtEXACTLY_ONCE;
       property RequireAuthentication: Boolean read FRequireAuthentication write FRequireAuthentication default true;
