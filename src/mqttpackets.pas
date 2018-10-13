@@ -146,6 +146,7 @@ begin
   Result := mqttconsts.GetPacketTypeName(PacketType);
 end;
 
+{ Validates a received packet and returns True if it is valid }
 function TMQTTPacket.Validate: Boolean;
 begin
   // BROKERCONNECT packets are not implemented by this code.
@@ -456,7 +457,7 @@ begin
   P := PChar(CP);
   WC := UTF8CharacterToUnicode(P,Len);
   Result := True;
-  if (WC = 0) or ((WC >= $D899) and (WC <= $DFFF)) or (WC = $FFFF) then
+  if (WC = 0) or ((WC >= $00) and (WC <= $1F)) or ((WC >= $7F) and (WC <= 9F)) or ((WC >= $D800) and (WC <= $DFFF)) or (WC = $FFFF) then
     Result := False;
 end;
 
@@ -509,11 +510,13 @@ end;
 
 procedure WriteUTF8StringToBuffer(ABuffer: TBuffer; Str: UTF8String);
 var
+  S: UTF8String;
   Len: Word;
 begin
-  Len := Length(Str);
+  S := UTF8Trim(Str,[u8tKeepNoBreakSpaces]);
+  Len := Length(S);
   WriteWordToBuffer(ABuffer,Len);
-  ABuffer.Write(PChar(Str),Len);
+  ABuffer.Write(PChar(S),Len);
 end;
 
 function ReadRemainingLengthFromBuffer(ABuffer: TBuffer; out Value: DWORD): Boolean;
