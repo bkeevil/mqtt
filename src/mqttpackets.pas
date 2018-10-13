@@ -11,6 +11,8 @@ uses
 
 type
 
+  EPacketError = class(Exception);
+
   { TMQTTPacket - Base class for objects that represents an MQTT Packet }
 
   TMQTTPacket = class(TObject)
@@ -458,7 +460,7 @@ begin
   WC := UTF8CharacterToUnicode(P,Len);
   Result := True;
   { See: http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180829 }
-  if (WC = 0) or ((WC >= $00) and (WC <= $1F)) or ((WC >= $7F) and (WC <= 9F)) or ((WC >= $D800) and (WC <= $DFFF)) or (WC = $FFFF) then
+  if (WC = 0) or ((WC >= $00) and (WC <= $1F)) or ((WC >= $7F) and (WC <= $9F)) or ((WC >= $D800) and (WC <= $DFFF)) or (WC = $FFFF) then
     Result := False;
 end;
 
@@ -498,7 +500,7 @@ begin
           SetLength(Str,Size);
           if ABuffer.Read(PChar(Str),Size) = Size then
             begin
-              Result := ValidateUTF8String(Str)
+              Result := ValidateUTF8String(Str);
               { A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean
                 U+FEFF ("ZERO WIDTH NO-BREAK SPACE") wherever it appears in a string and MUST
                 NOT be skipped over or stripped off by a packet receiver [MQTT-1.5.3-3]}

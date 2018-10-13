@@ -417,12 +417,12 @@ begin
   Ini := TInifile.Create(Filename,[ifoStripComments,ifoStripInvalid,ifoFormatSettingsActive]);
   try
     if Ini.ReadBool('General','Debug',False) then
-      FListener.Filter := ALL_LOG_MESSAGE_TYPES
+      FListener.TypeFilter := ALL_LOG_MESSAGE_TYPES
     else
-      FListener.Filter := DEFAULT_LOG_MESSAGE_TYPES;
+      FListener.TypeFilter := DEFAULT_LOG_MESSAGE_TYPES;
     S := Ini.ReadString('General','LogFilename','');
     if S > '' then
-      FLogListener := TLogFileListener.Create(S,True);
+      FLogFile := TLogFileListener.Create(S,True);
     S := Ini.ReadString('General','Title','');
     if S > '' then
       Caption := S;
@@ -436,7 +436,7 @@ begin
     Server.ResendPacketTimeout := Ini.ReadInteger('MQTT','ResendPacketTimeout',MQTT_DEFAULT_RESEND_PACKET_TIMEOUT);
     I := Ini.ReadInteger('MQTT','MaximumQOS',2);
 
-    StartNormalListener = Ini.ReadBool('Server','Listen',True);
+    StartNormalListener := Ini.ReadBool('Server','Listen',True);
     if I < 0 then
       I := 0;
     if I > 2 then
@@ -450,7 +450,7 @@ begin
       I := 65535;
     TCP.Port := I;
 
-    StartSSLListener = Ini.ReadBool('SSL','Listen',False);
+    StartSSLListener := Ini.ReadBool('SSL','Listen',False);
     SSLTCP.Host := Ini.ReadString('SSL','BindAddress',TCP.Host);
     I := Ini.ReadInteger('SSL','Port',8883);
         if I < 81 then

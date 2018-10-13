@@ -920,7 +920,7 @@ var
 begin
   Result := False;
   if ReadUTF8StringFromBuffer(ABuffer,Str) then
-    Result := UTF8CompareStr('MQTT') = 0;
+    Result := UTF8CompareStr(Str,'MQTT') = 0;
   if not Result then
     FReturnCode := MQTT_CONNACK_UNACCEPTABLE_PROTOCOL;
 end;
@@ -972,7 +972,7 @@ begin
       else
         { The Server MUST validate that the reserved flag in the CONNECT Control
         Packet is set to zero and disconnect the Client if it is not zero [MQTT-3.1.2-3] }
-        Bail(MQTT_ERROR_INVALID_PACKET_FLAGS);
+        FReturnCode := MQTT_ERROR_INVALID_PACKET_FLAGS;
     end
   else
     FReturnCode := MQTT_ERROR_UNACCEPTABLE_PROTOCOL;
@@ -1010,7 +1010,10 @@ begin
     else
       Result := MQTT_ERROR_PAYLOAD_INVALID
   else
-    Result := MQTT_ERROR_VARHEADER_INVALID;
+    if FReturnCode = MQTT_ERROR_INVALID_PACKET_FLAGS then
+      Result := FReturnCode
+    else
+      Result := MQTT_ERROR_VARHEADER_INVALID;
 end;
 
 function TMQTTCONNECTPacket.GetFlagsByte: Byte;
