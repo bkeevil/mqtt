@@ -686,7 +686,7 @@ begin
   FServer.Connections.Add(Self);
   FSendBuffer          := TBuffer.Create;
   FRecvBuffer          := TBuffer.Create;
-  FKeepAlive           := Server.DefaultKeepAlive;
+  FKeepAlive           := Server.KeepAlive;
   FKeepAliveRemaining  := FKeepAlive;
   FWillMessage         := TMQTTWillMessage.Create;
   FServer.ConnectionsChanged;
