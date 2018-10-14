@@ -10,7 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="50" Y="15"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="68"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\..\Forms\clientfm.pas"/>
@@ -22,7 +22,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="73"/>
         <CursorPos X="3" Y="89"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="68"/>
         <Bookmarks Count="1">
           <Item0 X="9" Y="368" ID="1"/>
         </Bookmarks>
@@ -37,7 +37,7 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="5"/>
         <CursorPos X="32" Y="9"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="68"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit2>
@@ -46,14 +46,14 @@
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="68"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\Forms\subscribefm.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="67"/>
+        <UsageCount Value="68"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\Forms\clientfm.lfm"/>
