@@ -17,9 +17,9 @@ object ServerForm: TServerForm
     Height = 346
     Top = 0
     Width = 817
-    ActivePage = TabSheet1
+    ActivePage = PacketsInMemTab
     Align = alClient
-    TabIndex = 4
+    TabIndex = 5
     TabOrder = 0
     object ConnectionsTab: TTabSheet
       Caption = 'Connections'
@@ -460,25 +460,24 @@ object ServerForm: TServerForm
       OnClick = RefreshRetainedMessagesItmClick
     end
   end
-  object SSLTCP: TLTCPComponent
+  object TLSTCP: TLTCPComponent
     Host = '0.0.0.0'
     Port = 8883
     OnReceive = TCPReceive
     OnError = TCPError
     OnDisconnect = TCPDisconnect
-    OnAccept = TCPAccept
     OnCanSend = TCPCanSend
     Timeout = 0
     ReuseAddress = True
-    Session = SSL
+    Session = TLS
     left = 80
     top = 248
   end
-  object SSL: TLSSLSessionComponent
+  object TLS: TLSSLSessionComponent
     CAFile = 'cert'
     KeyFile = 'pkey'
     Method = msTLSv1
-    OnSSLAccept = SSLSSLAccept
+    OnSSLAccept = TLSTLSAccept
     left = 160
     top = 248
   end

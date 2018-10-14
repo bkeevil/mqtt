@@ -28,8 +28,8 @@ type
     cbEnableDebugMessages: TCheckBox;
     RMDatastore: TMQTTRetainedMessagesDatastore;
     RestartServerItm: TMenuItem;
-    SSL: TLSSLSessionComponent;
-    SSLTCP: TLTCPComponent;
+    TLS: TLSSLSessionComponent;
+    TLSTCP: TLTCPComponent;
     PacketListMemo: TMemo;
     RefreshPacketListBtn: TButton;
     CBEnabled: TCheckBox;
@@ -80,7 +80,7 @@ type
     procedure ListenTimerTimer(Sender: TObject);
     procedure LoadConfigurationItmClick(Sender: TObject);
     procedure RestartServerItmClick(Sender: TObject);
-    procedure SSLSSLAccept(aSocket: TLSocket);
+    procedure TLSTLSAccept(aSocket: TLSocket);
     procedure PropertiesItmClick(Sender: TObject);
     procedure RefreshConnectionsItmClick(Sender: TObject);
     procedure RefreshPacketListBtnClick(Sender: TObject);
@@ -119,7 +119,7 @@ type
   public
     Log: TLogDispatcher;
     StartNormalListener: Boolean;
-    StartSSLListener: Boolean;
+    StartTLSListener: Boolean;
   end;
 
 var
@@ -163,7 +163,7 @@ begin
   FListener := TLogListener.Create;
   FListener.OnMessage := @HandleMessage;
   StartNormalListener := True;
-  StartSSLListener := False;
+  StartTLSListener := False;
 
   S := Application.CheckOptions('l:c:ansti:p:k:q:h','log-file: title: config: authenticate null-clientid strict-clientid '+
                                 'disabled debug tls tls-only interface: port: tls-interface: tls-port: pkey: cert: pkey-password: '+
@@ -205,14 +205,14 @@ begin
   Log.Send(mtDebug,'MaxSubscriptionAge=%d',[Server.MaxSubscriptionAge]);
   Log.Send(mtDebug,'MaximumQoS=%s',[getQOSTypeName(Server.MaximumQoS)]);
   Log.Send(mtDebug,'StartNormalListener=%s',[BoolToStr(StartNormalListener)]);
-  Log.Send(mtDebug,'StartSSLListener=%s',[BoolToStr(StartSSLListener)]);
+  Log.Send(mtDebug,'StartTLSListener=%s',[BoolToStr(StartTLSListener)]);
   Log.Send(mtDebug,'ListenInterface=%s',[TCP.Host]);
   Log.Send(mtDebug,'ListenPort=%d',[TCP.Port]);
-  Log.Send(mtDebug,'TLSInterface=%s',[SSLTCP.Host]);
-  Log.Send(mtDebug,'TLSPort=%d',[SSLTCP.Port]);
-  Log.Send(mtDebug,'PKeyFilename=%s',[SSL.KeyFile]);
-  Log.Send(mtDebug,'CertFilename=%s',[SSL.CAFile]);
-  Log.Send(mtDebug,'PasswordSupplied=%s',[BoolToStr(SSL.Password > '')]);
+  Log.Send(mtDebug,'TLSInterface=%s',[TLSTCP.Host]);
+  Log.Send(mtDebug,'TLSPort=%d',[TLSTCP.Port]);
+  Log.Send(mtDebug,'PKeyFilename=%s',[TLS.KeyFile]);
+  Log.Send(mtDebug,'CertFilename=%s',[TLS.CAFile]);
+  Log.Send(mtDebug,'PasswordSupplied=%s',[BoolToStr(TLS.Password > '')]);
   Log.Send(mtDebug,'MaxResendAttempts=%d',[Server.MaxResendAttempts]);
   Log.Send(mtDebug,'ResendPacketTimeout=%d',[Server.ResendPacketTimeout]);
   if not Server.Enabled then
@@ -225,8 +225,8 @@ procedure TServerForm.FormDestroy(Sender: TObject);
 begin
   if StartNormalListener then
     TCP.Disconnect;
-  if StartSSLListener then
-    SSLTCP.Disconnect;
+  if StartTLSListener then
+    TLSTCP.Disconnect;
   if SaveConfigurationItm.Enabled then
     try
       SaveConfiguration(FConfigFilename);
@@ -266,10 +266,10 @@ begin
           end
         else
           Retry := True;
-      if StartSSLListener then
-        if (not (Assigned(SSLTCP.Session) and SSLTCP.Session.Active)) and SSLTCP.Listen then
+      if StartTLSListener then
+        if (not (Assigned(TLSTCP.Session) and TLSTCP.Session.Active)) and TLSTCP.Listen then
           begin
-            Log.Send(mtInfo,'SSL/TLS Server listening on port %d',[SSLTCP.Port]);
+            Log.Send(mtInfo,'TLS Server listening on port %d',[TLSTCP.Port]);
             ConnectionsGrid.Enabled := True;
             SubscriptionsGrid.Enabled := True;
             SessionsGrid.Enabled := True;
@@ -335,7 +335,7 @@ begin
       end;
   // tls-interface
   if Application.HasOption('tls-interface') then
-    SSLTCP.Host := Application.GetOptionValue('tls-interface');
+    TLSTCP.Host := Application.GetOptionValue('tls-interface');
   // tls-port
   if Application.HasOption('tls-port') then
       begin
@@ -347,7 +347,7 @@ begin
       end;
   // tls
   if Application.HasOption('t','tls') then
-    StartSSLListener := True;
+    StartTLSListener := True;
   // tls-only
   if Application.HasOption('tls-only') then
     StartNormalListener := False;
@@ -356,11 +356,11 @@ begin
     begin
       S := Application.GetOptionValue('pkey');
       if (S > '') and FileExists(S) then
-        SSL.KeyFile := S
+        TLS.KeyFile := S
       else
         begin
-          StartSSLListener := False;
-          Log.Send(mtWarning,'Private key file %s not found',[SSL.KeyFile]);
+          StartTLSListener := False;
+          Log.Send(mtWarning,'Private key file %s not found',[TLS.KeyFile]);
         end;
     end;
   // cert
@@ -368,16 +368,16 @@ begin
     begin
       S := Application.GetOptionValue('cert');
       if (S > '') and FileExists(S) then
-        SSL.CAFile := S
+        TLS.CAFile := S
       else
         begin
-          StartSSLListener := False;
-          Log.Send(mtWarning,'TLS Certificate file %s not found',[SSL.CAFile]);
+          StartTLSListener := False;
+          Log.Send(mtWarning,'TLS Certificate file %s not found',[TLS.CAFile]);
         end;
     end;
   // pkey-password
   if Application.HasOption('pkey-password') then
-    SSL.Password := Application.GetOptionValue('pkey-password');
+    TLS.Password := Application.GetOptionValue('pkey-password');
   // keepalive
   if Application.HasOption('k','keepalive') then
     begin
@@ -491,7 +491,7 @@ end;
 
 procedure TServerForm.PropertiesItmClick(Sender: TObject);
 begin
-  if ServerPropertiesDlg(Server,StartNormalListener,StartSSLListener,TCP,SSLTCP,SSL) then
+  if ServerPropertiesDlg(Server,StartNormalListener,StartTLSListener,TCP,TLSTCP,TLS) then
     begin
       SaveConfiguration(SaveDialog.Filename);
       RefreshAll;
@@ -510,11 +510,11 @@ end;
 procedure TServerForm.RestartServerItmClick(Sender: TObject);
 begin
   TCP.Disconnect;
-  SSLTCP.Disconnect;
+  TLSTCP.Disconnect;
   ListenTimer.Enabled := True;
 end;
 
-procedure TServerForm.SSLSSLAccept(aSocket: TLSocket);
+procedure TServerForm.TLSTLSAccept(aSocket: TLSocket);
 var
   Conn: TMQTTServerConnection;
   PeerCertificate: PX509;
@@ -523,7 +523,7 @@ var
 begin
   if (aSocket is TLSSLSocket) then
     begin
-      Log.Send(mtInfo,'SSL/TLS connection accepted from %s on port %d',[aSocket.PeerAddress,aSocket.PeerPort]);
+      Log.Send(mtInfo,'TLS connection accepted from %s on port %d',[aSocket.PeerAddress,aSocket.PeerPort]);
       PeerCertificate := SslGetPeerCertificate((aSocket as TLSSLSocket).GetSSLPointer);
       if Assigned(PeerCertificate) then
         begin
@@ -613,20 +613,22 @@ begin
       I := 65535;
     TCP.Port := I;
 
-    StartSSLListener := Ini.ReadBool('SSL','Listen',False);
-    SSLTCP.Host := Ini.ReadString('SSL','Interface',TCP.Host);
-    I := Ini.ReadInteger('SSL','Port',8883);
+    StartTLSListener := Ini.ReadBool('TLS','Listen',False);
+    TLSTCP.Host := Ini.ReadString('TLS','Interface',TCP.Host);
+    I := Ini.ReadInteger('TLS','Port',8883);
         if I < 81 then
       I := 81;
     if I > 65535 then
       I := 65535;
-    SSLTCP.Port := I;
+    TLSTCP.Port := I;
 
-    SSL.CAFile := Ini.ReadString('SSL','Certificate','');
-    SSL.KeyFile := Ini.ReadString('SSL','Key','');
-    S := Ini.ReadString('SSL','EncPassword','');
+    TLS.CAFile := Ini.ReadString('TLS','Certificate','');
+    TLS.KeyFile := Ini.ReadString('TLS','Key','');
+    S := Ini.ReadString('TLS','EncPassword','');
     if S > '' then
-      SSL.Password := DecryptString(DecodeBase32Str(S),SYSTEM_PASSWORD);
+      TLS.Password := DecryptString(DecodeBase32Str(S),SYSTEM_PASSWORD)
+    else
+      TLS.Password := '';
   finally
     Ini.Free;
   end;
@@ -640,7 +642,9 @@ begin
   Ini := TInifile.Create(Filename,[ifoStripComments,ifoStripInvalid,ifoFormatSettingsActive]);
   try
     if Assigned(FLogFile) then
-      Ini.WriteString('General','LogFilename',FLogFile.Filename);
+      Ini.WriteString('General','LogFilename',FLogFile.Filename)
+    else
+      Ini.DeleteKey('General','LogFilename');
     Ini.WriteBool('General','Debug',cbEnableDebugMessages.Checked);
     Ini.WriteString('General','Title',Caption);
     Ini.WriteBool('MQTT','Enabled',Server.Enabled);
@@ -657,12 +661,15 @@ begin
     Ini.WriteBool('Server','Listen',StartNormalListener);
     Ini.WriteString('Server','BindAddress',TCP.Host);
     Ini.WriteInteger('Server','Port',TCP.Port);
-    Ini.WriteBool('SSL','Listen',StartSSLListener);
-    Ini.WriteString('SSL','BindAddress',SSLTCP.Host);
-    Ini.WriteInteger('SSL','Port',SSLTCP.Port);
-    Ini.WriteString('SSL','Certificate',SSL.CAFile);
-    Ini.WriteString('SSL','Key',SSL.KeyFile);
-    Ini.WriteString('SSL','PasswordEnc',EncodeBase32Str(EncryptString(SSL.Password,SYSTEM_PASSWORD)));
+    Ini.WriteBool('TLS','Listen',StartTLSListener);
+    Ini.WriteString('TLS','BindAddress',TLSTCP.Host);
+    Ini.WriteInteger('TLS','Port',TLSTCP.Port);
+    Ini.WriteString('TLS','Certificate',TLS.CAFile);
+    Ini.WriteString('TLS','Key',TLS.KeyFile);
+    if TLS.Password > '' then
+      Ini.WriteString('TLS','PasswordEnc',EncodeBase32Str(EncryptString(TLS.Password,SYSTEM_PASSWORD)))
+    else
+      Ini.DeleteKey('TLS','PasswordEnc');
   finally
     Ini.Free;
   end;
