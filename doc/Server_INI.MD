@@ -19,6 +19,7 @@ Title | String | "" | Specify a title for the main application window or leave b
 
 Parameter | Datatype | Default | Description
 :--- | :---: | :--- | :---
+Enabled | Boolean | True | Set to 0 to start the server application in disabled mode. Used for using the application to create an INI file without starting the server.
 RequireAuthentication | Boolean | False | Set to 1 to require clients to authenticate using a username and password
 AllowNullClientIDs | Boolean | True | Set to 0 to prevent clients from connecting with null clientIDs
 StrictClientIDValidation | Boolean | False | Set to 1 to enable strict ClientID validation
@@ -44,4 +45,4 @@ Interface | String | "0.0.0.0" | Specify an interface to listen on by IP address
 Port | Integer | 8883 | Specify a port to listen for incomming TLS encrypted connections
 Key | String | "" | Specify a filename that holds the server's private key. The key should be in PEM format.
 Certificate | String | "" | Specify a certificate that holds the server's certificate. This should be in PEM format.
-Password | String | "" | Specify the password for decrypting the private key. Use with caution! 
+PasswordEnc | String | "" | Specifies a password for decrypting the private key. Stored in encrypted form. Use the GUI to set it and save a configuration file
