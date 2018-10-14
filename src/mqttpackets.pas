@@ -11,6 +11,8 @@ uses
 
 type
 
+  EPacketError = class(Exception);
+
   { TMQTTPacket - Base class for objects that represents an MQTT Packet }
 
   TMQTTPacket = class(TObject)
@@ -146,6 +148,7 @@ begin
   Result := mqttconsts.GetPacketTypeName(PacketType);
 end;
 
+{ Validates a received packet and returns True if it is valid }
 function TMQTTPacket.Validate: Boolean;
 begin
   // BROKERCONNECT packets are not implemented by this code.
@@ -456,7 +459,8 @@ begin
   P := PChar(CP);
   WC := UTF8CharacterToUnicode(P,Len);
   Result := True;
-  if (WC = 0) or ((WC >= $D899) and (WC <= $DFFF)) or (WC = $FFFF) then
+  { See: http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180829 }
+  if (WC <= $1F) or ((WC >= $7F) and (WC <= $9F)) or ((WC >= $D800) and (WC <= $DFFF)) or (WC = $FFFF) then
     Result := False;
 end;
 
@@ -495,7 +499,14 @@ begin
         begin
           SetLength(Str,Size);
           if ABuffer.Read(PChar(Str),Size) = Size then
-            Result := ValidateUTF8String(Str)
+            begin
+              Result := ValidateUTF8String(Str);
+              { A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean
+                U+FEFF ("ZERO WIDTH NO-BREAK SPACE") wherever it appears in a string and MUST
+                NOT be skipped over or stripped off by a packet receiver [MQTT-1.5.3-3]}
+              if Result then
+                Str := UTF8Trim(Str,[u8tKeepNoBreakSpaces]);
+            end
           else
             Result := False;
         end
@@ -509,11 +520,18 @@ end;
 
 procedure WriteUTF8StringToBuffer(ABuffer: TBuffer; Str: UTF8String);
 var
+  S: UTF8String;
   Len: Word;
 begin
-  Len := Length(Str);
+  { A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean
+  U+FEFF ("ZERO WIDTH NO-BREAK SPACE") wherever it appears in a string and MUST
+  NOT be skipped over or stripped off by a packet receiver [MQTT-1.5.3-3]}
+  S := UTF8Trim(Str,[u8tKeepNoBreakSpaces]);
+  if not ValidateUTF8String(S) then
+    raise EPacketError.Create('Tried to send an invalid UTF8 String'); // This should never fire if UTF8Trim did its job
+  Len := Length(S);
   WriteWordToBuffer(ABuffer,Len);
-  ABuffer.Write(PChar(Str),Len);
+  ABuffer.Write(PChar(S),Len);
 end;
 
 function ReadRemainingLengthFromBuffer(ABuffer: TBuffer; out Value: DWORD): Boolean;
@@ -649,6 +667,7 @@ begin
         Result := MQTT_ERROR_REMAINING_LENGTH_ENCODING
     else
       Result := MQTT_ERROR_INVALID_PACKET_FLAGS;
+
     if Result <> MQTT_ERROR_NONE then
       begin
         ABuffer.Clear;

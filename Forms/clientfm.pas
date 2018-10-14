@@ -108,6 +108,7 @@ begin
   FListener := TLogListener.Create;
   FListener.OnMessage := @HandleMessage;
   Log := TLogDispatcher.Create('ClientForm');
+  Log.Filter := ALL_LOG_MESSAGE_TYPES;
 end;
 
 procedure TClientForm.FormDestroy(Sender: TObject);
@@ -356,15 +357,24 @@ begin
   if (aSocket is TLSSLSocket) then
     begin
       PeerCertificate := SslGetPeerCertificate((aSocket as TLSSLSocket).GetSSLPointer);
-      P := X509GetSubjectName(PeerCertificate);
-      SetLength(S,255);
-      X509NameOneline(P,S,255);
-      Log.Send(mtInfo,'Subject Name: ' + Trim(S));
-      S := '';
-      P := X509GetSubjectName(PeerCertificate);
-      SetLength(S,255);
-      X509NameOneline(P,S,255);
-      Log.Send(mtInfo,'Issuer Name: ' + Trim(S));
+      if Assigned(PeerCertificate) then
+        begin
+          P := X509GetSubjectName(PeerCertificate);
+          if Assigned(P) then
+            begin
+              SetLength(S,255);
+              X509NameOneline(P,S,255);
+              Log.Send(mtInfo,'Subject Name: ' + Trim(S));
+              S := '';
+            end;
+          P := X509GetSubjectName(PeerCertificate);
+          if Assigned(P) then
+            begin
+              SetLength(S,255);
+              X509NameOneline(P,S,255);
+              Log.Send(mtInfo,'Issuer Name: ' + Trim(S));
+            end;
+        end;
     end;
 end;
 

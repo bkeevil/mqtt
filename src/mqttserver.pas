@@ -8,21 +8,35 @@ uses
   Classes, SysUtils, Buffers, Logging, MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions,
   MQTTMessages;
 
-type
-  TMQTTServer               = class;
-  TMQTTServerConnection     = class;
-  TMQTTServerConnectionList = class;
-  TMQTTSessionList          = class;
-  TMQTTSession              = class;
+{ Some default values for configuration parameters }
 
-  TMQTTConnectionNotifyEvent = procedure (AConnection: TMQTTServerConnection) of object;
-  TMQTTValidateSubscriptionEvent = procedure (AConnection: TMQTTServerConnection; ASubscription: TMQTTSubscription; var QOS: TMQTTQOSType; var Allow: Boolean) of object;
-  TMQTTValidateClientIDEvent = procedure (AServer: TMQTTServer; AClientID: UTF8String; var Allow: Boolean) of object;
-  TMQTTValidatePasswordEvent = procedure (AServer: TMQTTServer; AUsername, APassword: UTF8String; var Allow: Boolean) of object;
-  TMQTTConnectionErrorEvent = procedure (AConnection: TMQTTServerConnection; ErrCode: Word; ErrMsg: String) of object;
-  TMQTTConnectionSendDataEvent = procedure (AConnection: TMQTTServerConnection) of object;
-  TMQTTConnectionDestroyEvent = procedure (AConnection: TMQTTServerConnection) of object;
-  EMQTTConnectionError = class(Exception);
+const
+  MQTT_DEFAULT_KEEPALIVE             = 30;   // Seconds
+  MQTT_DEFAULT_MAX_SESSION_AGE       = 1080; // Minutes
+  MQTT_DEFAULT_MAX_SUBSCRIPTION_AGE  = 1080; // Minutes
+  MQTT_DEFAULT_MAX_RESEND_ATTEMPTS   = 3;
+  MQTT_DEFAULT_RESEND_PACKET_TIMEOUT = 2;    // Seconds
+
+type
+  TMQTTServer                     = class;
+  TMQTTServerConnection           = class;
+  TMQTTServerConnectionList       = class;
+  TMQTTSessionList                = class;
+  TMQTTSession                    = class;
+  TMQTTRetainedMessagesDatastore  = class;
+
+  TMQTTConnectionNotifyEvent      = procedure (AConnection: TMQTTServerConnection) of object;
+  TMQTTValidateSubscriptionEvent  = procedure (AConnection: TMQTTServerConnection; ASubscription: TMQTTSubscription; var QOS: TMQTTQOSType; var Allow: Boolean) of object;
+  TMQTTValidateClientIDEvent      = procedure (AServer: TMQTTServer; AClientID: UTF8String; var Allow: Boolean) of object;
+  TMQTTValidatePasswordEvent      = procedure (AServer: TMQTTServer; AUsername, APassword: UTF8String; var Allow: Boolean) of object;
+  TMQTTConnectionErrorEvent       = procedure (AConnection: TMQTTServerConnection; ErrCode: Word; ErrMsg: String) of object;
+  TMQTTConnectionSendDataEvent    = procedure (AConnection: TMQTTServerConnection) of object;
+  TMQTTConnectionDestroyEvent     = procedure (AConnection: TMQTTServerConnection) of object;
+  TMQTTRetainedMessageListEvent   = procedure (Sender: TMQTTRetainedMessagesDatastore; AMessageList: TMQTTMessageList) of object;
+  TMQTTDeleteRetainedMessageEvent = procedure (Sender: TMQTTRetainedMessagesDatastore; AClient, ATopic: UTF8String) of object;
+  TMQTTUpdateRetainedMessageEvent = procedure (Sender: TMQTTRetainedMessagesDatastore; AClient, ATopic: UTF8String; Data: String; QOS: TMQTTQOSType) of object;
+
+  EMQTTConnectionError            = class(Exception);
 
   { TMQTTServerConnection }
 
@@ -66,11 +80,9 @@ type
     public
       constructor Create(AServer: TMQTTServer);
       destructor Destroy; override;
-      // Methods
       procedure Publish(Topic: UTF8String; Data: String; QOS: TMQTTQOSType = qtAT_MOST_ONCE; Retain: Boolean = False; Duplicate: Boolean = False);
       procedure Disconnected;
       procedure DataAvailable(Buffer: TBuffer);
-      // Properties
       property SendBuffer  : TBuffer read FSendBuffer;
       property RecvBuffer  : TBuffer read FRecvBuffer;
       property Socket      : TObject read FSocket write FSocket;
@@ -99,9 +111,34 @@ type
       procedure Remove(AConnection: TMQTTServerConnection);
       procedure Delete(Index: Integer);
       //function Find(ClientID: UTF8String): TMQTTServerConnection;
-      //
       property Count: Integer read GetCount;
       property Items[Index: Integer]: TMQTTServerConnection read GetItem; default;
+  end;
+
+  { TMQTTRetainedMessagesDatastore }
+
+  TMQTTRetainedMessagesDatastore = class(TComponent)
+    private
+      FFilename: String;
+      FEnabled: Boolean;
+      FModified: Boolean;
+      FOnLoadDatastore: TMQTTRetainedMessageListEvent;
+      FOnSaveDatastore: TMQTTRetainedMessageListEvent;
+      FOnDeleteTopic: TMQTTDeleteRetainedMessageEvent;
+      FOnUpdateTopic: TMQTTUpdateRetainedMessageEvent;
+    public
+      procedure LoadDatastore(Messages: TMQTTMessageList); virtual;
+      procedure SaveDatastore(Messages: TMQTTMessageList); virtual;
+      procedure DeleteTopic(ClientID, Topic: UTF8String); virtual;
+      procedure UpdateTopic(ClientID, Topic: UTF8String; Data: String; QOS: TMQTTQOSType); virtual;
+      property Modified: Boolean read FModified write FModified;
+    published
+      property Filename: String read FFilename write FFilename;
+      property Enabled: Boolean read FEnabled write FEnabled;
+      property OnLoadDatastore: TMQTTRetainedMessageListEvent read FOnLoadDatastore write FOnLoadDatastore;
+      property OnSaveDatastore: TMQTTRetainedMessageListEvent read FOnSaveDatastore write FOnSaveDatastore;
+      property OnDeleteTopic: TMQTTDeleteRetainedMessageEvent read FOnDeleteTopic write FOnDeleteTopic;
+      property OnUpdateTopic: TMQTTUpdateRetainedMessageEvent read FOnUpdateTopic write FOnUpdateTopic;
   end;
 
   { TMQTTServerThread }
@@ -121,6 +158,7 @@ type
       FConnections                : TMQTTServerConnectionList;
       FSessions                   : TMQTTSessionList;
       FRetainedMessages           : TMQTTMessageList;
+      FRetainedMessagesDatastore  : TMQTTRetainedMessagesDatastore;
       FResendPacketTimeout        : Byte;
       FMaxResendAttempts          : Byte;
       FMaxSubscriptionAge         : Word;
@@ -154,7 +192,10 @@ type
       procedure ProcessAckQueues;
       procedure ProcessSessionAges;
       procedure HandleTimer;
+      //
+      procedure SetRetainedMessagesDatastore(AValue: TMQTTRetainedMessagesDatastore);
     protected
+      procedure Notification(AComponent: TComponent; Operation: TOperation); override;
       // Methods that trigger event handlers
       procedure Accepted(Connection: TMQTTServerConnection); virtual;
       procedure Disconnected(Connection: TMQTTServerConnection); virtual;
@@ -173,6 +214,8 @@ type
       procedure SendRetainedMessages(Session: TMQTTSession; Subscription: TMQTTSubscription);
       function ValidateClientID(AClientID: UTF8String): Boolean; virtual;
       function ValidatePassword(AUsername, APassword: UTF8String): Boolean; virtual;
+      property ResendPacketTimeout: Byte read FResendPacketTimeout write FResendPacketTimeout default MQTT_DEFAULT_RESEND_PACKET_TIMEOUT;
+      property MaxResendAttempts: Byte read FMaxResendAttempts write FMaxResendAttempts default MQTT_DEFAULT_MAX_RESEND_ATTEMPTS;
     public
       Log: TLogDispatcher;
       constructor Create(AOwner: TComponent); override;
@@ -182,16 +225,15 @@ type
       property Sessions: TMQTTSessionList read FSessions;
       property RetainedMessages: TMQTTMessageList read FRetainedMessages;
     published
-      property ResendPacketTimeout: Byte read FResendPacketTimeout write FResendPacketTimeout default 2; // Seconds
-      property MaxResendAttempts: Byte read FMaxResendAttempts write FMaxResendAttempts default 3;
-      property MaxSubscriptionAge: Word read FMaxSubscriptionAge write FMaxSubscriptionAge default 1080; // Minutes
-      property MaxSessionAge: Word read FMaxSessionAge write FMaxSessionAge default 1080; // Minutes
-      property DefaultKeepAlive: Integer read FDefaultKeepAlive write FDefaultKeepAlive default 30; // Seconds
+      property MaxSubscriptionAge: Word read FMaxSubscriptionAge write FMaxSubscriptionAge default MQTT_DEFAULT_MAX_SUBSCRIPTION_AGE;
+      property MaxSessionAge: Word read FMaxSessionAge write FMaxSessionAge default MQTT_DEFAULT_MAX_SESSION_AGE;
+      property KeepAlive: Integer read FDefaultKeepAlive write FDefaultKeepAlive default MQTT_DEFAULT_KEEPALIVE;
       property Enabled: Boolean read FEnabled write FEnabled default true;
       property MaximumQOS: TMQTTQOSType read FMaximumQOS write FMaximumQOS default qtEXACTLY_ONCE;
       property RequireAuthentication: Boolean read FRequireAuthentication write FRequireAuthentication default true;
       property AllowNullClientIDs: Boolean read FAllowNullClientIDs write FAllowNullClientIds default false;
       property StrictClientIDValidation: Boolean read FStrictClientIDValidation write FStrictClientIDValidation default false;
+      property RetainedMessagesDatastore: TMQTTRetainedMessagesDatastore read FRetainedMessagesDatastore write SetRetainedMessagesDatastore;
       //
       property OnAccepted                 : TMQTTConnectionNotifyEvent read FOnAccepted write FOnAccepted;
       property OnDisconnect               : TMQTTConnectionNotifyEvent read FOnDisconnect write FOnDisconnect;
@@ -280,6 +322,71 @@ implementation
 uses
   MQTTTokenizer;
 
+{ TMQTTRetainedMessagesDatastore }
+
+procedure TMQTTRetainedMessagesDatastore.LoadDatastore(Messages: TMQTTMessageList);
+var
+  S: TFileStream;
+begin
+  if Enabled then
+    begin
+      if (Filename > '') and FileExists(Filename) then
+        begin
+          S := TFileStream.Create(Filename,fmOpenRead+fmShareDenyWrite);
+          try
+            Messages.LoadFromStream(S);
+          finally
+            S.Free;
+          end;
+        end;
+      if Assigned(FOnLoadDatastore) then
+        FOnLoadDatastore(Self,Messages);
+      Modified := False;
+    end;
+end;
+
+procedure TMQTTRetainedMessagesDatastore.SaveDatastore(Messages: TMQTTMessageList);
+var
+  S: TFileStream;
+begin
+  if Enabled then
+    begin
+      if (Filename > '') then
+        begin
+          if FileExists(Filename) then
+            S := TFileStream.Create(Filename,fmOpenWrite+fmShareDenyRead)
+          else
+            S := TFileStream.Create(Filename,fmCreate);
+          try
+            Messages.SaveToStream(S);
+          finally
+            S.Free;
+          end;
+        end;
+      if Assigned(FOnSaveDatastore) then
+        FOnSaveDatastore(Self,Messages);
+      Modified := False;
+    end;
+end;
+
+procedure TMQTTRetainedMessagesDatastore.DeleteTopic(ClientID, Topic: UTF8String);
+begin
+  if Enabled and Assigned(FOnDeleteTopic) then
+    begin
+      Modified := True;
+      OnDeleteTopic(Self,ClientID,Topic);
+    end;
+end;
+
+procedure TMQTTRetainedMessagesDatastore.UpdateTopic(ClientID, Topic: UTF8String; Data: String; QOS: TMQTTQOSType);
+begin
+  if Enabled and Assigned(OnUpdateTopic) then
+    begin
+      Modified := True;
+      OnUpdateTopic(Self,ClientID,Topic,Data,QOS);
+    end;
+end;
+
 { TMQTTServerThread }
 
 procedure TMQTTServerThread.OnTimer;
@@ -303,6 +410,7 @@ constructor TMQTTServer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   Log                     := TLogDispatcher.Create(Name);
+  Log.Filter              := ALL_LOG_MESSAGE_TYPES;
   FMaximumQOS             := qtEXACTLY_ONCE;
   FEnabled                := True;
   FAllowNullClientIDs     := False;
@@ -328,9 +436,18 @@ begin
   FThread.Terminate;
   FSessions.Free;
   FConnections.Free;
+  if Assigned(RetainedMessagesDatastore) and (RetainedMessagesDatastore.Enabled) then
+    RetainedMessagesDatastore.SaveDatastore(RetainedMessages);
   FRetainedMessages.Free;
   Log.Free;
   inherited Destroy;
+end;
+
+procedure TMQTTServer.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+  if (Operation = opRemove) and (AComponent = FRetainedMessagesDatastore) then
+    FRetainedMessagesDatastore := nil;
+  inherited Notification(AComponent, Operation);
 end;
 
 procedure TMQTTServer.ProcessSessionAges;
@@ -436,6 +553,8 @@ procedure TMQTTServer.Loaded;
 begin
   inherited Loaded;
   Log.Name := Name;
+  if Assigned(RetainedMessagesDatastore) and RetainedMessagesDatastore.Enabled then
+    RetainedMessagesDatastore.LoadDatastore(FRetainedMessages);
 end;
 
 function TMQTTServer.ValidateClientID(AClientID: UTF8String): Boolean;
@@ -478,17 +597,23 @@ begin
       begin
         if M.Retain then
           begin
-           {A PUBLISH Packet with a RETAIN flag set to 1 and a payload containing zero bytes will be processed as
-           normal by the Server and sent to Clients with a subscription matching the topic name. Additionally any
-           existing retained message with the same topic name MUST be removed and any future subscribers for the
-           topic will not receive a retained message [MQTT-3.3.1-10]. “As normal” means that the RETAIN flag is
-           not set in the message received by existing Clients. A zero byte retained message MUST NOT be stored
-           as a retained message on the Server [MQTT-3.3.1-11].}
+            { A PUBLISH Packet with a RETAIN flag set to 1 and a payload containing zero bytes will be processed as
+            normal by the Server and sent to Clients with a subscription matching the topic name. Additionally any
+            existing retained message with the same topic name MUST be removed and any future subscribers for the
+            topic will not receive a retained message [MQTT-3.3.1-10]. “As normal” means that the RETAIN flag is
+            not set in the message received by existing Clients. A zero byte retained message MUST NOT be stored
+            as a retained message on the Server [MQTT-3.3.1-11].}
             if M.Data = '' then
-              RetainedMessages.DeleteByTopic(M.Topic)
+              begin
+                RetainedMessages.DeleteByTopic(M.Topic);
+                if Assigned(RetainedMessagesDatastore) and (RetainedMessagesDatastore.Enabled) then
+                  FRetainedMessagesDatastore.DeleteTopic(Sender.ClientID,M.Topic);
+              end
             else
               begin
                 RetainedMessages.Update(M);
+                if Assigned(RetainedMessagesDatastore) and (RetainedMessagesDatastore.Enabled) then
+                  RetainedMessagesDatastore.UpdateTopic(Sender.ClientID,M.Topic,M.Data,M.QOS);
                 M := M.Clone; // Store the message in the RetainedMessages list and continue processing using a clone of the original message
               end;
             RetainedMessagesChanged;
@@ -538,6 +663,16 @@ begin
     end;
 end;
 
+procedure TMQTTServer.SetRetainedMessagesDatastore(AValue: TMQTTRetainedMessagesDatastore);
+begin
+  if FRetainedMessagesDatastore=AValue then Exit;
+  if Assigned(FRetainedMessagesDatastore) then
+    FRetainedMessagesDatastore.RemoveFreeNotification(Self);
+  FRetainedMessagesDatastore:=AValue;
+  if Assigned(FRetainedMessagesDatastore) then
+    FRetainedMessagesDatastore.FreeNotification(Self);
+end;
+
 { TMQTTServerConnection }
 
 constructor TMQTTServerConnection.Create(AServer: TMQTTServer);
@@ -545,11 +680,12 @@ begin
   Assert(Assigned(AServer));
   inherited Create;
   Log.Name := 'Connection';
+  Log.Filter := ALL_LOG_MESSAGE_TYPES;
   FServer  := AServer;
   FServer.Connections.Add(Self);
   FSendBuffer          := TBuffer.Create;
   FRecvBuffer          := TBuffer.Create;
-  FKeepAlive           := Server.DefaultKeepAlive;
+  FKeepAlive           := Server.KeepAlive;
   FKeepAliveRemaining  := FKeepAlive;
   FWillMessage         := TMQTTWillMessage.Create;
   FServer.ConnectionsChanged;
@@ -776,8 +912,13 @@ begin
       Exit;
     end;
 
-
   // If a zero length ClientID is provided, generate a unique random ClientID
+
+  { A Server MAY allow a Client to supply a ClientId that has a length of zero
+    bytes, however if it does so the Server MUST treat this as a special case
+    and assign a unique ClientId to that Client. It MUST then process the CONNECT
+    packet as if the Client had provided that unique ClientId [MQTT-3.1.3-6]}
+
   if APacket.ClientID = '' then
     if APacket.CleanSession and Server.AllowNullClientIDs then
       begin
@@ -867,62 +1008,6 @@ begin
   Server.SessionsChanged;
 end;
 
-procedure TMQTTServerConnection.HandleDISCONNECTPacket;
-begin
-  Log.Send(mtDebug,'Received DISCONNECT');
-  Disconnect;
-end;
-
-procedure TMQTTServerConnection.HandleCONNECTPacket(APacket: TMQTTCONNECTPacket);
-var
-  SessionPresent : Boolean;
-  ReturnCode     : Byte;
-  Reply          : TMQTTCONNACKPacket;
-begin
-  Assert(State = csNew);
-  FState := csConnecting;
-  ReturnCode := InitNetworkConnection(APacket);
-
-  if ReturnCode <> MQTT_CONNACK_SUCCESS then
-    SessionPresent := False
-  else
-    SessionPresent := InitSessionState(APacket);
-
-  Log.Send(mtDebug,'Received CONNECT. ClientID=%s Username=%s SessionPresent=%s KeepAlive=%d',[APacket.ClientID,APacket.Username,BoolToStr(SessionPresent),APacket.KeepAlive]);
-
-  Reply := TMQTTCONNACKPACKET.Create;
-  try
-    Reply.ReturnCode := ReturnCode;
-    Reply.SessionPresent := SessionPresent;
-    Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtDebug,'Sending CONNACK.  ReturnCode=%d',[ReturnCode]);
-    Server.SendData(Self);
-    if ReturnCode = MQTT_CONNACK_SUCCESS then
-      Accepted
-    else
-      Disconnect;
-  finally
-    Reply.Free;
-  end;
-end;
-
-procedure TMQTTServerConnection.HandlePINGREQPacket;
-var
-  Reply: TMQTTPINGRESPPacket;
-begin
-  //Log.Send(mtDebug,'Received PINGREQ');
-  Reply := TMQTTPINGRESPPacket.Create;
-  try
-    // KeepAlive is reset in DataAvailable() in response to all packets
-    Reply.WriteToBuffer(SendBuffer);
-    //Log.Send(mtDebug,'Sending PINGRESP');
-    Server.SendData(Self);
-  finally
-    Reply.Free;
-  end;
-end;
-
-
 function TMQTTServerConnection.ValidateSubscription(ASubscription: TMQTTSubscription; var QOS: TMQTTQOSType): Boolean;
 begin
   // Note: 3.8.4 says "The Server might grant a lower maximum QoS than the
@@ -980,7 +1065,7 @@ begin
   Assert(State = csDisconnecting);
   if WillMessage.Enabled then
     begin
-      Log.Send(mtInfo,'Sending Will Message');
+      Log.Send(mtDebug,'Sending Will Message (%s)',[WillMessage.AsString]);
       Publish(WillMessage.Topic,WillMessage.Message,WillMessage.QOS,WillMessage.Retain,False);
       if WillMessage.QOS = qtAT_MOST_ONCE then
         FState := csDisconnected;
@@ -989,11 +1074,66 @@ begin
     FState := csDisconnected;
 end;
 
+procedure TMQTTServerConnection.HandleDISCONNECTPacket;
+begin
+  Log.Send(mtDebug,'Received DISCONNECT');
+  Disconnect;
+end;
+
+procedure TMQTTServerConnection.HandleCONNECTPacket(APacket: TMQTTCONNECTPacket);
+var
+  SessionPresent : Boolean;
+  ReturnCode     : Byte;
+  Reply          : TMQTTCONNACKPacket;
+begin
+  Assert(State = csNew);
+  FState := csConnecting;
+  ReturnCode := InitNetworkConnection(APacket);
+
+  if ReturnCode <> MQTT_CONNACK_SUCCESS then
+    SessionPresent := False
+  else
+    SessionPresent := InitSessionState(APacket);
+
+  Log.Send(mtDebug,'Received CONNECT (%s)',[APacket.ToString]);
+
+  Reply := TMQTTCONNACKPACKET.Create;
+  try
+    Reply.ReturnCode := ReturnCode;
+    Reply.SessionPresent := SessionPresent;
+    Reply.WriteToBuffer(SendBuffer);
+    Log.Send(mtDebug,'Sending CONNACK (%s)',[Reply.ToString]);
+    Server.SendData(Self);
+    if ReturnCode = MQTT_CONNACK_SUCCESS then
+      Accepted
+    else
+      Disconnect;
+  finally
+    Reply.Free;
+  end;
+end;
+
+procedure TMQTTServerConnection.HandlePINGREQPacket;
+var
+  Reply: TMQTTPINGRESPPacket;
+begin
+  //Log.Send(mtDebug,'Received PINGREQ');
+  Reply := TMQTTPINGRESPPacket.Create;
+  try
+    // KeepAlive is reset in DataAvailable() in response to all packets
+    Reply.WriteToBuffer(SendBuffer);
+    //Log.Send(mtDebug,'Sending PINGRESP');
+    Server.SendData(Self);
+  finally
+    Reply.Free;
+  end;
+end;
+
 procedure TMQTTServerConnection.HandleSUBSCRIBEPacket(APacket: TMQTTSUBSCRIBEPacket);
 var
   Reply: TMQTTSUBACKPacket;
 begin
-  Log.Send(mtDebug,'Received SUBSCRIBE (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received SUBSCRIBE (%s)',[APacket.AsString]);
   Reply := TMQTTSUBACKPacket.Create;
   try
     Reply.PacketID := APacket.PacketID;
@@ -1001,7 +1141,7 @@ begin
     Session.Subscriptions.MergeList(APacket.Subscriptions);
     // Send the data
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtDebug,'Sending SUBACK (%d)',[Reply.PacketID]);
+    Log.Send(mtDebug,'Sending SUBACK (%s)',[Reply.AsString]);
     Server.SendData(Self);
     Server.SubscriptionsChanged;
     Session.SendRetainedMessages(APacket.Subscriptions);
@@ -1014,7 +1154,7 @@ procedure TMQTTServerConnection.HandleUNSUBSCRIBEPacket(APacket: TMQTTUNSUBSCRIB
 var
   Reply: TMQTTUNSUBACKPacket;
 begin
-  Log.Send(mtDebug,'Received UNSUBSCRIBE (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received UNSUBSCRIBE (%s)',[APacket.AsString]);
   Reply := TMQTTUNSUBACKPacket.Create;
   try
     Reply.PacketID := APacket.PacketID;
@@ -1023,7 +1163,7 @@ begin
     Session.Subscriptions.DeleteList(APacket.Subscriptions);
     // Send the data
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtDebug,'Sending UNSUBACK (%d)',[Reply.PacketID]);
+    Log.Send(mtDebug,'Sending UNSUBACK (%s)',[Reply.AsString]);
     Server.SendData(Self);
     Server.SubscriptionsChanged;
   finally
@@ -1033,7 +1173,7 @@ end;
 
 procedure TMQTTServerConnection.HandlePUBACKPacket(APacket: TMQTTPUBACKPacket);
 begin
-  Log.Send(mtDebug,'Received PUBACK (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received PUBACK (%s)',[APacket.AsString]);
   Session.FPacketIDManager.ReleaseID(APacket.PacketID);
   Session.FWaitingForAck.Remove(ptPUBLISH,APacket.PacketID);
   // Disconnects the connection after the willmessage has been sent
@@ -1045,14 +1185,14 @@ procedure TMQTTServerConnection.HandlePUBRECPacket(APacket: TMQTTPUBRECPacket);
 var
   Reply: TMQTTPUBRELPacket;
 begin
-  Log.Send(mtDebug,'Received PUBREC (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received PUBREC (%s)',[APacket.AsString]);
   Session.FWaitingForAck.Remove(ptPublish,APacket.PacketID);
 
   Reply := TMQTTPUBRELPacket.Create;
   Reply.PacketID := APacket.PacketID;
   Session.FWaitingForAck.Add(Reply);
   Reply.WriteToBuffer(SendBuffer);
-  Log.Send(mtDebug,'Sending PUBREL (%d)',[Reply.PacketID]);
+  Log.Send(mtDebug,'Sending PUBREL (%s)',[Reply.AsString]);
   Server.SendData(Self);
 end;
 
@@ -1061,7 +1201,7 @@ var
   Pkt: TMQTTPUBLISHPacket;
   Reply: TMQTTPUBCOMPPacket;
 begin
-  Log.Send(mtDebug,'Received PUBREL (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received PUBREL (%s)',[APacket.AsString]);
   Session.FWaitingForAck.Remove(ptPUBREC,APacket.PacketID);
   Pkt := Session.FPendingDispatch.Find(ptPUBLISH,APacket.PacketID) as TMQTTPUBLISHPacket;
   if Assigned(Pkt) then
@@ -1074,7 +1214,7 @@ begin
   try
     Reply.PacketID := APacket.PacketID;
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtDebug,'Sending PUBCOMP (%d)',[Reply.PacketID]);
+    Log.Send(mtDebug,'Sending PUBCOMP (%s)',[Reply.AsString]);
     Server.SendData(Self);
     Server.SendPendingMessages;
   finally
@@ -1084,7 +1224,7 @@ end;
 
 procedure TMQTTServerConnection.HandlePUBCOMPPacket(APacket: TMQTTPUBCOMPPacket);
 begin
-  Log.Send(mtDebug,'Received PUBCOMP (%d)',[APacket.PacketID]);
+  Log.Send(mtDebug,'Received PUBCOMP (%s)',[APacket.AsString]);
   Session.FPacketIDManager.ReleaseID(APacket.PacketID);
   Session.FWaitingForAck.Remove(ptPUBREL,APacket.PacketID);
   // Disconnects the connection after the willmessage has been sent
@@ -1100,7 +1240,7 @@ begin
   try
     Reply.PacketID := APacket.PacketID;
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtDebug,'Sending PUBACK (%d)',[Reply.PacketID]);
+    Log.Send(mtDebug,'Sending PUBACK (%s)',[Reply.AsString]);
     Server.SendData(Self);
     Server.DispatchMessage(Session,APacket.Topic,APacket.Data,APacket.QOS,APacket.Retain);
     Server.SendPendingMessages;
@@ -1124,18 +1264,17 @@ begin
       Pkt := APacket;
       Session.FPendingDispatch.Add(APacket);
     end;
-
   Reply := TMQTTPUBRECPacket.Create;
   Reply.PacketID := Pkt.PacketID;
   Session.FWaitingForAck.Add(Reply);
   Reply.WriteToBuffer(SendBuffer);
-  Log.Send(mtDebug,'Sending PUBREC (%d)',[Reply.PacketID]);
+  Log.Send(mtDebug,'Sending PUBREC (%s)',[Reply.AsString]);
   Server.SendData(Self);
 end;
 
 procedure TMQTTServerConnection.HandlePUBLISHPacket(APacket: TMQTTPUBLISHPacket);
 begin
-  Log.Send(mtDebug,'Received PUBLISH (PacketID=%d,QOS=%s,Retain=%s)',[APacket.PacketID,GetQOSTypeName(APacket.QOS),BoolToStr(APacket.Retain,'True','False')]);
+  Log.Send(mtDebug,'Received PUBLISH (%s)',[APacket.AsString]);
   case APacket.QOS of
     qtAT_MOST_ONCE  : Server.DispatchMessage(Session,APacket.Topic,APacket.Data,APacket.QOS,APacket.Retain);
     qtAT_LEAST_ONCE : HandlePUBLISHPacket1(APacket);
@@ -1338,6 +1477,7 @@ begin
   FClientID            := AClientID;
   FMaximumQOS          := qtEXACTLY_ONCE;
   Log.Name             := 'Session ('+FClientID+')';
+  Log.Filter           := ALL_LOG_MESSAGE_TYPES;
 end;
 
 destructor TMQTTSession.Destroy;

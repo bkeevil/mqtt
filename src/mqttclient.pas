@@ -312,6 +312,7 @@ constructor TMQTTClient.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   Log                     := TLogDispatcher.Create('Client');
+  Log.Filter              := ALL_LOG_MESSAGE_TYPES;
   FResendPacketTimeout    := MQTT_DEFAULT_RESEND_PACKET_TIMEOUT;
   FMaxResendAttempts      := MQTT_DEFAULT_MAX_RESEND_ATTEMPTS;
   FSendBuffer             := TBuffer.Create;
@@ -469,7 +470,7 @@ begin
         // Use the CONNECT object to write packet data to a buffer and send the buffer
         Packet.WriteToBuffer(SendBuffer);
         FState := csConnecting;
-        Log.Send(mtDebug,'Sending CONNECT');
+        Log.Send(mtDebug,'Sending CONNECT (%s)',[Packet.AsString]);
         SendData;
       finally
         Packet.Destroy;
@@ -482,7 +483,7 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtDebug,'Received CONNACK ('+IntToStr(APacket.ReturnCode)+')');
+      Log.Send(mtDebug,'Received CONNACK (%s)',[APacket.AsString]);
       if APacket.ReturnCode = MQTT_CONNACK_SUCCESS then
         begin
           // Start the ping interval timer
@@ -708,7 +709,7 @@ begin
       Packet := TMQTTPINGREQPacket.Create;
       try
         Packet.WriteToBuffer(SendBuffer);
-        Log.Send(mtDebug,'Sending PINGREQ');
+        //Log.Send(mtDebug,'Sending PINGREQ');
         SendData;
       finally
         Packet.Free;
@@ -718,7 +719,7 @@ end;
 
 procedure TMQTTClient.HandlePINGRESPPacket;
 begin
-  Log.Send(mtDebug,'Received PINGRESP');
+  //Log.Send(mtDebug,'Received PINGRESP');
   FPingCount := 0;
   FPingIntRemaining := FPingInterval;
 end;
@@ -737,7 +738,7 @@ begin
       Packet.PacketID := PacketIDManager.GenerateID;
       FWaitingForAck.Add(Packet);
       Packet.WriteToBuffer(SendBuffer);
-      Log.Send(mtDebug,'Sending SUBSCRIBE');
+      Log.Send(mtDebug,'Sending SUBSCRIBE (%s)',[Packet.AsString]);
       SendData;
     end;
 end;
@@ -750,7 +751,7 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtDebug,'Received SUBACK (PacketID='+IntToStr(APacket.PacketID)+')');
+      Log.Send(mtDebug,'Received SUBACK (%s)',[APacket.AsString]);
       // Remove from Ack Queue
       for I := FWaitingForAck.Count - 1 downto 0 do
         begin
@@ -858,7 +859,7 @@ begin
       Packet.PacketID := PacketIDManager.GenerateID;
       FWaitingForAck.Add(Packet);
       Packet.WriteToBuffer(SendBuffer);
-      Log.Send(mtDebug,'Sending UNSUBSCRIBE');
+      Log.Send(mtDebug,'Sending UNSUBSCRIBE (%s)',[Packet.AsString]);
       SendData;
     end;
 end;
@@ -871,7 +872,7 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtDebug,'Received UNSUBACK ('+IntToStr(APacket.PacketID)+')');
+      Log.Send(mtDebug,'Received UNSUBACK (%s)',[APacket.AsString]);
       // Remove from Ack Queue
       for I := FWaitingForAck.Count - 1 downto 0 do
         begin
@@ -932,7 +933,7 @@ begin
             FWaitingForAck.Add(Packet);
           end;
           Packet.WriteToBuffer(SendBuffer);
-          Log.Send(mtDebug,'Sending PUBLISH (%d)',[Packet.PacketID]);
+          Log.Send(mtDebug,'Sending PUBLISH (%s)',[Packet.AsString]);
           SendData;
       finally
         if QOS = qtAT_MOST_ONCE then
@@ -946,7 +947,7 @@ begin
   Assert(Assigned(APacket) and (State = csConnected));
   if Assigned(APacket) and (State = csConnected) then
     begin
-      Log.Send(mtDebug,'Received PUBLISH (PacketID=%d,QOS=%s)',[APacket.PacketID,GetQOSTypeName(APacket.QOS)]);
+      Log.Send(mtDebug,'Received PUBLISH (%s)',[APacket.AsString]);
       case APacket.QOS of
         qtAT_MOST_ONCE  : ReceiveMessage(APacket.Topic,APacket.Data,APacket.QOS,APacket.Retain);
         qtAT_LEAST_ONCE : HandlePUBLISHPacket1(APacket);
@@ -963,7 +964,7 @@ begin
   try
     Reply.PacketID := APacket.PacketID;
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtDebug,'Sending PUBACK (%d)',[Reply.PacketID]);
+    Log.Send(mtDebug,'Sending PUBACK (%s)',[Reply.AsString]);
     SendData;
     ReceiveMessage(APacket.Topic,APacket.Data,APacket.QOS,APacket.Retain);
   finally
@@ -991,7 +992,7 @@ begin
   Reply.PacketID := Pkt.PacketID;
   FWaitingForAck.Add(Reply);
   Reply.WriteToBuffer(SendBuffer);
-  Log.Send(mtDebug,'Sending PUBREC (%d)',[Reply.PacketID]);
+  Log.Send(mtDebug,'Sending PUBREC (%s)',[Reply.AsString]);
   SendData;
 end;
 
@@ -1000,7 +1001,7 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtDebug,'Received PUBACK (%d)',[APacket.PacketID]);
+      Log.Send(mtDebug,'Received PUBACK (%s)',[APacket.AsString]);
       FPacketIDManager.ReleaseID(APacket.PacketID);
       FWaitingForAck.Remove(ptPUBLISH,APacket.PacketID);
     end;
@@ -1013,13 +1014,13 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtDebug,'Received PUBREC (%d)',[APacket.PacketID]);
+      Log.Send(mtDebug,'Received PUBREC (%s)',[APacket.AsString]);
       FWaitingForAck.Remove(ptPublish,APacket.PacketID);
       Reply := TMQTTPUBRELPacket.Create;
       Reply.PacketID := APacket.PacketID;
       FWaitingForAck.Add(Reply);
       Reply.WriteToBuffer(SendBuffer);
-      Log.Send(mtDebug,'Sending PUBREL (%d)',[Reply.PacketID]);
+      Log.Send(mtDebug,'Sending PUBREL (%s)',[Reply.AsString]);
       SendData;
     end;
 end;
@@ -1032,7 +1033,7 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtDebug,'Received PUBREL (%d)',[APacket.PacketID]);
+      Log.Send(mtDebug,'Received PUBREL (%s)',[APacket.AsString]);
       FWaitingForAck.Remove(ptPUBREC,APacket.PacketID);
       Pkt := FPendingReceive.Find(ptPUBLISH,APacket.PacketID) as TMQTTPUBLISHPacket;
       Assert(Assigned(Pkt));
@@ -1045,7 +1046,7 @@ begin
           try
             Reply.PacketID := APacket.PacketID;
             Reply.WriteToBuffer(SendBuffer);
-            Log.Send(mtDebug,'Sending PUBCOMP (%d)',[Reply.PacketID]);
+            Log.Send(mtDebug,'Sending PUBCOMP (%s)',[Reply.AsString]);
             SendData;
           finally
             Reply.Free;
@@ -1059,7 +1060,7 @@ begin
   Assert(Assigned(APacket));
   if Assigned(APacket) then
     begin
-      Log.Send(mtDebug,'Received PUBCOMP (PacketID='+IntToStr(APacket.PacketID)+')');
+      Log.Send(mtDebug,'Received PUBCOMP (%s)',[APacket.AsString]);
       FPacketIDManager.ReleaseID(APacket.PacketID);
       FWaitingForAck.Remove(ptPUBREL,APacket.PacketID);
     end;

@@ -1,7 +1,7 @@
 object ServerForm: TServerForm
   Left = 504
   Height = 371
-  Top = 158
+  Top = 186
   Width = 817
   ActiveControl = PageControl
   Caption = 'MQTT Server'
@@ -11,15 +11,15 @@ object ServerForm: TServerForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poScreenCenter
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '1.8.5.0'
   object PageControl: TPageControl
     Left = 0
     Height = 346
     Top = 0
     Width = 817
-    ActivePage = SubscriptionsTab
+    ActivePage = PacketsInMemTab
     Align = alClient
-    TabIndex = 1
+    TabIndex = 5
     TabOrder = 0
     object ConnectionsTab: TTabSheet
       Caption = 'Connections'
@@ -93,7 +93,7 @@ object ServerForm: TServerForm
           end        
           item
             Title.Caption = 'Topic Filter'
-            Width = 501
+            Width = 499
           end        
           item
             SizePriority = 0
@@ -117,7 +117,7 @@ object ServerForm: TServerForm
         TabOrder = 0
         ColWidths = (
           120
-          501
+          499
           120
           64
         )
@@ -225,9 +225,9 @@ object ServerForm: TServerForm
       ClientWidth = 807
       object LogGrid: TStringGrid
         Left = 0
-        Height = 286
+        Height = 265
         Top = 50
-        Width = 811
+        Width = 807
         Align = alClient
         AutoAdvance = aaNone
         AutoEdit = False
@@ -249,7 +249,7 @@ object ServerForm: TServerForm
           item
             ReadOnly = True
             Title.Caption = 'Message'
-            Width = 607
+            Width = 605
           end>
         DefaultRowHeight = 18
         ExtendedSelect = False
@@ -260,22 +260,22 @@ object ServerForm: TServerForm
         ColWidths = (
           80
           120
-          607
+          605
         )
       end
       object LogToolbarPanel: TPanel
         Left = 0
         Height = 50
         Top = 0
-        Width = 811
+        Width = 807
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 50
-        ClientWidth = 811
+        ClientWidth = 807
         TabOrder = 1
         object FilterText: TEdit
           Left = 8
-          Height = 27
+          Height = 29
           Top = 9
           Width = 144
           OnExit = FilterTextExit
@@ -283,18 +283,18 @@ object ServerForm: TServerForm
         end
         object CBFiltered: TCheckBox
           Left = 160
-          Height = 22
+          Height = 23
           Top = 12
-          Width = 66
+          Width = 68
           Caption = 'Filtered'
           OnChange = CBFilteredChange
           TabOrder = 1
         end
         object CBEnabled: TCheckBox
           Left = 231
-          Height = 22
+          Height = 23
           Top = 12
-          Width = 69
+          Width = 71
           Caption = 'Enabled'
           Checked = True
           OnChange = CBEnabledChange
@@ -302,7 +302,7 @@ object ServerForm: TServerForm
           TabOrder = 2
         end
         object ClearBtn: TButton
-          Left = 312
+          Left = 408
           Height = 25
           Top = 9
           Width = 75
@@ -310,6 +310,15 @@ object ServerForm: TServerForm
           Caption = '&Clear'
           OnClick = ClearBtnClick
           TabOrder = 3
+        end
+        object cbEnableDebugMessages: TCheckBox
+          Left = 312
+          Height = 23
+          Top = 12
+          Width = 63
+          Caption = 'Debug'
+          OnChange = cbEnableDebugMessagesChange
+          TabOrder = 4
         end
       end
     end
@@ -350,6 +359,10 @@ object ServerForm: TServerForm
       object SaveConfigurationItm: TMenuItem
         Caption = '&Save Configuration...'
         OnClick = SaveConfigurationItmClick
+      end
+      object RestartServerItm: TMenuItem
+        Caption = '&Restart Server'
+        OnClick = RestartServerItmClick
       end
       object PropertiesItm: TMenuItem
         Caption = '&Properties...'
@@ -401,6 +414,7 @@ object ServerForm: TServerForm
   object Server: TMQTTServer
     RequireAuthentication = False
     AllowNullClientIDs = True
+    RetainedMessagesDatastore = RMDatastore
     OnAccepted = ServerAccepted
     OnDisconnect = ServerDisconnect
     OnDisconnected = ServerDisconnected
@@ -427,6 +441,7 @@ object ServerForm: TServerForm
     OnError = TCPError
     OnDisconnect = TCPDisconnect
     OnAccept = TCPAccept
+    OnCanSend = TCPCanSend
     Timeout = 0
     ReuseAddress = True
     left = 80
@@ -444,5 +459,31 @@ object ServerForm: TServerForm
       Caption = '&Refresh'
       OnClick = RefreshRetainedMessagesItmClick
     end
+  end
+  object TLSTCP: TLTCPComponent
+    Host = '0.0.0.0'
+    Port = 8883
+    OnReceive = TCPReceive
+    OnError = TCPError
+    OnDisconnect = TCPDisconnect
+    OnCanSend = TCPCanSend
+    Timeout = 0
+    ReuseAddress = True
+    Session = TLS
+    left = 80
+    top = 248
+  end
+  object TLS: TLSSLSessionComponent
+    CAFile = 'cert'
+    KeyFile = 'pkey'
+    Method = msTLSv1
+    OnSSLAccept = TLSTLSAccept
+    left = 160
+    top = 248
+  end
+  object RMDatastore: TMQTTRetainedMessagesDatastore
+    Enabled = True
+    left = 256
+    top = 248
   end
 end

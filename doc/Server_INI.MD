@@ -5,7 +5,7 @@ The Server INI file is created using the Lazarus IniFiles unit. There are four s
 * General - General application settings
 * MQTT - MQTT protocol settings
 * Server - Normal unencrypted TCP/IP listener settings
-* SSL - Encrypted SSL/TLS session listener settings
+* TLS - Encrypted SSL/TLS session listener settings
 
 ## [General]
 
@@ -26,8 +26,6 @@ StrictClientIDValidation | Boolean | False | Set to 1 to enable strict ClientID 
 KeepAlive | Integer | 30 | Disconnect the client if it hasn't been heard from in this many seconds
 MaxSessionAge | Integer | 1080 | The number of minutes to retain session information for disconnected sessions
 MaxSubscriptionAge | Integer | 1080 | The number of minutes to retain subscriptions for disconnected clients
-MaxResendAttempts | Integer | 3 | The number of times to try to resend a packet before giving up and failing
-ResendPacketTimeout | Integer | 2 | The number of seconds to wait for a response before retransmitting a packet
 MaximumQOS | Integer | 2 | The maximum QoS level provided by the server. Any packets received at a higher QoS level will be downgraded. 
 
 ## [Server]
@@ -35,16 +33,16 @@ MaximumQOS | Integer | 2 | The maximum QoS level provided by the server. Any pac
 Parameter | Datatype | Default | Description
 :--- | :---: | :--- | :---
 Listen | Boolean | 1 | Set to 0 to disable listening for non-SSL connections
-BindAddress | String | "0.0.0.0" | Specify an interface to listen on by IP address. "0.0.0.0" means listen on all interfaces.
+Interface | String | "0.0.0.0" | Specify an interface to listen on by IP address. "0.0.0.0" means listen on all interfaces.
 Port | Integer | 1883 | Specify a port to listen for incomming unencrypted connections on
 
-## [SSL]
+## [TLS]
 
 Parameter | Datatype | Default | Description
 :--- | :---: | :--- | :---
-Listen | Boolean | 0 | Set to 1 to enable listening SSL/TLS connections
-BindAddress | String | "0.0.0.0" | Specify an interface to listen on by IP address. "0.0.0.0" means listen on all interfaces.
-Port | Integer | 8883 | Specify a port to listen for incomming SSL/TLS encrypted connections
+Listen | Boolean | 0 | Set to 1 to enable listening TLS connections
+Interface | String | "0.0.0.0" | Specify an interface to listen on by IP address. "0.0.0.0" means listen on all interfaces.
+Port | Integer | 8883 | Specify a port to listen for incomming TLS encrypted connections
 Key | String | "" | Specify a filename that holds the server's private key. The key should be in PEM format.
 Certificate | String | "" | Specify a certificate that holds the server's certificate. This should be in PEM format.
-Password | String | "" | Specify the password for decrypting the private key. Use with caution! 
+PasswordEnc | String | "" | Specifies a password for decrypting the private key. Stored in encrypted form. Use the GUI to set it and save a configuration file
