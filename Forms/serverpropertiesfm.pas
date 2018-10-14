@@ -32,20 +32,16 @@ type
     lbAddress: TLabel;
     lbCertificateFile: TLabel;
     lbMaximumQoS: TLabel;
-    lbMaxResendAttempts: TLabel;
     lbMaxSessionAge: TLabel;
     lbMaxSubscriptionAge: TLabel;
     lbPort: TLabel;
-    lbResendPacketTimeout: TLabel;
     lbPrivateKeyFile: TLabel;
     lbPrivateKeyPassword: TLabel;
     lbTLSPort: TLabel;
     lbTLSVersionCombo: TLabel;
-    seMaxResendAttempts: TSpinEdit;
     seMaxSessionAge: TSpinEdit;
     seMaxSubscriptionAge: TSpinEdit;
     sePort: TSpinEdit;
-    seResendPacketTimeout: TSpinEdit;
     seTLSPort: TSpinEdit;
     TLSSettingsGroup: TGroupBox;
     TLSVersionCombo: TComboBox;
@@ -61,13 +57,13 @@ type
 var
   ServerPropertiesForm: TServerPropertiesForm;
 
-function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartSSLListener: Boolean; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
+function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
 
 implementation
 
 {$R *.lfm}
 
-function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartSSLListener: Boolean; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
+function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
 begin
   ServerPropertiesForm.cbEnabled.Checked := AServer.Enabled;
   ServerPropertiesForm.cbAuthentication.Checked := AServer.RequireAuthentication;
@@ -76,17 +72,15 @@ begin
   ServerPropertiesForm.cbStrictClientIDValidation.Checked := AServer.StrictClientIDValidation;
   ServerPropertiesForm.edAddress.Text := ATCP.Host;
   ServerPropertiesForm.sePort.Value := ATCP.Port;
-  ServerPropertiesForm.seResendPacketTimeout.Value := AServer.ResendPacketTimeout;
-  ServerPropertiesForm.seMaxResendAttempts.Value := AServer.MaxResendAttempts;
   ServerPropertiesForm.seMaxSubscriptionAge.Value := AServer.MaxSubscriptionAge;
   ServerPropertiesForm.seMaxSessionAge.Value := AServer.MaxSessionAge;
 
-  ServerPropertiesForm.cbListenSSL.Checked := StartSSLListener;
+  ServerPropertiesForm.cbListenTLS.Checked := StartSSLListener;
   ServerPropertiesForm.edCertificateFile.Filename := ASSL.CAFile;
   ServerPropertiesForm.edPrivateKeyFile.Filename := ASSL.KeyFile;
   ServerPropertiesForm.SetSSLMethod(ASSL.Method);
   ServerPropertiesForm.edPrivateKeyPassword.Text := ASSL.Password;
-  ServerPropertiesForm.seSSLPort.Value := ASSLTCP.Port;
+  ServerPropertiesForm.seTLSPort.Value := ASSLTCP.Port;
 
   ServerPropertiesForm.ActiveControl := ServerPropertiesForm.edAddress;
 
@@ -99,18 +93,16 @@ begin
       AServer.Enabled := ServerPropertiesForm.cbEnabled.Checked;
       AServer.AllowNullClientIDs := ServerPropertiesForm.cbAllowNullClientIDs.Checked;
       AServer.StrictClientIDValidation := ServerPropertiesForm.cbStrictClientIDValidation.Checked;
-      AServer.ResendPacketTimeout := ServerPropertiesForm.seResendPacketTimeout.Value;
-      AServer.MaxResendAttempts := ServerPropertiesForm.seMaxResendAttempts.Value;
       AServer.MaxSubscriptionAge := ServerPropertiesForm.seMaxSubscriptionAge.Value;
       AServer.MaxSessionAge := ServerPropertiesForm.seMaxSessionAge.Value;
       ATCP.Host := ServerPropertiesForm.edAddress.Text;
       ATCP.Port := ServerPropertiesForm.sePort.Value;
-      StartSSLListener := ServerPropertiesForm.cbListenSSL.Checked;
+      StartTLSListener := ServerPropertiesForm.cbListenTLS.Checked;
       ASSL.CAFile := ServerPropertiesForm.edCertificateFile.Filename;
       ASSL.KeyFile := ServerPropertiesForm.edPrivateKeyFile.Filename;
       ASSL.Method := ServerPropertiesForm.GetSSLMethod;
       ASSL.Password := ServerPropertiesForm.edPrivateKeyPassword.Text;
-      ASSLTCP.Port := ServerPropertiesForm.seSSLPort.Value;
+      ASSLTCP.Port := ServerPropertiesForm.seTLSPort.Value;
     end;
 end;
 

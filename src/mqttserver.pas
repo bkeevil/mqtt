@@ -214,6 +214,8 @@ type
       procedure SendRetainedMessages(Session: TMQTTSession; Subscription: TMQTTSubscription);
       function ValidateClientID(AClientID: UTF8String): Boolean; virtual;
       function ValidatePassword(AUsername, APassword: UTF8String): Boolean; virtual;
+      property ResendPacketTimeout: Byte read FResendPacketTimeout write FResendPacketTimeout default MQTT_DEFAULT_RESEND_PACKET_TIMEOUT;
+      property MaxResendAttempts: Byte read FMaxResendAttempts write FMaxResendAttempts default MQTT_DEFAULT_MAX_RESEND_ATTEMPTS;
     public
       Log: TLogDispatcher;
       constructor Create(AOwner: TComponent); override;
@@ -223,8 +225,6 @@ type
       property Sessions: TMQTTSessionList read FSessions;
       property RetainedMessages: TMQTTMessageList read FRetainedMessages;
     published
-      property ResendPacketTimeout: Byte read FResendPacketTimeout write FResendPacketTimeout default MQTT_DEFAULT_RESEND_PACKET_TIMEOUT;
-      property MaxResendAttempts: Byte read FMaxResendAttempts write FMaxResendAttempts default MQTT_DEFAULT_MAX_RESEND_ATTEMPTS;
       property MaxSubscriptionAge: Word read FMaxSubscriptionAge write FMaxSubscriptionAge default MQTT_DEFAULT_MAX_SUBSCRIPTION_AGE;
       property MaxSessionAge: Word read FMaxSessionAge write FMaxSessionAge default MQTT_DEFAULT_MAX_SESSION_AGE;
       property KeepAlive: Integer read FDefaultKeepAlive write FDefaultKeepAlive default MQTT_DEFAULT_KEEPALIVE;

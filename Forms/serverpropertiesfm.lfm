@@ -1,12 +1,12 @@
 object ServerPropertiesForm: TServerPropertiesForm
-  Left = 522
+  Left = 576
   Height = 434
-  Top = 177
-  Width = 710
+  Top = 184
+  Width = 534
   BorderStyle = bsDialog
   Caption = 'MQTT Server Properties'
   ClientHeight = 434
-  ClientWidth = 710
+  ClientWidth = 534
   Position = poMainFormCenter
   LCLVersion = '1.8.5.0'
   object TLSSettingsGroup: TGroupBox
@@ -121,7 +121,7 @@ object ServerPropertiesForm: TServerPropertiesForm
     Left = 6
     Height = 39
     Top = 389
-    Width = 698
+    Width = 522
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     HelpButton.Name = 'HelpButton'
@@ -137,10 +137,10 @@ object ServerPropertiesForm: TServerPropertiesForm
     Left = 320
     Height = 365
     Top = 11
-    Width = 374
+    Width = 198
     Caption = 'MQTT Settings'
     ClientHeight = 347
-    ClientWidth = 372
+    ClientWidth = 196
     TabOrder = 2
     object cbEnabled: TCheckBox
       Left = 15
@@ -167,10 +167,10 @@ object ServerPropertiesForm: TServerPropertiesForm
       TabOrder = 1
     end
     object cbAllowNullClientIDs: TCheckBox
-      Left = 197
+      Left = 15
       Height = 23
       Hint = 'Clients connecting with no clientid will be assigned a random client id'
-      Top = 36
+      Top = 91
       Width = 138
       Caption = 'Allow Null Client IDs'
       Checked = True
@@ -180,58 +180,15 @@ object ServerPropertiesForm: TServerPropertiesForm
       TabOrder = 3
     end
     object cbStrictClientIDValidation: TCheckBox
-      Left = 197
+      Left = 15
       Height = 23
       Hint = 'Restrict clientids to alphanumeric characters'
-      Top = 9
+      Top = 64
       Width = 164
       Caption = 'Strict Client ID Validation'
       ParentShowHint = False
       ShowHint = True
       TabOrder = 2
-    end
-    object lbResendPacketTimeout: TLabel
-      Left = 17
-      Height = 17
-      Top = 217
-      Width = 161
-      Caption = 'Resend Packet &Timeout (Sec)'
-      FocusControl = seResendPacketTimeout
-      ParentColor = False
-    end
-    object seResendPacketTimeout: TSpinEdit
-      Left = 17
-      Height = 29
-      Hint = 'Number of seconds to wait for an acknowledgement from a client before resending a packet'
-      Top = 240
-      Width = 161
-      MaxValue = 4
-      MinValue = 1
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 5
-      Value = 2
-    end
-    object lbMaxResendAttempts: TLabel
-      Left = 197
-      Height = 17
-      Top = 217
-      Width = 154
-      Caption = 'Maximum &Resend Attempts'
-      FocusControl = seMaxResendAttempts
-      ParentColor = False
-    end
-    object seMaxResendAttempts: TSpinEdit
-      Left = 197
-      Height = 29
-      Hint = 'Maximum number of times to attempt to resend a packet before giving up. (0 = Don''t resend)'
-      Top = 240
-      Width = 160
-      MaxValue = 5
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 6
-      Value = 3
     end
     object lbMaxSubscriptionAge: TLabel
       Left = 17
@@ -251,28 +208,28 @@ object ServerPropertiesForm: TServerPropertiesForm
       MaxValue = 65535
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 7
+      TabOrder = 5
       Value = 1080
     end
     object lbMaxSessionAge: TLabel
-      Left = 197
+      Left = 17
       Height = 17
-      Top = 281
+      Top = 217
       Width = 127
       Caption = 'Max S&ession Age (Min)'
       FocusControl = seMaxSessionAge
       ParentColor = False
     end
     object seMaxSessionAge: TSpinEdit
-      Left = 197
+      Left = 17
       Height = 29
       Hint = 'Number of minutes before an inactive session times out (0 = Never)'
-      Top = 304
+      Top = 240
       Width = 160
       MaxValue = 65535
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 8
+      TabOrder = 6
       Value = 1079
     end
     object lbMaximumQoS: TLabel
@@ -304,12 +261,12 @@ object ServerPropertiesForm: TServerPropertiesForm
       Text = 'Exactly once (QOS2)'
     end
     object PasswordManagerBtn: TButton
-      Left = 197
+      Left = 17
       Height = 25
-      Top = 80
-      Width = 154
+      Top = 128
+      Width = 160
       Caption = '&Password Manager...'
-      TabOrder = 9
+      TabOrder = 7
     end
   end
   object TCPSettingsGroupBox: TGroupBox

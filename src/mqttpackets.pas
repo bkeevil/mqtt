@@ -460,7 +460,7 @@ begin
   WC := UTF8CharacterToUnicode(P,Len);
   Result := True;
   { See: http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180829 }
-  if (WC = 0) or ((WC >= $00) and (WC <= $1F)) or ((WC >= $7F) and (WC <= $9F)) or ((WC >= $D800) and (WC <= $DFFF)) or (WC = $FFFF) then
+  if (WC <= $1F) or ((WC >= $7F) and (WC <= $9F)) or ((WC >= $D800) and (WC <= $DFFF)) or (WC = $FFFF) then
     Result := False;
 end;
 
