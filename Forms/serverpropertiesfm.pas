@@ -19,7 +19,7 @@ type
     cbAllowNullClientIDs: TCheckBox;
     cbAuthentication: TCheckBox;
     cbEnabled: TCheckBox;
-    cbListenSSL: TCheckBox;
+    cbListenTLS: TCheckBox;
     cbListenUnencrypted: TCheckBox;
     cbMaximumQoS: TComboBox;
     cbStrictClientIDValidation: TCheckBox;
@@ -39,17 +39,17 @@ type
     lbResendPacketTimeout: TLabel;
     lbPrivateKeyFile: TLabel;
     lbPrivateKeyPassword: TLabel;
-    lbSSLPort: TLabel;
-    lbSSLVersionCombo: TLabel;
+    lbTLSPort: TLabel;
+    lbTLSVersionCombo: TLabel;
     seMaxResendAttempts: TSpinEdit;
     seMaxSessionAge: TSpinEdit;
     seMaxSubscriptionAge: TSpinEdit;
     sePort: TSpinEdit;
     seResendPacketTimeout: TSpinEdit;
-    seSSLPort: TSpinEdit;
-    SSLSettingsGroup: TGroupBox;
-    SSLVersionCombo: TComboBox;
-    procedure cbListenSSLChange(Sender: TObject);
+    seTLSPort: TSpinEdit;
+    TLSSettingsGroup: TGroupBox;
+    TLSVersionCombo: TComboBox;
+    procedure cbListenTLSChange(Sender: TObject);
     procedure cbListenUnencryptedChange(Sender: TObject);
   private
     { private declarations }
@@ -116,10 +116,10 @@ end;
 
 { TServerPropertiesForm }
 
-procedure TServerPropertiesForm.cbListenSSLChange(Sender: TObject);
+procedure TServerPropertiesForm.cbListenTLSChange(Sender: TObject);
 begin
-  SSLSettingsGroup.Enabled := cbListenSSL.Checked;
-  seSSLPort.Enabled := cbListenSSL.Checked;
+  TLSSettingsGroup.Enabled := cbListenTLS.Checked;
+  seTLSPort.Enabled := cbListenTLS.Checked;
 end;
 
 procedure TServerPropertiesForm.cbListenUnencryptedChange(Sender: TObject);
@@ -129,7 +129,7 @@ end;
 
 function TServerPropertiesForm.GetSSLMethod: TLSSLMethod;
 begin
-  case SSLVersionCombo.ItemIndex of
+  case TLSVersionCombo.ItemIndex of
     0: Result := msSSLv2;
     1: Result := msSSLv3;
     2: Result := msSSLv2or3;
@@ -140,10 +140,10 @@ end;
 procedure TServerPropertiesForm.SetSSLMethod(const Value: TLSSLMethod);
 begin
   case Value of
-    msSSLv2: SSLVersionCombo.ItemIndex := 0;
-    msSSLv3: SSLVersionCombo.ItemIndex := 1;
-    msSSLv2or3: SSLVersionCombo.ItemIndex := 2;
-    msTLSv1: SSLVersionCombo.ItemIndex := 3;
+    msSSLv2: TLSVersionCombo.ItemIndex := 0;
+    msSSLv3: TLSVersionCombo.ItemIndex := 1;
+    msSSLv2or3: TLSVersionCombo.ItemIndex := 2;
+    msTLSv1: TLSVersionCombo.ItemIndex := 3;
   end;
 end;
 

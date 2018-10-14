@@ -8,13 +8,13 @@ object ServerPropertiesForm: TServerPropertiesForm
   ClientHeight = 434
   ClientWidth = 710
   Position = poMainFormCenter
-  LCLVersion = '1.8.2.0'
-  object SSLSettingsGroup: TGroupBox
+  LCLVersion = '1.8.5.0'
+  object TLSSettingsGroup: TGroupBox
     Left = 16
     Height = 211
     Top = 164
     Width = 292
-    Caption = 'SSL/TLS Settings'
+    Caption = 'TLS Settings'
     ClientHeight = 193
     ClientWidth = 290
     Enabled = False
@@ -90,7 +90,7 @@ object ServerPropertiesForm: TServerPropertiesForm
       PasswordChar = '*'
       TabOrder = 1
     end
-    object SSLVersionCombo: TComboBox
+    object TLSVersionCombo: TComboBox
       Left = 16
       Height = 27
       Top = 30
@@ -107,13 +107,13 @@ object ServerPropertiesForm: TServerPropertiesForm
       TabOrder = 0
       Text = 'TLS v1'
     end
-    object lbSSLVersionCombo: TLabel
+    object lbTLSVersionCombo: TLabel
       Left = 16
       Height = 17
       Top = 8
       Width = 95
       Caption = 'SSL/TLS &Version: '
-      FocusControl = SSLVersionCombo
+      FocusControl = TLSVersionCombo
       ParentColor = False
     end
   end
@@ -363,28 +363,28 @@ object ServerPropertiesForm: TServerPropertiesForm
       TabOrder = 1
       Value = 1883
     end
-    object cbListenSSL: TCheckBox
+    object cbListenTLS: TCheckBox
       Left = 16
       Height = 23
       Top = 93
-      Width = 195
-      Caption = 'Listen for SSL/TLS connections'
-      OnChange = cbListenSSLChange
+      Width = 171
+      Caption = 'Listen for TLS connections'
+      OnChange = cbListenTLSChange
       TabOrder = 4
     end
-    object lbSSLPort: TLabel
+    object lbTLSPort: TLabel
       Left = 214
       Height = 17
       Top = 9
       Width = 46
       Caption = 'SSL &Port'
-      FocusControl = seSSLPort
+      FocusControl = seTLSPort
       ParentColor = False
     end
-    object seSSLPort: TSpinEdit
+    object seTLSPort: TSpinEdit
       Left = 214
       Height = 29
-      Hint = 'The TCP port number to listen on. (Default is 1883)'
+      Hint = 'The TCP port number to listen for TLS connections on. (Default is 8883)'
       Top = 29
       Width = 62
       Enabled = False

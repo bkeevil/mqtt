@@ -19,8 +19,8 @@
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="6"/>
-        <TopLine Value="617"/>
-        <CursorPos X="26" Y="631"/>
+        <TopLine Value="675"/>
+        <CursorPos X="7" Y="700"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="1">
           <Item0 X="5" Y="601" ID="3"/>
@@ -37,9 +37,10 @@
         <UnitName Value="ServerPropertiesFM"/>
         <EditorIndex Value="5"/>
         <TopLine Value="38"/>
-        <CursorPos X="58" Y="53"/>
+        <CursorPos X="20" Y="57"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="../../Forms/helpfm.pas"/>
@@ -146,8 +147,8 @@
       </Unit13>
       <Unit14>
         <Filename Value="../../src/mqttserver.pas"/>
-        <TopLine Value="677"/>
-        <CursorPos X="34" Y="689"/>
+        <TopLine Value="871"/>
+        <CursorPos X="34" Y="895"/>
         <UsageCount Value="100"/>
         <Bookmarks Count="1">
           <Item0 X="16" Y="13" ID="2"/>

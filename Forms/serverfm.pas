@@ -595,8 +595,8 @@ begin
     Server.KeepAlive := Ini.ReadInteger('MQTT','KeepAlive',MQTT_DEFAULT_KEEPALIVE);
     Server.MaxSessionAge := Ini.ReadInteger('MQTT','MaxSessionAge',MQTT_DEFAULT_MAX_SESSION_AGE);
     Server.MaxSubscriptionAge := Ini.ReadInteger('MQTT','MaxSubscriptionAge',MQTT_DEFAULT_MAX_SUBSCRIPTION_AGE);
-    Server.MaxResendAttempts := Ini.ReadInteger('MQTT','MaxResendAttempts',MQTT_DEFAULT_MAX_RESEND_ATTEMPTS);
-    Server.ResendPacketTimeout := Ini.ReadInteger('MQTT','ResendPacketTimeout',MQTT_DEFAULT_RESEND_PACKET_TIMEOUT);
+    //Server.MaxResendAttempts := Ini.ReadInteger('MQTT','MaxResendAttempts',MQTT_DEFAULT_MAX_RESEND_ATTEMPTS);
+    //Server.ResendPacketTimeout := Ini.ReadInteger('MQTT','ResendPacketTimeout',MQTT_DEFAULT_RESEND_PACKET_TIMEOUT);
     I := Ini.ReadInteger('MQTT','MaximumQOS',2);
 
     StartNormalListener := Ini.ReadBool('Server','Listen',True);
@@ -654,8 +654,8 @@ begin
     Ini.WriteInteger('MQTT','KeepAlive',Server.KeepAlive);
     Ini.WriteInteger('MQTT','MaxSessionAge',Server.MaxSessionAge);
     Ini.WriteInteger('MQTT','MaxSubscriptionAge',Server.MaxSubscriptionAge);
-    Ini.WriteInteger('MQTT','MaxResendAttempts',Server.MaxResendAttempts);
-    Ini.WriteInteger('MQTT','ResendPacketTimeout',Server.ResendPacketTimeout);
+    //Ini.WriteInteger('MQTT','MaxResendAttempts',Server.MaxResendAttempts);
+    //Ini.WriteInteger('MQTT','ResendPacketTimeout',Server.ResendPacketTimeout);
     I := ord(Server.MaximumQOS);
     Ini.WriteInteger('MQTT','MaximumQOS',I);
     Ini.WriteBool('Server','Listen',StartNormalListener);

@@ -25,8 +25,6 @@ StrictClientIDValidation | Boolean | False | Set to 1 to enable strict ClientID 
 KeepAlive | Integer | 30 | Disconnect the client if it hasn't been heard from in this many seconds
 MaxSessionAge | Integer | 1080 | The number of minutes to retain session information for disconnected sessions
 MaxSubscriptionAge | Integer | 1080 | The number of minutes to retain subscriptions for disconnected clients
-MaxResendAttempts | Integer | 3 | The number of times to try to resend a packet before giving up and failing
-ResendPacketTimeout | Integer | 2 | The number of seconds to wait for a response before retransmitting a packet
 MaximumQOS | Integer | 2 | The maximum QoS level provided by the server. Any packets received at a higher QoS level will be downgraded. 
 
 ## [Server]
