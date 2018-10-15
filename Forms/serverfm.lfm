@@ -189,7 +189,6 @@ object ServerForm: TServerForm
         Align = alClient
         AutoEdit = False
         AutoFillColumns = True
-        ColCount = 3
         Columns = <        
           item
             SizePriority = 0
@@ -197,8 +196,8 @@ object ServerForm: TServerForm
             Width = 120
           end        
           item
-            Title.Caption = 'Description'
-            Width = 545
+            Title.Caption = 'Queue Status'
+            Width = 375
           end        
           item
             PickList.Strings = (
@@ -209,6 +208,20 @@ object ServerForm: TServerForm
             SizePriority = 0
             Title.Caption = 'Max QoS'
             Width = 140
+          end        
+          item
+            Alignment = taRightJustify
+            SizePriority = 0
+            Title.Alignment = taRightJustify
+            Title.Caption = 'Age'
+            Width = 80
+          end        
+          item
+            ButtonStyle = cbsCheckboxColumn
+            SizePriority = 0
+            Title.Alignment = taCenter
+            Title.Caption = 'Clean Session'
+            Width = 90
           end>
         DefaultRowHeight = 20
         Enabled = False
@@ -220,8 +233,10 @@ object ServerForm: TServerForm
         TabOrder = 0
         ColWidths = (
           120
-          545
+          375
           140
+          80
+          90
         )
       end
     end

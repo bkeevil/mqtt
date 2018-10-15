@@ -99,7 +99,6 @@ type
     procedure TLSTLSAccept(aSocket: TLSocket);
     procedure PropertiesItmClick(Sender: TObject);
     procedure RefreshConnectionsItmClick(Sender: TObject);
-    procedure RefreshPacketListBtnClick(Sender: TObject);
     procedure RefreshRetainedMessagesItmClick(Sender: TObject);
     procedure RefreshSessionsItmClick(Sender: TObject);
     procedure RefreshSubscriptionsItmClick(Sender: TObject);
@@ -147,7 +146,7 @@ implementation
 {$R *.lfm}
 
 uses
-  MQTTPackets, MQTTPacketDefs, IniFiles, Crypto, Base32, HelpFM, ServerPropertiesFM, LNetSSL, OpenSSL;
+  MQTTPackets, MQTTPacketDefs, IniFiles, Crypto, Base32, PassManFM, HelpFM, ServerPropertiesFM, LNetSSL, OpenSSL;
 
 const
   SYSTEM_PASSWORD = 'st5F2wrhXAaFVE9jzgKw';
@@ -216,7 +215,7 @@ begin
   Log.Send(mtDebug,'RequireAuthentication=%s',[BoolToStr(Server.RequireAuthentication,'True','False')]);
   Log.Send(mtDebug,'AllowNullClientIDs=%s',[BoolToStr(Server.AllowNullClientIDs,'True','False')]);
   Log.Send(mtDebug,'StrictClientIDValidation=%s',[BoolToStr(Server.StrictClientIDValidation,'true','false')]);
-  Log.Send(mtDebug,'StoreOfflineQoS0Messages=%d',[Server.StoreOfflineQoS0Messages]);
+  Log.Send(mtDebug,'StoreOfflineQoS0Messages=%s',[BoolToStr(Server.StoreOfflineQoS0Messages,'true','false')]);
   Log.Send(mtDebug,'KeepAlive=%d',[Server.KeepAlive]);
   Log.Send(mtDebug,'MaxSessionAge=%d',[Server.MaxSessionAge]);
   Log.Send(mtDebug,'MaxSubscriptionAge=%d',[Server.MaxSubscriptionAge]);
@@ -866,12 +865,6 @@ begin
     end;
 end;
 
-procedure TServerForm.RefreshPacketListBtnClick(Sender: TObject);
-begin
-  PacketListMemo.Clear;
-  PacketList.Dump(PacketListMemo.Lines);
-end;
-
 procedure TServerForm.RefreshSessionsItmClick(Sender: TObject);
 var
   I: Integer;
@@ -883,8 +876,13 @@ begin
       S := Server.Sessions[I];
       SessionsGrid.Objects[0,I+1] := S;
       SessionsGrid.Cells[0,I+1] := S.ClientID;
-      SessionsGrid.Cells[1,I+1] := S.Description;
+      SessionsGrid.Cells[1,I+1] := S.GetQueueStatusStr;
       SessionsGrid.Cells[2,I+1] := GetQOSTypeName(S.MaximumQOS);
+      SessionsGrid.Cells[3,I+1] := IntToStr(S.Age);
+      if S.CleanSession then
+        SessionsGrid.Cells[4,I+1] := '1'
+      else
+        SessionsGrid.Cells[5,I+1] := '0';
     end;
 end;
 

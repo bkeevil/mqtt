@@ -47,7 +47,6 @@ type
     TLSVersionCombo: TComboBox;
     procedure cbListenTLSChange(Sender: TObject);
     procedure cbListenUnencryptedChange(Sender: TObject);
-    procedure PasswordManagerBtnClick(Sender: TObject);
   private
     { private declarations }
   public
@@ -61,9 +60,6 @@ var
 function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
 
 implementation
-
-uses
-  PassmanFM;
 
 {$R *.lfm}
 
@@ -120,13 +116,6 @@ end;
 procedure TServerPropertiesForm.cbListenUnencryptedChange(Sender: TObject);
 begin
   sePort.Enabled := cbListenUnencrypted.Checked;
-end;
-
-procedure TServerPropertiesForm.PasswordManagerBtnClick(Sender: TObject);
-begin
-  if not Assigned(PassManForm) then
-    PassManForm := TPassManForm.Create(Application);
-  PassManForm.Show;
 end;
 
 function TServerPropertiesForm.GetSSLMethod: TLSSLMethod;
