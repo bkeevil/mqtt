@@ -3,6 +3,7 @@
 *.compiled
 *.exe
 *.ini
+*.pwd
 lib
 core
 Makefile
