@@ -266,6 +266,7 @@ object ServerPropertiesForm: TServerPropertiesForm
       Top = 128
       Width = 160
       Caption = '&Password Manager...'
+      OnClick = PasswordManagerBtnClick
       TabOrder = 7
     end
   end

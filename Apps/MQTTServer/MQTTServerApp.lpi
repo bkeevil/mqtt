@@ -39,7 +39,7 @@
         <PackageName Value="mqttcomponents"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="7">
       <Unit0>
         <Filename Value="MQTTServerApp.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -50,6 +50,7 @@
         <ComponentName Value="ServerForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ServerFM"/>
       </Unit1>
       <Unit2>
         <Filename Value="../../Forms/serverpropertiesfm.pas"/>
@@ -66,6 +67,24 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="../../Forms/createpasswordfm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../Forms/passmanfm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="PassManForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../Forms/passmanparamsfm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UnitName Value="PassManParamsFM"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

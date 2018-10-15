@@ -1,4 +1,4 @@
-unit serverfm;
+unit ServerFM;
 
 {$mode objfpc}{$H+}
 
@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  Grids, Menus, ExtCtrls, StdCtrls, Buffers, Logging, LNet, LNetComponents,
-  MQTTConsts, MQTTSubscriptions, MQTTServer, MQTTMessages;
+  Grids, Menus, ExtCtrls, StdCtrls, ActnList, Buffers, Logging, LNet,
+  LNetComponents, MQTTConsts, MQTTSubscriptions, MQTTServer, MQTTMessages;
 
 const
   LISTEN_RETRY_DELAY    = 15000;
@@ -25,27 +25,38 @@ type
   { TServerForm }
 
   TServerForm = class(TForm)
-    cbEnableDebugMessages: TCheckBox;
-    RMDatastore: TMQTTRetainedMessagesDatastore;
-    RestartServerItm: TMenuItem;
-    TLS: TLSSLSessionComponent;
-    TLSTCP: TLTCPComponent;
-    PacketListMemo: TMemo;
-    RefreshPacketListBtn: TButton;
     CBEnabled: TCheckBox;
+    cbEnableDebugMessages: TCheckBox;
     CBFiltered: TCheckBox;
     ClearBtn: TButton;
+    ConnectionsGrid: TStringGrid;
+    ConnectionsTab: TTabSheet;
     FilterText: TEdit;
     LogGrid: TStringGrid;
     LogToolbarPanel: TPanel;
-    RefreshRetainedMessagesItm: TMenuItem;
-    RetainedMessagesGridMenu: TPopupMenu;
+    PageControl: TPageControl;
     RetainedMessagesGrid: TStringGrid;
     RetainedMessagesTab: TTabSheet;
-    TabSheet1: TTabSheet;
-    PacketsInMemTab: TTabSheet;
-    TCP: TLTCPComponent;
+    ServerPropertiesAction: TAction;
+    RestartSeverAction: TAction;
+    PasswordManagerAction: TAction;
+    ExitAction: TAction;
+    SaveConfigurationAction: TAction;
+    LoadConfigurationAction: TAction;
+    ActionList: TActionList;
+    PasswordManagerItm: TMenuItem;
+    RMDatastore: TMQTTRetainedMessagesDatastore;
+    RestartServerItm: TMenuItem;
     SessionsGrid: TStringGrid;
+    SessionsTab: TTabSheet;
+    SubscriptionsGrid: TStringGrid;
+    SubscriptionsTab: TTabSheet;
+    TabSheet1: TTabSheet;
+    TLS: TLSSLSessionComponent;
+    TLSTCP: TLTCPComponent;
+    RefreshRetainedMessagesItm: TMenuItem;
+    RetainedMessagesGridMenu: TPopupMenu;
+    TCP: TLTCPComponent;
     MainMenu: TMainMenu;
     LoadConfigurationItm: TMenuItem;
     MenuDividerItem1: TMenuItem;
@@ -62,13 +73,17 @@ type
     ServerMenu: TMenuItem;
     PropertiesItm: TMenuItem;
     ExitItm: TMenuItem;
-    PageControl: TPageControl;
-    ConnectionsTab: TTabSheet;
-    SubscriptionsGrid: TStringGrid;
-    ConnectionsGrid: TStringGrid;
-    SubscriptionsTab: TTabSheet;
-    SessionsTab: TTabSheet;
     ListenTimer: TTimer;
+    ToolBar: TToolBar;
+    ToolbarButtons: TImageList;
+    LoadConfigurationBtn: TToolButton;
+    SaveConfigurationBtn: TToolButton;
+    ToolbarDivider1: TToolButton;
+    ExitBtn: TToolButton;
+    ToolbarDivider2: TToolButton;
+    ServerPropertiesBtn: TToolButton;
+    RestartServerBtn: TToolButton;
+    PassswordManagerBtn: TToolButton;
     procedure CBEnabledChange(Sender: TObject);
     procedure cbEnableDebugMessagesChange(Sender: TObject);
     procedure CBFilteredChange(Sender: TObject);
@@ -79,6 +94,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure ListenTimerTimer(Sender: TObject);
     procedure LoadConfigurationItmClick(Sender: TObject);
+    procedure PasswordManagerActionExecute(Sender: TObject);
     procedure RestartServerItmClick(Sender: TObject);
     procedure TLSTLSAccept(aSocket: TLSocket);
     procedure PropertiesItmClick(Sender: TObject);
@@ -213,8 +229,6 @@ begin
   Log.Send(mtDebug,'PKeyFilename=%s',[TLS.KeyFile]);
   Log.Send(mtDebug,'CertFilename=%s',[TLS.CAFile]);
   Log.Send(mtDebug,'PasswordSupplied=%s',[BoolToStr(TLS.Password > '')]);
-  Log.Send(mtDebug,'MaxResendAttempts=%d',[Server.MaxResendAttempts]);
-  Log.Send(mtDebug,'ResendPacketTimeout=%d',[Server.ResendPacketTimeout]);
   if not Server.Enabled then
     Log.Send(mtWarning,'The server is being started in a disabled state');
   SaveConfigurationItm.Enabled := CheckConfigWriteAccess(FConfigFilename);
@@ -505,6 +519,13 @@ begin
       LoadConfiguration(OpenDialog.Filename);
       RefreshAll;
     end;
+end;
+
+procedure TServerForm.PasswordManagerActionExecute(Sender: TObject);
+begin
+  if not Assigned(PassManForm) then
+    PassManForm := TPassManForm.Create(Application);
+  PassManForm.Show;
 end;
 
 procedure TServerForm.RestartServerItmClick(Sender: TObject);

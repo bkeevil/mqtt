@@ -1,0 +1,66 @@
+object ParamsForm: TParamsForm
+  Left = 468
+  Height = 343
+  Top = 143
+  Width = 531
+  BorderStyle = bsDialog
+  Caption = 'Parameters'
+  ClientHeight = 343
+  ClientWidth = 531
+  LCLVersion = '1.6.4.0'
+  object ValueListEditor: TValueListEditor
+    Left = 16
+    Height = 276
+    Top = 16
+    Width = 499
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    FixedCols = 0
+    RowCount = 2
+    TabOrder = 0
+    KeyOptions = [keyEdit, keyAdd]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goEditing, goAutoAddRows, goAlwaysShowEditor, goThumbTracking]
+    Strings.Strings = (
+      ''
+    )
+    ColWidths = (
+      64
+      433
+    )
+  end
+  object OKBtn: TButton
+    Left = 440
+    Height = 25
+    Top = 304
+    Width = 75
+    Caption = '&OK'
+    ModalResult = 1
+    TabOrder = 1
+  end
+  object CancelBtn: TButton
+    Left = 352
+    Height = 25
+    Top = 304
+    Width = 75
+    Caption = '&Cancel'
+    ModalResult = 2
+    TabOrder = 2
+  end
+  object AddBtn: TButton
+    Left = 16
+    Height = 25
+    Top = 304
+    Width = 75
+    Caption = '&Add'
+    OnClick = AddBtnClick
+    TabOrder = 3
+  end
+  object RemoveBtn: TButton
+    Left = 104
+    Height = 25
+    Top = 304
+    Width = 75
+    Caption = '&Remove'
+    OnClick = RemoveBtnClick
+    TabOrder = 4
+  end
+end

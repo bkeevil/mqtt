@@ -47,6 +47,7 @@ type
     TLSVersionCombo: TComboBox;
     procedure cbListenTLSChange(Sender: TObject);
     procedure cbListenUnencryptedChange(Sender: TObject);
+    procedure PasswordManagerBtnClick(Sender: TObject);
   private
     { private declarations }
   public
@@ -61,6 +62,9 @@ function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, Star
 
 implementation
 
+uses
+  PassmanFM;
+
 {$R *.lfm}
 
 function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
@@ -74,16 +78,13 @@ begin
   ServerPropertiesForm.sePort.Value := ATCP.Port;
   ServerPropertiesForm.seMaxSubscriptionAge.Value := AServer.MaxSubscriptionAge;
   ServerPropertiesForm.seMaxSessionAge.Value := AServer.MaxSessionAge;
-
-  ServerPropertiesForm.cbListenTLS.Checked := StartSSLListener;
+  ServerPropertiesForm.cbListenTLS.Checked := StartTLSListener;
   ServerPropertiesForm.edCertificateFile.Filename := ASSL.CAFile;
   ServerPropertiesForm.edPrivateKeyFile.Filename := ASSL.KeyFile;
   ServerPropertiesForm.SetSSLMethod(ASSL.Method);
   ServerPropertiesForm.edPrivateKeyPassword.Text := ASSL.Password;
   ServerPropertiesForm.seTLSPort.Value := ASSLTCP.Port;
-
   ServerPropertiesForm.ActiveControl := ServerPropertiesForm.edAddress;
-
   Result := ServerPropertiesForm.ShowModal = mrOK;
 
   if Result then
@@ -117,6 +118,13 @@ end;
 procedure TServerPropertiesForm.cbListenUnencryptedChange(Sender: TObject);
 begin
   sePort.Enabled := cbListenUnencrypted.Checked;
+end;
+
+procedure TServerPropertiesForm.PasswordManagerBtnClick(Sender: TObject);
+begin
+  if not Assigned(PassManForm) then
+    PassManForm := TPassManForm.Create(Application);
+  PassManForm.Show;
 end;
 
 function TServerPropertiesForm.GetSSLMethod: TLSSLMethod;

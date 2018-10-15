@@ -7,8 +7,8 @@ uses
   cthreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, serverfm, ServerPropertiesFM,
-  mqttregister, lnetvisual, helpfm;
+  Forms, ServerFM, ServerPropertiesFM, mqttregister, lnetvisual, helpfm,
+  createpasswordfm, passmanfm, PassManParamsFM;
 
 {$R *.res}
 
