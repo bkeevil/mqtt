@@ -686,7 +686,7 @@ begin
   FSendBuffer          := TBuffer.Create;
   FRecvBuffer          := TBuffer.Create;
   FKeepAlive           := Server.KeepAlive;
-  FKeepAliveRemaining  := FKeepAlive;
+  FKeepAliveRemaining  := Round(FKeepAlive * 1.5);
   FWillMessage         := TMQTTWillMessage.Create;
   FServer.ConnectionsChanged;
 end;
@@ -716,7 +716,7 @@ end;
 
 procedure TMQTTServerConnection.Timeout;
 begin
-  if State = csConnected then
+  if (State = csConnected) then
     begin
       FState := csDisconnecting;
       Log.Send(mtWarning,'Connection timed out');
@@ -724,8 +724,9 @@ begin
       if FState = csDisconnected then
         begin
           Server.Disconnect(Self);
-          if Assigned(FSession) then
-            FSession.FConnection := nil;
+          CheckTerminateSession;
+          //if Assigned(FSession) then
+          //  FSession.FConnection := nil;
           Destroy;
         end;
     end;
@@ -764,7 +765,6 @@ begin
     begin
       Log.Send(mtError,'Connection failed');
       FState := csDisconnecting;
-      //Server.Disconnect(Self);
       //CheckTerminateSession;
       Destroy;
     end;
@@ -779,7 +779,7 @@ begin
     end;
   if State = csDisconnected then
     begin
-      Log.Send(mtInfo,'Connection disconnected');
+      Log.Send(mtInfo,'Connection was disconnected');
       Server.Disconnected(Self);
       CheckTerminateSession;
       Destroy;
@@ -841,7 +841,7 @@ var
 begin
   DestroyPacket := True;
   Packet := nil;
-  FKeepAliveRemaining := FKeepAlive; // Receipt of any data, even invalid data, should reset KeepAlive
+  FKeepAliveRemaining := Round(FKeepAlive * 1.5); // Receipt of any data, even invalid data, should reset KeepAlive
   ErrCode := ReadMQTTPacketFromBuffer(Buffer,Packet,State = csConnected);
   try
     if ErrCode = MQTT_ERROR_NONE then
@@ -1004,12 +1004,13 @@ begin
       // Otherwise create a new one
       Result := False;
       FSession := Server.Sessions.New(APacket.ClientID);
+      FSession.CleanSession := APacket.CleanSession;
     end;
 
   // Initialize the session state
   FSession.FConnection := Self;
   FKeepAlive           := APacket.KeepAlive;
-  FKeepAliveRemaining  := FKeepAlive;
+  FKeepAliveRemaining  := Round(FKeepAlive * 1.5);
   Log.Name             := 'Connection['+Session.ClientID+']';
   Session.Log.Name     := 'Session['+Session.ClientID+']';
   FWillMessage.Assign(APacket.WillMessage);
@@ -1106,14 +1107,14 @@ begin
   else
     SessionPresent := InitSessionState(APacket);
 
-  Log.Send(mtDebug,'Received CONNECT (%s)',[APacket.ToString]);
+  Log.Send(mtDebug,'Received CONNECT (%s)',[APacket.AsString]);
 
   Reply := TMQTTCONNACKPACKET.Create;
   try
     Reply.ReturnCode := ReturnCode;
     Reply.SessionPresent := SessionPresent;
     Reply.WriteToBuffer(SendBuffer);
-    Log.Send(mtDebug,'Sending CONNACK (%s)',[Reply.ToString]);
+    Log.Send(mtDebug,'Sending CONNACK (%s)',[Reply.AsString]);
     Server.SendData(Self);
     if ReturnCode = MQTT_CONNACK_SUCCESS then
       Accepted

@@ -940,10 +940,22 @@ begin
   FUsernameFlag        := (B and 128) > 0;
   FPasswordFlag        := (B and 64) > 0;
   FWillMessage.Retain  := (B and 32) > 0;
+
   FWillMessage.QOS     := TMQTTQOSType((B shr 3) and 3);
   FWillMessage.Enabled := (B and 4) > 0;
   FCleanSession        := (B and 2) > 0;
+  { REQ: The Server MUST validate that the reserved flag in the CONNECT Control
+    Packet is set to zero and disconnect the Client if it is not zero [MQTT-3.1.2-3] }
   Result               := (B and 1) = 0;
+  { REQ: If WillMessage is not Enabled then WillRetain and WillQoS must be zero }
+  if (not FWillMessage.Enabled) and (FWillMessage.Retain or (FWillMessage.QOS <> qtAT_MOST_ONCE)) then
+    Result := False;
+  { REQ: The QoS of the WillMessage must not be qtReserved3 }
+  if FWillMessage.QOS = qtReserved3 then
+    Result := False;
+  { REG: If the Username flag is 0 then the Password flag must be 0 }
+  if FPasswordFlag and (not FUsernameFlag) then
+    Result := False;
 end;
 
 procedure TMQTTCONNECTPacket.SetWillMessage(AValue: TMQTTWillMessage);
@@ -970,8 +982,6 @@ begin
           Result := True;
         end
       else
-        { The Server MUST validate that the reserved flag in the CONNECT Control
-        Packet is set to zero and disconnect the Client if it is not zero [MQTT-3.1.2-3] }
         FReturnCode := MQTT_ERROR_INVALID_PACKET_FLAGS;
     end
   else
@@ -982,6 +992,8 @@ function TMQTTCONNECTPacket.ParsePayload(ABuffer: TBuffer): Boolean;
 begin
   Result := False;
   if not ReadUTF8StringFromBuffer(ABuffer,FClientID) then Exit;
+  { If WillMessage.Enabled then the WillMessage topic and data must be in the payload, otherwise
+    they must not be in the payload }
   if WillMessage.Enabled then
     begin
       if not ReadUTF8StringFromBuffer(ABuffer,WillMessage.FTopic) then Exit;
@@ -1024,9 +1036,12 @@ begin
     Result := 0;
   if PasswordFlag then
     Result := Result or 64;
-  if WillMessage.Retain then
-    Result := Result or 32;
-  Result := Result or (ord(WillMessage.QOS) shl 3);
+  if WillMessage.Enabled then
+    begin
+      if WillMessage.Retain then
+        Result := Result or 32;
+      Result := Result or (ord(WillMessage.QOS) shl 3);
+    end;
   if WillMessage.Enabled then
     Result := Result or 4;
   if CleanSession then
@@ -1051,10 +1066,10 @@ begin
     LBuffer.Write(@B,1);
     B := KeepAlive and 255;
     LBuffer.Write(@B,1);
-    // Paload
+    // Payload
     WriteUTF8StringToBuffer(LBuffer,FClientID);
     if WillMessage.Enabled then
-      begin
+      begin { Should only be present if WillMessage flag is set }
         WriteUTF8StringToBuffer(LBuffer,WillMessage.Topic);
         WriteUTF8StringToBuffer(LBuffer,WillMessage.Message);
       end;
