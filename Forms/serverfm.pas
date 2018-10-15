@@ -135,6 +135,7 @@ type
     Log: TLogDispatcher;
     StartNormalListener: Boolean;
     StartTLSListener: Boolean;
+    PasswordFile: String;
   end;
 
 var
@@ -179,11 +180,9 @@ begin
   FListener.OnMessage := @HandleMessage;
   StartNormalListener := True;
   StartTLSListener := False;
-
   S := Application.CheckOptions('l:c:ansti:p:k:q:h','log-file: title: config: authenticate null-clientid strict-clientid store-qos0'+
-                                'disabled debug tls tls-only interface: port: tls-interface: tls-port: pkey: cert: pkey-password: '+
+                                'passfile: disabled debug tls tls-only interface: port: tls-interface: tls-port: pkey: cert: pkey-password: '+
                                 'keepalive: max-session-age: max-subs-age: max-qos: help');
-
   if S > '' then
     begin
       Log.Send(mtError,S);
@@ -212,6 +211,7 @@ begin
   LoadCommandLineOptions;
   if Assigned(FLogFile) then
     Log.Send(mtDebug,'LogFile=%s',[FLogFile.Filename]);
+  Log.Send(mtDebug,'PasswordFile=%s',[PasswordFile]);
   Log.Send(mtDebug,'RequireAuthentication=%s',[BoolToStr(Server.RequireAuthentication,'True','False')]);
   Log.Send(mtDebug,'AllowNullClientIDs=%s',[BoolToStr(Server.AllowNullClientIDs,'True','False')]);
   Log.Send(mtDebug,'StrictClientIDValidation=%s',[BoolToStr(Server.StrictClientIDValidation,'true','false')]);
@@ -229,6 +229,14 @@ begin
   Log.Send(mtDebug,'PKeyFilename=%s',[TLS.KeyFile]);
   Log.Send(mtDebug,'CertFilename=%s',[TLS.CAFile]);
   Log.Send(mtDebug,'PasswordSupplied=%s',[BoolToStr(TLS.Password > '')]);
+  if not Assigned(PassManForm) then
+    PassManForm := TPassManForm.Create(Application);
+  if FileExists(PasswordFile) then
+    begin
+      PassManForm.Filename := PasswordFile; // Sets the filename property of the Open/Save dialogs
+      PassManForm.PassMan.LoadFromFile(PasswordFile);
+    end;
+  Log.Send(mtDebug,'Number of user accounts in database: %d',[PassManForm.PassMan.Count]);
   if not Server.Enabled then
     Log.Send(mtWarning,'The server is being started in a disabled state');
   SaveConfigurationItm.Enabled := CheckConfigWriteAccess(FConfigFilename);
@@ -324,6 +332,9 @@ begin
           Caption := S;
         end;
     end;
+  // passfile
+  if Application.HasOption('passfile') then
+    PasswordFile := Application.GetOptionValue('passfile');
   // debug
   if Application.HasOption('debug') then
     begin
@@ -459,6 +470,7 @@ begin
       writeln('  -c --config          Sets the default configuration file.  Default is');
       writeln('                       /etc/mqtt/mqttserver.ini or mqttserver.ini in the');
       writeln('                       current working directory if that is not found.');
+      writeln('     --passfile        A password filename. This file can be created with the GUI.');
       writeln('  -a --authenticate    When specified, clients are authenticated against the');
       writeln('                       password database.  Default is no authentication.');
       writeln('  -n --null-clientid   When no ClientID is provided by a client, generate a');
@@ -519,7 +531,7 @@ end;
 
 procedure TServerForm.PropertiesItmClick(Sender: TObject);
 begin
-  if ServerPropertiesDlg(Server,StartNormalListener,StartTLSListener,TCP,TLSTCP,TLS) then
+  if ServerPropertiesDlg(Server,StartNormalListener,StartTLSListener,PasswordFile,TCP,TLSTCP,TLS) then
     begin
       SaveConfiguration(SaveDialog.Filename);
       RefreshAll;
@@ -537,8 +549,6 @@ end;
 
 procedure TServerForm.PasswordManagerActionExecute(Sender: TObject);
 begin
-  if not Assigned(PassManForm) then
-    PassManForm := TPassManForm.Create(Application);
   PassManForm.Show;
 end;
 
@@ -587,7 +597,11 @@ end;
 procedure TServerForm.SaveConfigurationItmClick(Sender: TObject);
 begin
   if SaveDialog.Execute then
-    SaveConfiguration(SaveDialog.Filename);
+    begin
+      SaveConfiguration(SaveDialog.Filename);
+      if PassmanForm.PassMan.Modified then
+        PassmanForm.PassMan.SaveToFile(PasswordFile);
+    end;
 end;
 
 procedure TServerForm.LoadConfiguration(Filename: String);
@@ -623,6 +637,7 @@ begin
         Caption := S;
         Application.Title := S;
       end;
+    PasswordFile := Ini.ReadString('General','PasswordFile','');
     Server.Enabled := Ini.ReadBool('MQTT','Enabled',True);
     Server.RequireAuthentication := Ini.ReadBool('MQTT','RequireAuthentication',False);
     Server.AllowNullClientIDs := Ini.ReadBool('MQTT','AllowNullClientIDs',False);
@@ -683,6 +698,7 @@ begin
       Ini.DeleteKey('General','LogFilename');
     Ini.WriteBool('General','Debug',cbEnableDebugMessages.Checked);
     Ini.WriteString('General','Title',Caption);
+    Ini.WriteString('General','PasswordFilename',PasswordFile);
     Ini.WriteBool('MQTT','Enabled',Server.Enabled);
     Ini.WriteBool('MQTT','RequireAuthentication',Server.RequireAuthentication);
     Ini.WriteBool('MQTT','AllowNullClientIDs',Server.AllowNullClientIDs);

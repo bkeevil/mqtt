@@ -17,6 +17,7 @@ begin
   Application.Initialize;
   Application.CreateForm(TServerForm, ServerForm);
   Application.CreateForm(TServerPropertiesForm, ServerPropertiesForm);
+  Application.CreateForm(TPassManForm, PassManForm);
   Application.CreateForm(THelpForm, HelpForm);
   Application.Run;
 end.

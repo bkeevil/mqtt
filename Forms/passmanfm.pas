@@ -65,10 +65,14 @@ type
     procedure FileSaveAsAction(Sender: TObject);
     procedure FileSaveAction(Sender: TObject);
     procedure MemDatasetNewRecord(DataSet: TDataSet);
+  private
+    function GetFilename: String;
+    procedure SetFilename(AValue: String);
   public
     PassMan: TPasswordManager;
     procedure GridToPassman;
     procedure PassmanToGrid;
+    property Filename: String read GetFilename write SetFilename;
   end;
 
 var
@@ -177,6 +181,20 @@ begin
   MemDataset.FieldByName('LastActiveField').AsDateTime := Now;
   MemDataset.FieldByName('EnabledField').AsBoolean := True;
   MemDataset.FieldByName('AdminField').AsBoolean := False;
+end;
+
+function TPassManForm.GetFilename: String;
+begin
+  Result := FileOpen.Dialog.Filename;
+end;
+
+procedure TPassManForm.SetFilename(AValue: String);
+begin
+  if AValue <> GetFilename then
+    begin
+      FileOpen.Dialog.Filename := AValue;
+      FileSaveAs.Dialog.Filename := AValue;
+    end;
 end;
 
 procedure TPassManForm.GridToPassman;
