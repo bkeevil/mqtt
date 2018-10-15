@@ -14,6 +14,7 @@ Parameter | Datatype | Default | Description
 Debug | Boolean | 0 | Set to 1 to enable debug messages in the logs 
 LogFilename | String | "" | Specify a log file name or leave blank to disable logging to a file
 Title | String | "" | Specify a title for the main application window or leave blank to use the default title
+PasswordFile | Filename | "" | Specify a file to use as the password or authentication file. This file can be created using the Server GUI app
 
 ## [MQTT]
 

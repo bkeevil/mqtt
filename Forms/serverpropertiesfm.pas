@@ -26,7 +26,9 @@ type
     edAddress: TEdit;
     edCertificateFile: TFileNameEdit;
     edPrivateKeyFile: TFileNameEdit;
+    edPasswordFile: TFileNameEdit;
     edPrivateKeyPassword: TEdit;
+    lbPasswordFile: TLabel;
     MQTTSettingsGroup: TGroupBox;
     TCPSettingsGroupBox: TGroupBox;
     lbAddress: TLabel;
@@ -57,13 +59,13 @@ type
 var
   ServerPropertiesForm: TServerPropertiesForm;
 
-function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
+function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; var PasswordFilename: String; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
 
 implementation
 
 {$R *.lfm}
 
-function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
+function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; var PasswordFilename: String; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
 begin
   ServerPropertiesForm.cbEnabled.Checked := AServer.Enabled;
   ServerPropertiesForm.cbAuthentication.Checked := AServer.RequireAuthentication;
@@ -82,6 +84,7 @@ begin
   ServerPropertiesForm.edPrivateKeyPassword.Text := ASSL.Password;
   ServerPropertiesForm.seTLSPort.Value := ASSLTCP.Port;
   ServerPropertiesForm.ActiveControl := ServerPropertiesForm.edAddress;
+  ServerPropertiesForm.edPasswordFile.Filename := PasswordFilename;
   Result := ServerPropertiesForm.ShowModal = mrOK;
 
   if Result then
@@ -97,6 +100,7 @@ begin
       ATCP.Host := ServerPropertiesForm.edAddress.Text;
       ATCP.Port := ServerPropertiesForm.sePort.Value;
       StartTLSListener := ServerPropertiesForm.cbListenTLS.Checked;
+      PasswordFilename := ServerPropertiesForm.edPasswordFile.Filename;
       ASSL.CAFile := ServerPropertiesForm.edCertificateFile.Filename;
       ASSL.KeyFile := ServerPropertiesForm.edPrivateKeyFile.Filename;
       ASSL.Method := ServerPropertiesForm.GetSSLMethod;

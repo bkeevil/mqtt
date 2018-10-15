@@ -5,6 +5,7 @@ Short Switch | Long Switch | Parameter | Description
 -l | --log-file | *filename* | Specify a log filename to use
 N/A | --title | *string* | Specify an alternate application title
 -c | --config | *filename* | Specify a configuration ini file. Default is /etc/mqtt/mqttserver.ini or mqttserver.ini in the current working directory if that is not found
+N/A | --passfile | *filename* | Specify a password file. This file can be created using the server GUI.
 -a | --authenticate | (none) | When specified, clients are authenticated against the password database.  Default behavior is to only authenticate clients when they connect using a username and password. 
 -n | --null-clientid | (none) | Allow clients to connect with a null ClientID. When no ClientID is provided by a client, generate a unique one automatically.  The default behavior is to reject the connection if no ClientID has been provided
 -s | --strict-clientid | (none) | Validate Client IDs to ensure they contain only letters and numbers and are less than 23 characters in length. Default behavior is to accepts any character or length.
