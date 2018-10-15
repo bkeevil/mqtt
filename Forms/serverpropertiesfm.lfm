@@ -208,7 +208,7 @@ object ServerPropertiesForm: TServerPropertiesForm
       MaxValue = 65535
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 5
+      TabOrder = 7
       Value = 1080
     end
     object lbMaxSessionAge: TLabel
@@ -257,17 +257,21 @@ object ServerPropertiesForm: TServerPropertiesForm
       ParentShowHint = False
       ShowHint = True
       Style = csDropDownList
-      TabOrder = 4
+      TabOrder = 5
       Text = 'Exactly once (QOS2)'
     end
-    object PasswordManagerBtn: TButton
-      Left = 17
-      Height = 25
-      Top = 128
-      Width = 160
-      Caption = '&Password Manager...'
-      OnClick = PasswordManagerBtnClick
-      TabOrder = 7
+    object cbStoreQOS0Messages: TCheckBox
+      Left = 15
+      Height = 23
+      Hint = 'If True QoS0 messages sent to a disconnected session are stored and sent when the connection to that session is re-established'
+      Top = 119
+      Width = 149
+      Caption = 'Store QoS0 Messages'
+      Checked = True
+      ParentShowHint = False
+      ShowHint = True
+      State = cbChecked
+      TabOrder = 4
     end
   end
   object TCPSettingsGroupBox: TGroupBox

@@ -53,7 +53,6 @@ type
       function New(ATopic: UTF8String): TMQTTMessage;
       procedure Add(AMessage: TMQTTMessage);
       procedure Update(AMessage: TMQTTMessage);
-      //function Find(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retain: Boolean): TMQTTMessage;
       procedure Remove(AMessage: TMQTTMessage);
       procedure Delete(Index: Integer);
       procedure DeleteByTopic(Topic: UTF8String);
@@ -84,6 +83,15 @@ begin
   inherited Destroy;
 end;
 
+procedure TMQTTMessageList.Clear;
+var
+  X: Integer;
+begin
+  for X := Count - 1 downto 0 do
+    Items[X].Destroy;
+  FList.Clear;
+end;
+
 function TMQTTMessageList.GetCount: Integer;
 begin
   Result := FList.Count;
@@ -92,15 +100,6 @@ end;
 function TMQTTMessageList.GetItem(Index: Integer): TMQTTMessage;
 begin
   Result := TMQTTMessage(FList[Index]);
-end;
-
-procedure TMQTTMessageList.Clear;
-var
-  X: Integer;
-begin
-  for X := Count - 1 downto 0 do
-    Items[X].Destroy;
-  FList.Clear;
 end;
 
 function TMQTTMessageList.New(ATopic: UTF8String): TMQTTMessage;

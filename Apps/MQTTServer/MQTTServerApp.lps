@@ -18,12 +18,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ServerFM"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="524"/>
-        <CursorPos X="98" Y="533"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="620"/>
+        <CursorPos X="101" Y="627"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="1">
-          <Item0 X="5" Y="622" ID="3"/>
+          <Item0 X="5" Y="638" ID="3"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -35,9 +35,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ServerPropertiesFM"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="114"/>
-        <CursorPos Y="125"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="69"/>
+        <CursorPos X="87" Y="75"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -50,7 +50,7 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="3" Y="31"/>
-        <UsageCount Value="121"/>
+        <UsageCount Value="125"/>
       </Unit3>
       <Unit4>
         <Filename Value="../../Forms/passwordmanfm.pas"/>
@@ -132,7 +132,7 @@
       </Unit11>
       <Unit12>
         <Filename Value="../../src/mqttclient.pas"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="914"/>
         <CursorPos X="3" Y="939"/>
         <UsageCount Value="102"/>
@@ -140,7 +140,7 @@
       </Unit12>
       <Unit13>
         <Filename Value="../../src/mqttconsts.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="125"/>
         <CursorPos X="5" Y="150"/>
         <UsageCount Value="100"/>
@@ -149,30 +149,29 @@
       <Unit14>
         <Filename Value="../../src/mqttserver.pas"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="261"/>
-        <CursorPos Y="283"/>
+        <TopLine Value="1496"/>
+        <CursorPos X="67" Y="1509"/>
         <UsageCount Value="100"/>
-        <Bookmarks Count="1">
-          <Item0 X="16" Y="13" ID="2"/>
+        <Bookmarks Count="2">
+          <Item0 X="63" Y="1585" ID="1"/>
+          <Item1 X="3" Y="658" ID="2"/>
         </Bookmarks>
         <Loaded Value="True"/>
       </Unit14>
       <Unit15>
         <Filename Value="../../src/mqttmessages.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="234"/>
-        <CursorPos X="27" Y="238"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="148"/>
+        <CursorPos X="3" Y="150"/>
         <UsageCount Value="73"/>
+        <Loaded Value="True"/>
       </Unit15>
       <Unit16>
         <Filename Value="../../src/mqttpacketdefs.pas"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="993"/>
         <CursorPos X="63" Y="1007"/>
         <UsageCount Value="102"/>
-        <Bookmarks Count="1">
-          <Item0 X="26" Y="923" ID="1"/>
-        </Bookmarks>
         <Loaded Value="True"/>
       </Unit16>
       <Unit17>
@@ -185,10 +184,10 @@
       </Unit17>
       <Unit18>
         <Filename Value="../../src/mqttpackets.pas"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="457"/>
         <CursorPos X="6" Y="463"/>
-        <UsageCount Value="88"/>
+        <UsageCount Value="89"/>
         <Loaded Value="True"/>
       </Unit18>
       <Unit19>
@@ -606,9 +605,9 @@
       <Unit77>
         <Filename Value="../../../bkutils/logging.pas"/>
         <UnitName Value="Logging"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="12"/>
         <CursorPos X="3" Y="14"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit77>
       <Unit78>
@@ -622,20 +621,19 @@
       <Unit79>
         <Filename Value="/usr/share/fpcsrc/3.0.4/packages/fcl-base/src/custapp.pp"/>
         <UnitName Value="CustApp"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="11"/>
         <TopLine Value="52"/>
         <CursorPos X="14" Y="72"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="14"/>
         <Loaded Value="True"/>
       </Unit79>
       <Unit80>
         <Filename Value="../../../bkutils/crypto.pas"/>
         <UnitName Value="Crypto"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="45"/>
         <CursorPos Y="55"/>
         <UsageCount Value="13"/>
-        <Loaded Value="True"/>
       </Unit80>
       <Unit81>
         <Filename Value="mqttserver.ini"/>
@@ -648,21 +646,20 @@
       <Unit82>
         <Filename Value="../../../../../.lazarus/onlinepackagemanager/packages/dcpcrypt-2.0.4.1/Ciphers/dcprc4.pas"/>
         <UnitName Value="DCPrc4"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="176"/>
         <CursorPos Y="188"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit82>
       <Unit83>
         <Filename Value="../../Forms/createpasswordfm.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="34"/>
         <CursorPos X="9" Y="47"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit83>
       <Unit84>
@@ -671,142 +668,141 @@
         <ComponentName Value="PassManForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <CursorPos X="74" Y="8"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit84>
       <Unit85>
         <Filename Value="../../Forms/passmanparamsfm.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UnitName Value="PassManParamsFM"/>
-        <EditorIndex Value="8"/>
-        <UsageCount Value="21"/>
+        <EditorIndex Value="9"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit85>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="../../Forms/passmanfm.pas"/>
-        <Caret Line="184" TopLine="171"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1549" Column="48" TopLine="1538"/>
       </Position1>
       <Position2>
-        <Filename Value="../../Forms/createpasswordfm.pas"/>
-        <Caret Line="47" Column="9" TopLine="34"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="262" Column="7" TopLine="249"/>
       </Position2>
       <Position3>
-        <Filename Value="../../Forms/passmanfm.pas"/>
-        <Caret Line="8" Column="74"/>
+        <Filename Value="../../src/mqttmessages.pas"/>
+        <Caret Line="55" Column="51" TopLine="31"/>
       </Position3>
       <Position4>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="11" Column="7"/>
+        <Filename Value="../../src/mqttmessages.pas"/>
+        <Caret Line="138" TopLine="113"/>
       </Position4>
       <Position5>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="6" Column="98"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="271" Column="28" TopLine="249"/>
       </Position5>
       <Position6>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="531" Column="21" TopLine="527"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1582" Column="41" TopLine="1557"/>
       </Position6>
       <Position7>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="530" Column="21" TopLine="526"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="270" Column="46" TopLine="253"/>
       </Position7>
       <Position8>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="529" Column="21" TopLine="525"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1518" Column="33" TopLine="1504"/>
       </Position8>
       <Position9>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="528" Column="21" TopLine="524"/>
+        <Filename Value="../../src/mqttmessages.pas"/>
+        <Caret Line="57" Column="17" TopLine="43"/>
       </Position9>
       <Position10>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="527" Column="21" TopLine="523"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1534" Column="65" TopLine="1517"/>
       </Position10>
       <Position11>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="526" Column="21" TopLine="522"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="76" Column="17" TopLine="65"/>
       </Position11>
       <Position12>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="525" Column="21" TopLine="521"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="710" Column="3" TopLine="704"/>
       </Position12>
       <Position13>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="524" Column="21" TopLine="520"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="201" Column="17" TopLine="189"/>
       </Position13>
       <Position14>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="523" Column="21" TopLine="519"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="492" Column="3" TopLine="490"/>
       </Position14>
       <Position15>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="522" Column="21" TopLine="518"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="59" Column="17" TopLine="49"/>
       </Position15>
       <Position16>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="521" Column="21" TopLine="517"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1124" Column="3" TopLine="1099"/>
       </Position16>
       <Position17>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="520" Column="21" TopLine="516"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="76" Column="17" TopLine="65"/>
       </Position17>
       <Position18>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="519" Column="21" TopLine="515"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="711" TopLine="704"/>
       </Position18>
       <Position19>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="518" Column="21" TopLine="514"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="59" Column="17" TopLine="48"/>
       </Position19>
       <Position20>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="517" Column="21" TopLine="513"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1089" Column="3" TopLine="1081"/>
       </Position20>
       <Position21>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="516" Column="21" TopLine="512"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="70" Column="17" TopLine="48"/>
       </Position21>
       <Position22>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="515" Column="21" TopLine="511"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="978" Column="3" TopLine="953"/>
       </Position22>
       <Position23>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="514" Column="21" TopLine="510"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="71" Column="16" TopLine="61"/>
       </Position23>
       <Position24>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="513" Column="21" TopLine="509"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="988" Column="91" TopLine="977"/>
       </Position24>
       <Position25>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="512" Column="21" TopLine="508"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="278" Column="17" TopLine="266"/>
       </Position25>
       <Position26>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="511" Column="21" TopLine="507"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1497" Column="45" TopLine="1494"/>
       </Position26>
       <Position27>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="531" Column="21" TopLine="527"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1543" TopLine="1518"/>
       </Position27>
       <Position28>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="530" Column="21" TopLine="526"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1499" Column="3" TopLine="1486"/>
       </Position28>
       <Position29>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="529" Column="21" TopLine="525"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="263" Column="7" TopLine="250"/>
       </Position29>
       <Position30>
-        <Filename Value="../../Forms/serverfm.pas"/>
-        <Caret Line="528" Column="21" TopLine="524"/>
+        <Filename Value="../../src/mqttserver.pas"/>
+        <Caret Line="1499" Column="20" TopLine="1486"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

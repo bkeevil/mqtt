@@ -181,7 +181,7 @@ begin
   StartNormalListener := True;
   StartTLSListener := False;
 
-  S := Application.CheckOptions('l:c:ansti:p:k:q:h','log-file: title: config: authenticate null-clientid strict-clientid '+
+  S := Application.CheckOptions('l:c:ansti:p:k:q:h','log-file: title: config: authenticate null-clientid strict-clientid store-qos0'+
                                 'disabled debug tls tls-only interface: port: tls-interface: tls-port: pkey: cert: pkey-password: '+
                                 'keepalive: max-session-age: max-subs-age: max-qos: help');
 
@@ -216,6 +216,7 @@ begin
   Log.Send(mtDebug,'RequireAuthentication=%s',[BoolToStr(Server.RequireAuthentication,'True','False')]);
   Log.Send(mtDebug,'AllowNullClientIDs=%s',[BoolToStr(Server.AllowNullClientIDs,'True','False')]);
   Log.Send(mtDebug,'StrictClientIDValidation=%s',[BoolToStr(Server.StrictClientIDValidation,'true','false')]);
+  Log.Send(mtDebug,'StoreOfflineQoS0Messages=%d',[Server.StoreOfflineQoS0Messages]);
   Log.Send(mtDebug,'KeepAlive=%d',[Server.KeepAlive]);
   Log.Send(mtDebug,'MaxSessionAge=%d',[Server.MaxSessionAge]);
   Log.Send(mtDebug,'MaxSubscriptionAge=%d',[Server.MaxSubscriptionAge]);
@@ -246,7 +247,6 @@ begin
       SaveConfiguration(FConfigFilename);
     except
     end;
-  //Server.Free;
   Log.Free;
   FListener.Destroy;
   FCRTListener.Free;
@@ -401,6 +401,18 @@ begin
       else
         Log.Send(mtWarning,'keep-alive command line parameter not an integer');
     end;
+  // authenticate
+  if Application.HasOption('a','authenticate') then
+    Server.RequireAuthentication := True;
+  // null-clientid
+  if Application.HasOption('n','null-clientID') then
+    Server.AllowNullClientIDs := True;
+  // strict-clientid
+  if Application.HasOption('s','strict-clientid') then
+    Server.StrictClientIDValidation := True;
+  // store-qos0
+  if Application.HasOption('store-qos0') then
+    Server.StoreOfflineQoS0Messages := True;
   // max-session-age
   if Application.HasOption('max-session-age') then
     begin
@@ -454,6 +466,9 @@ begin
       writeln('                       unique one automatically.  Default rejects connection.');
       writeln('  -s --strict-clientid Validate Client IDs to ensure they contain only');
       writeln('                       letters and numbers.  Default accepts any character');
+      writeln('     --store-QoS0      Ensures QoS0 messages dispatched to a disconnected session');
+      writeln('                       are stored and resent when the connection is resumed ');
+      writeln('                       rather than discarded.');
       writeln('     --debug           Add verbose debugging info to the log');
       writeln('     --disabled        Starts the server in disabled state.  Use to create a');
       writeln('                       config ini file using the GUI.');
@@ -611,8 +626,9 @@ begin
       end;
     Server.Enabled := Ini.ReadBool('MQTT','Enabled',True);
     Server.RequireAuthentication := Ini.ReadBool('MQTT','RequireAuthentication',False);
-    Server.AllowNullClientIDs := Ini.ReadBool('MQTT','AllowNullClientIDs',True);
+    Server.AllowNullClientIDs := Ini.ReadBool('MQTT','AllowNullClientIDs',False);
     Server.StrictClientIDValidation := Ini.ReadBool('MQTT','StrictClientIDValidation',False);
+    Server.StoreOfflineQoS0Messages := Ini.ReadBool('MQTT','StoreOfflineQoS0Messages',False);
     Server.KeepAlive := Ini.ReadInteger('MQTT','KeepAlive',MQTT_DEFAULT_KEEPALIVE);
     Server.MaxSessionAge := Ini.ReadInteger('MQTT','MaxSessionAge',MQTT_DEFAULT_MAX_SESSION_AGE);
     Server.MaxSubscriptionAge := Ini.ReadInteger('MQTT','MaxSubscriptionAge',MQTT_DEFAULT_MAX_SUBSCRIPTION_AGE);
@@ -672,6 +688,7 @@ begin
     Ini.WriteBool('MQTT','RequireAuthentication',Server.RequireAuthentication);
     Ini.WriteBool('MQTT','AllowNullClientIDs',Server.AllowNullClientIDs);
     Ini.WriteBool('MQTT','StrictClientIDValidation',Server.StrictClientIDValidation);
+    Ini.WriteBool('MQTT','StoreOfflineQoS0Messages',Server.StoreOfflineQoS0Messages);
     Ini.WriteInteger('MQTT','KeepAlive',Server.KeepAlive);
     Ini.WriteInteger('MQTT','MaxSessionAge',Server.MaxSessionAge);
     Ini.WriteInteger('MQTT','MaxSubscriptionAge',Server.MaxSubscriptionAge);

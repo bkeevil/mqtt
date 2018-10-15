@@ -14,9 +14,9 @@ type
   { TServerPropertiesForm }
 
   TServerPropertiesForm = class(TForm)
-    PasswordManagerBtn: TButton;
     ButtonPanel: TButtonPanel;
     cbAllowNullClientIDs: TCheckBox;
+    cbStoreQOS0Messages: TCheckBox;
     cbAuthentication: TCheckBox;
     cbEnabled: TCheckBox;
     cbListenTLS: TCheckBox;
@@ -72,6 +72,7 @@ begin
   ServerPropertiesForm.cbEnabled.Checked := AServer.Enabled;
   ServerPropertiesForm.cbAuthentication.Checked := AServer.RequireAuthentication;
   ServerPropertiesForm.cbAllowNullClientIDs.Checked := AServer.AllowNullClientIDs;
+  ServerPropertiesForm.cbStoreQOS0Messages.Checked := AServer.StoreOfflineQoS0Messages;
   ServerPropertiesForm.cbMaximumQOS.ItemIndex := ord(AServer.MaximumQOS);
   ServerPropertiesForm.cbStrictClientIDValidation.Checked := AServer.StrictClientIDValidation;
   ServerPropertiesForm.edAddress.Text := ATCP.Host;
@@ -93,6 +94,7 @@ begin
       AServer.RequireAuthentication := ServerPropertiesForm.cbAuthentication.Checked;
       AServer.Enabled := ServerPropertiesForm.cbEnabled.Checked;
       AServer.AllowNullClientIDs := ServerPropertiesForm.cbAllowNullClientIDs.Checked;
+      AServer.StoreOfflineQoS0Messages := ServerPropertiesForm.cbStoreQOS0Messages.Checked;
       AServer.StrictClientIDValidation := ServerPropertiesForm.cbStrictClientIDValidation.Checked;
       AServer.MaxSubscriptionAge := ServerPropertiesForm.seMaxSubscriptionAge.Value;
       AServer.MaxSessionAge := ServerPropertiesForm.seMaxSessionAge.Value;
