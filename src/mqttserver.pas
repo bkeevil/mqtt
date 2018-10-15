@@ -262,7 +262,6 @@ type
       FWaitingForAck       : TMQTTPacketQueue; // QoS 1 and QoS 2 messages which have been sent to the Client, but have not been completely acknowledged.
       FPendingDispatch     : TMQTTPacketQueue; // QoS 2 messages which have been received from the Client, but have not been completely acknowledged.
       FClientID            : UTF8String;
-      FDescription         : String;
       FMaximumQOS          : TMQTTQOSType;
       FAge                 : Integer;
       procedure SendRetainedMessages(NewSubscriptions: TMQTTSubscriptionList);
@@ -281,7 +280,6 @@ type
       property Connection: TMQTTServerConnection read FConnection write FConnection;
       // Attributes
       property ClientID: UTF8String read FClientID;
-      property Description: String read FDescription write FDescription;
       property MaximumQOS: TMQTTQOSType read FMaximumQOS write FMaximumQOS;
       property Age: Integer read FAge write FAge;
   end;
