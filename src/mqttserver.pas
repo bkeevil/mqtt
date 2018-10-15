@@ -266,9 +266,11 @@ type
       FClientID            : UTF8String;
       FMaximumQOS          : TMQTTQOSType;
       FAge                 : Integer;
+      FCleanSession        : Boolean;
       procedure SendRetainedMessages(NewSubscriptions: TMQTTSubscriptionList);
       procedure SendPendingTransmissionMessages;
       procedure SendPendingReconnectMessages;
+      procedure ResendUnacknowledgedMessages;
       procedure DispatchMessage(Message: TMQTTMessage);
       procedure ProcessAckQueue;
       procedure ProcessSessionAges;
@@ -283,6 +285,7 @@ type
       property ClientID: UTF8String read FClientID;
       property MaximumQOS: TMQTTQOSType read FMaximumQOS write FMaximumQOS;
       property Age: Integer read FAge write FAge;
+      property CleanSession: Boolean read FCleanSession write FCleanSession default True;
   end;
 
   { TMQTTSessionList }
@@ -730,17 +733,20 @@ end;
 
 procedure TMQTTServerConnection.CheckTerminateSession;
 begin
-  if Assigned(FSession) then
-    if Self.FClientIDGenerated then
+  if Assigned(Session) then
+    if ClientIDGenerated or Session.CleanSession then
       begin
-        Log.Send(mtInfo,'Terminating auto created session %s',[Session.ClientID]);
-        FSession.Clean;
+        Log.Send(mtDebug,'Discarding session state for %s',[Session.ClientID]);
+        // FSession.Clean; // Is this really necessary? Apparently not.
         Server.Sessions.Remove(FSession);
         FSession.Destroy;
         Server.SessionsChanged;
       end
     else
-      FSession.FConnection := nil;
+      begin
+        Log.Send(mtDebug,'Retaining session state for %s',[Session.ClientID]);
+        FSession.FConnection := nil;
+      end;
 end;
 
 procedure TMQTTServerConnection.Disconnect;
@@ -925,13 +931,13 @@ begin
       end
     else
       begin
-        Result := MQTT_CONNACK_CLIENTID_REJECTED;
+        Result := MQTT_CONNACK_CLIENTID_REJECTED;  { Can't reconnect to a session when no ClientID provided }
         Exit;
       end
   else
     FClientIDGenerated := False;
 
-  // See if the ClientID conforms to the strict optional requirements for a ClientID
+  // See if the ClientID conforms to the optional strict requirements for a ClientID
   if Server.StrictClientIDValidation and not Server.Sessions.IsStrictlyValid(APacket.ClientID) then
     begin
       Result := MQTT_CONNACK_CLIENTID_REJECTED;
@@ -987,7 +993,11 @@ begin
       if APacket.CleanSession then
         FSession.Clean
       else
-        FSession.SendPendingReconnectMessages; // Send any messages received while offline
+        begin
+          FSession.CleanSession := False;
+          FSession.ResendUnacknowledgedMessages; // Resend any unacknowledged PUBLISH or PUBREL messages
+          FSession.SendPendingReconnectMessages; // Send any messages received while offline
+        end;
     end
   else
     begin
@@ -1478,6 +1488,7 @@ begin
   FWaitingForAck       := TMQTTPacketQueue.Create;
   FClientID            := AClientID;
   FMaximumQOS          := qtEXACTLY_ONCE;
+  FCleanSession        := True;
   Log.Name             := 'Session ('+FClientID+')';
   Log.Filter           := ALL_LOG_MESSAGE_TYPES;
 end;
@@ -1502,6 +1513,7 @@ begin // Reset the session to a clean state.
   FPendingDispatch.Clear;
   FPacketIDManager.Reset;
   FAge := 0;
+  FCleanSession := True;
 end;
 
 function TMQTTSession.GetQueueStatusStr: String;
@@ -1544,6 +1556,54 @@ begin
           Connection.Publish(M.Topic,M.Data,M.QOS,M.Retain);
         end;
       FPendingTransmission.Clear;
+    end;
+end;
+
+procedure TMQTTSession.ResendUnacknowledgedMessages;
+var { To satisfy REQ: When a client reconnects with CleanSession=0, Retransmit any unacknowledged PUBLISH or PUBREL packets}
+  I, C: Integer;
+  P: TMQTTPacket;
+  PP: TMQTTPUBLISHPacket;
+  PR: TMQTTPUBRELPacket;
+begin
+  Assert(Assigned(FConnection));
+  if not Assigned(FConnection) then Exit;
+  C := FWaitingForAck.Count;
+  for I := C-1 downto 0 do
+    begin
+      P := FWaitingForAck[I];
+      Assert(Assigned(P));
+      if Assigned(P) then
+        if P.PacketType=ptPUBLISH then
+          begin
+            PP := TMQTTPublishPacket.Create;
+            try
+              PP.PacketID  := (P as TMQTTPUBLISHPacket).PacketID;
+              PP.Topic     := (P as TMQTTPUBLISHPacket).Topic;
+              PP.Data      := (P as TMQTTPUBLISHPacket).Data;
+              PP.QOS       := (P as TMQTTPUBLISHPacket).QOS;
+              PP.Retain    := (P as TMQTTPUBLISHPacket).Retain;
+              PP.Duplicate := True;
+              PP.WriteToBuffer(Connection.SendBuffer);
+              Log.Send(mtDebug,'Resending PUBLISH (%s)',[PP.AsString]);
+              Server.SendData(Connection);
+            finally
+              PP.Free;
+            end;
+          end
+        else
+          if P.PacketType=ptPUBREL then
+            begin
+              PR := TMQTTPUBRELPacket.Create;
+              try
+                PR.PacketID := (P as TMQTTPUBRELPacket).PacketID;
+                PR.WriteToBuffer(Connection.SendBuffer);
+                Log.Send(mtDebug,'Resending PUBREL (%s)',[PR.AsString]);
+                Server.SendData(Connection);
+              finally
+                PR.Free;
+              end;
+            end;
     end;
 end;
 
