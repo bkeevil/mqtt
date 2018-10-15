@@ -23,7 +23,7 @@ Enabled | Boolean | True | Set to 0 to start the server application in disabled 
 RequireAuthentication | Boolean | False | Set to 1 to require clients to authenticate using a username and password
 AllowNullClientIDs | Boolean | True | Set to 0 to prevent clients from connecting with null clientIDs
 StrictClientIDValidation | Boolean | False | Set to 1 to enable strict ClientID validation
-KeepAlive | Integer | 30 | Disconnect the client if it hasn't been heard from in this many seconds
+KeepAlive | Integer | 30 | Disconnect the client if it hasn't been heard from in 1.5 times this many seconds
 MaxSessionAge | Integer | 1080 | The number of minutes to retain session information for disconnected sessions
 MaxSubscriptionAge | Integer | 1080 | The number of minutes to retain subscriptions for disconnected clients
 MaximumQOS | Integer | 2 | The maximum QoS level provided by the server. Any packets received at a higher QoS level will be downgraded. 
