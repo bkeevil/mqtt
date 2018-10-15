@@ -9,7 +9,7 @@
 <body>
 <table class="bar" width="100%" border="0" cellpadding="4" cellspacing="0">
 <tr>
-<td><b>[<a href="../mqttpackets/index.html">Overview</a>][<a href="../mqttpackets/index-4.html">Classes</a>][<a href="../mqttpackets/index-5.html">Procedures and functions</a>][<a href="../mqttpackets/index-8.html">Index</a>]</b></td>
+<td><b>[<a href="../mqttpackets/index.html">Overview</a>][<a href="../mqttpackets/index-4.html">Classes</a>][<a href="../mqttpackets/index-5.html">Procedures and functions</a>][<a href="../mqttpackets/index-6.html">Variables</a>][<a href="../mqttpackets/index-8.html">Index</a>]</b></td>
 <td align="right"><span class="bartitle">Reference for unit 'mqttpackets' (<a href="../index.html">#mqttcomponents</a>)</span></td>
 </tr>
 </table>
@@ -17,13 +17,16 @@
 <p>[<a href="../mqttpackets/tmqttqueuedpacket-1.html" onClick="window.open('../mqttpackets/tmqttqueuedpacket-1.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Properties</a> (<a href="../mqttpackets/tmqttqueuedpacket-2.html" onClick="window.open('../mqttpackets/tmqttqueuedpacket-2.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttpackets/tmqttqueuedpacket-3.html" onClick="window.open('../mqttpackets/tmqttqueuedpacket-3.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Methods</a> (<a href="../mqttpackets/tmqttqueuedpacket-4.html" onClick="window.open('../mqttpackets/tmqttqueuedpacket-4.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttpackets/tmqttqueuedpacket-5.html" onClick="window.open('../mqttpackets/tmqttqueuedpacket-5.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Events</a> (<a href="../mqttpackets/tmqttqueuedpacket-6.html" onClick="window.open('../mqttpackets/tmqttqueuedpacket-6.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] </p>
 <p>A descendant of TMQTTPacketIDPacket that adds properties for storing the packet in a packet queue</p>
 <h2>Declaration</h2>
-<p>Source position: mqttpackets.pas line 40</p>
+<p>Source position: mqttpackets.pas line 48</p>
 <table cellpadding="0" cellspacing="0">
 <tr>
 <td><p><tt><span class="code"><span class="kw">type</span> TMQTTQueuedPacket <span class="sym">=</span> <span class="kw">class</span><span class="sym">(</span><a href="../mqttpackets/tmqttpacketidpacket.html">TMQTTPacketIDPacket</a><span class="sym">)</span> <span class="kw">end</span><span class="sym">;</span></span></tt></p></td>
 </tr>
 <tr>
 <td><p><tt><span class="code"><span class="kw">public</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttpackets/tmqttqueuedpacket.asstring.html">AsString</a><span class="sym">;</span><span class="kw"> override</span><span class="sym">;</span></span></tt></p></td>
 </tr>
 <tr>
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttpackets/tmqttqueuedpacket.secondsinqueue.html">SecondsInQueue</a><span class="sym">: </span>DWORD<span class="sym">;</span>  [rw]</span></tt></p></td>

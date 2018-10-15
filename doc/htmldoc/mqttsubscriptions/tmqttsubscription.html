@@ -17,7 +17,7 @@
 <p>[<a href="../mqttsubscriptions/tmqttsubscription-1.html" onClick="window.open('../mqttsubscriptions/tmqttsubscription-1.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Properties</a> (<a href="../mqttsubscriptions/tmqttsubscription-2.html" onClick="window.open('../mqttsubscriptions/tmqttsubscription-2.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttsubscriptions/tmqttsubscription-3.html" onClick="window.open('../mqttsubscriptions/tmqttsubscription-3.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Methods</a> (<a href="../mqttsubscriptions/tmqttsubscription-4.html" onClick="window.open('../mqttsubscriptions/tmqttsubscription-4.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttsubscriptions/tmqttsubscription-5.html" onClick="window.open('../mqttsubscriptions/tmqttsubscription-5.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Events</a> (<a href="../mqttsubscriptions/tmqttsubscription-6.html" onClick="window.open('../mqttsubscriptions/tmqttsubscription-6.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] </p>
 <p>Represents a subscription to a topic</p>
 <h2>Declaration</h2>
-<p>Source position: mqttsubscriptions.pas line 16</p>
+<p>Source position: mqttsubscriptions.pas line 14</p>
 <table cellpadding="0" cellspacing="0">
 <tr>
 <td><p><tt><span class="code"><span class="kw">type</span> TMQTTSubscription <span class="sym">=</span> <span class="kw">class</span><span class="sym">(</span>TObject<span class="sym">)</span> <span class="kw">end</span><span class="sym">;</span></span></tt></p></td>
@@ -41,21 +41,6 @@
 <td><p class="cmt">Copies the contents of ASource into this object.  Resets Age to zero.</p></td>
 </tr>
 <tr>
-<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttsubscriptions/tmqttsubscription.ismatch.html">IsMatch</a><span class="sym">();</span></span></tt></p></td>
-<td><p>&nbsp;&nbsp;</p></td>
-<td><p class="cmt">Returns true if ATokens matches this subscription's filter</p></td>
-</tr>
-<tr>
-<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscription.loadfromstream.html">LoadFromStream</a><span class="sym">();</span></span></tt></p></td>
-<td><p>&nbsp;&nbsp;</p></td>
-<td><p class="cmt">Loads a subscription from a stream, resets Age, and sets Persistent to True.</p></td>
-</tr>
-<tr>
-<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscription.savetostream.html">SaveToStream</a><span class="sym">();</span></span></tt></p></td>
-<td><p>&nbsp;&nbsp;</p></td>
-<td><p class="cmt">Saves the subscription to a stream (even if not marked persistent)</p></td>
-</tr>
-<tr>
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttsubscriptions/tmqttsubscription.qos.html">QOS</a><span class="sym">: </span><a href="../mqttconsts/tmqttqostype.html">TMQTTQOSType</a><span class="sym">;</span>  [rw]</span></tt></p></td>
 <td><p>&nbsp;&nbsp;</p></td>
 <td><p class="cmt">The QoS of the subscription</p></td>
@@ -74,11 +59,6 @@
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttsubscriptions/tmqttsubscription.age.html">Age</a><span class="sym">: </span>Integer<span class="sym">;</span>  [rw]</span></tt></p></td>
 <td><p>&nbsp;&nbsp;</p></td>
 <td><p class="cmt">The age of the subscription in minutes.  At certain intervals, subscriptions older than a certain age will be removed.</p></td>
-</tr>
-<tr>
-<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttsubscriptions/tmqttsubscription.persistent.html">Persistent</a><span class="sym">: </span>Boolean<span class="sym">;</span>  [rw]</span></tt></p></td>
-<td><p>&nbsp;&nbsp;</p></td>
-<td><p class="cmt">Persistent means the subscription should be stored to a stream and persist between server instantiations</p></td>
 </tr>
 <tr>
 <td><p><tt><span class="code"></span></tt></p></td>

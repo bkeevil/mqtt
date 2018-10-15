@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>TMQTTRetainedMessagesDatastore</title>
+<link rel="stylesheet" href="../fpdoc.css" type="text/css">
+
+</head>
+<body>
+<table class="bar" width="100%" border="0" cellpadding="4" cellspacing="0">
+<tr>
+<td><b>[<a href="../mqttserver/index.html">Overview</a>][<a href="../mqttserver/index-2.html">Constants</a>][<a href="../mqttserver/index-3.html">Types</a>][<a href="../mqttserver/index-4.html">Classes</a>][<a href="../mqttserver/index-6.html">Variables</a>][<a href="../mqttserver/index-8.html">Index</a>]</b></td>
+<td align="right"><span class="bartitle">Reference for unit 'mqttserver' (<a href="../index.html">#mqttcomponents</a>)</span></td>
+</tr>
+</table>
+<h1>TMQTTRetainedMessagesDatastore</h1>
+<p>[<a href="../mqttserver/tmqttretainedmessagesdatastore-1.html" onClick="window.open('../mqttserver/tmqttretainedmessagesdatastore-1.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Properties</a> (<a href="../mqttserver/tmqttretainedmessagesdatastore-2.html" onClick="window.open('../mqttserver/tmqttretainedmessagesdatastore-2.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttserver/tmqttretainedmessagesdatastore-3.html" onClick="window.open('../mqttserver/tmqttretainedmessagesdatastore-3.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Methods</a> (<a href="../mqttserver/tmqttretainedmessagesdatastore-4.html" onClick="window.open('../mqttserver/tmqttretainedmessagesdatastore-4.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttserver/tmqttretainedmessagesdatastore-5.html" onClick="window.open('../mqttserver/tmqttretainedmessagesdatastore-5.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Events</a> (<a href="../mqttserver/tmqttretainedmessagesdatastore-6.html" onClick="window.open('../mqttserver/tmqttretainedmessagesdatastore-6.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] </p>
+<p></p>
+<h2>Declaration</h2>
+<p>Source position: mqttserver.pas line 120</p>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td><p><tt><span class="code"><span class="kw">type</span> TMQTTRetainedMessagesDatastore <span class="sym">=</span> <span class="kw">class</span><span class="sym">(</span>TComponent<span class="sym">)</span> <span class="kw">end</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"><span class="kw">public</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttretainedmessagesdatastore.loaddatastore.html">LoadDatastore</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttretainedmessagesdatastore.savedatastore.html">SaveDatastore</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttretainedmessagesdatastore.deletetopic.html">DeleteTopic</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttretainedmessagesdatastore.updatetopic.html">UpdateTopic</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttretainedmessagesdatastore.modified.html">Modified</a><span class="sym">: </span>Boolean<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"><span class="kw">published</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttretainedmessagesdatastore.filename.html">Filename</a><span class="sym">: </span>string<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttretainedmessagesdatastore.enabled.html">Enabled</a><span class="sym">: </span>Boolean<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttretainedmessagesdatastore.onloaddatastore.html">OnLoadDatastore</a><span class="sym">: </span><a href="../mqttserver/tmqttretainedmessagelistevent.html">TMQTTRetainedMessageListEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttretainedmessagesdatastore.onsavedatastore.html">OnSaveDatastore</a><span class="sym">: </span><a href="../mqttserver/tmqttretainedmessagelistevent.html">TMQTTRetainedMessageListEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttretainedmessagesdatastore.ondeletetopic.html">OnDeleteTopic</a><span class="sym">: </span><a href="../mqttserver/tmqttdeleteretainedmessageevent.html">TMQTTDeleteRetainedMessageEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttretainedmessagesdatastore.onupdatetopic.html">OnUpdateTopic</a><span class="sym">: </span><a href="../mqttserver/tmqttupdateretainedmessageevent.html">TMQTTUpdateRetainedMessageEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td><p><tt><span class="code"></span></tt></p></td>
+</tr>
+</table>
+<h2>Inheritance</h2>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td align="center" valign="top"><p><tt><span class="code"><a href="../mqttserver/tmqttretainedmessagesdatastore.html">TMQTTRetainedMessagesDatastore</a></span></tt></p></td>
+</tr>
+<tr>
+<td align="center">|</td>
+</tr>
+<tr>
+<td align="center"><p><tt><span class="code">TComponent</span></tt></p></td>
+</tr>
+<tr>
+<td align="center">?</td>
+</tr>
+<tr>
+<td align="center"><p><tt><span class="code">TObject</span></tt></p></td>
+</tr>
+</table>
+</body>
+</html>

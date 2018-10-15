@@ -9,7 +9,7 @@
 <body>
 <table class="bar" width="100%" border="0" cellpadding="4" cellspacing="0">
 <tr>
-<td><b>[<a href="../mqttserver/index.html">Overview</a>][<a href="../mqttserver/index-2.html">Constants</a>][<a href="../mqttserver/index-3.html">Types</a>][<a href="../mqttserver/index-4.html">Classes</a>][<a href="../mqttserver/index-8.html">Index</a>]</b></td>
+<td><b>[<a href="../mqttserver/index.html">Overview</a>][<a href="../mqttserver/index-2.html">Constants</a>][<a href="../mqttserver/index-3.html">Types</a>][<a href="../mqttserver/index-4.html">Classes</a>][<a href="../mqttserver/index-6.html">Variables</a>][<a href="../mqttserver/index-8.html">Index</a>]</b></td>
 <td align="right"><span class="bartitle">Reference for unit 'mqttserver' (<a href="../index.html">#mqttcomponents</a>)</span></td>
 </tr>
 </table>
@@ -17,13 +17,16 @@
 <p>[<a href="../mqttserver/tmqttserver-1.html" onClick="window.open('../mqttserver/tmqttserver-1.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Properties</a> (<a href="../mqttserver/tmqttserver-2.html" onClick="window.open('../mqttserver/tmqttserver-2.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttserver/tmqttserver-3.html" onClick="window.open('../mqttserver/tmqttserver-3.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Methods</a> (<a href="../mqttserver/tmqttserver-4.html" onClick="window.open('../mqttserver/tmqttserver-4.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttserver/tmqttserver-5.html" onClick="window.open('../mqttserver/tmqttserver-5.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Events</a> (<a href="../mqttserver/tmqttserver-6.html" onClick="window.open('../mqttserver/tmqttserver-6.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] </p>
 <p></p>
 <h2>Declaration</h2>
-<p>Source position: mqttserver.pas line 127</p>
+<p>Source position: mqttserver.pas line 156</p>
 <table cellpadding="0" cellspacing="0">
 <tr>
 <td><p><tt><span class="code"><span class="kw">type</span> TMQTTServer <span class="sym">=</span> <span class="kw">class</span><span class="sym">(</span>TComponent<span class="sym">)</span> <span class="kw">end</span><span class="sym">;</span></span></tt></p></td>
 </tr>
 <tr>
 <td><p><tt><span class="code"><span class="kw">protected</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.notification.html">Notification</a><span class="sym">();</span><span class="kw"> override</span><span class="sym">;</span></span></tt></p></td>
 </tr>
 <tr>
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttserver/tmqttserver.accepted.html">Accepted</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
@@ -71,6 +74,12 @@
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttserver/tmqttserver.validatepassword.html">ValidatePassword</a><span class="sym">();</span><span class="kw"> virtual</span><span class="sym">;</span></span></tt></p></td>
 </tr>
 <tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.resendpackettimeout.html">ResendPacketTimeout</a><span class="sym">: </span>Byte<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.maxresendattempts.html">MaxResendAttempts</a><span class="sym">: </span>Byte<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
 <td><p><tt><span class="code"><span class="kw">public</span></span></tt></p></td>
 </tr>
 <tr>
@@ -98,12 +107,20 @@
 <td><p><tt><span class="code"><span class="kw">published</span></span></tt></p></td>
 </tr>
 <tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.maxsubscriptionage.html">MaxSubscriptionAge</a><span class="sym">: </span>Word<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.maxsessionage.html">MaxSessionAge</a><span class="sym">: </span>Word<span class="sym">;</span>  [rw]</span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.keepalive.html">KeepAlive</a><span class="sym">: </span>Integer<span class="sym">;</span>  [rw]</span></tt></p></td>
+<td><p>&nbsp;&nbsp;</p></td>
+<td><p class="cmt">The number of seconds of inactivity before a client connection times out</p></td>
+</tr>
+<tr>
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.enabled.html">Enabled</a><span class="sym">: </span>Boolean<span class="sym">;</span>  [rw]</span></tt></p></td>
 <td><p>&nbsp;&nbsp;</p></td>
 <td><p class="cmt">Setting Enabled to false will prevent the server from accepting new connections</p></td>
-</tr>
-<tr>
-<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.systemclock.html">SystemClock</a><span class="sym">: </span>Boolean<span class="sym">;</span>  [rw]</span></tt></p></td>
 </tr>
 <tr>
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.maximumqos.html">MaximumQOS</a><span class="sym">: </span><a href="../mqttconsts/tmqttqostype.html">TMQTTQOSType</a><span class="sym">;</span>  [rw]</span></tt></p></td>
@@ -124,6 +141,9 @@
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.strictclientidvalidation.html">StrictClientIDValidation</a><span class="sym">: </span>Boolean<span class="sym">;</span>  [rw]</span></tt></p></td>
 <td><p>&nbsp;&nbsp;</p></td>
 <td><p class="cmt">If True, ClientIDs may only contain letters and numbers</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.retainedmessagesdatastore.html">RetainedMessagesDatastore</a><span class="sym">: </span><a href="../mqttserver/tmqttretainedmessagesdatastore.html">TMQTTRetainedMessagesDatastore</a><span class="sym">;</span>  [rw]</span></tt></p></td>
 </tr>
 <tr>
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">property </span><a href="../mqttserver/tmqttserver.onaccepted.html">OnAccepted</a><span class="sym">: </span><a href="../mqttserver/tmqttconnectionnotifyevent.html">TMQTTConnectionNotifyEvent</a><span class="sym">;</span>  [rw]</span></tt></p></td>

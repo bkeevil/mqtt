@@ -17,7 +17,7 @@
 <p>[<a href="../mqttpacketdefs/tmqttunsubscribepacket-1.html" onClick="window.open('../mqttpacketdefs/tmqttunsubscribepacket-1.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Properties</a> (<a href="../mqttpacketdefs/tmqttunsubscribepacket-2.html" onClick="window.open('../mqttpacketdefs/tmqttunsubscribepacket-2.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttpacketdefs/tmqttunsubscribepacket-3.html" onClick="window.open('../mqttpacketdefs/tmqttunsubscribepacket-3.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Methods</a> (<a href="../mqttpacketdefs/tmqttunsubscribepacket-4.html" onClick="window.open('../mqttpacketdefs/tmqttunsubscribepacket-4.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttpacketdefs/tmqttunsubscribepacket-5.html" onClick="window.open('../mqttpacketdefs/tmqttunsubscribepacket-5.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Events</a> (<a href="../mqttpacketdefs/tmqttunsubscribepacket-6.html" onClick="window.open('../mqttpacketdefs/tmqttunsubscribepacket-6.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] </p>
 <p></p>
 <h2>Declaration</h2>
-<p>Source position: mqttpacketdefs.pas line 188</p>
+<p>Source position: mqttpacketdefs.pas line 192</p>
 <table cellpadding="0" cellspacing="0">
 <tr>
 <td><p><tt><span class="code"><span class="kw">type</span> TMQTTUNSUBSCRIBEPacket <span class="sym">=</span> <span class="kw">class</span><span class="sym">(</span><a href="../mqttpackets/tmqttqueuedpacket.html">TMQTTQueuedPacket</a><span class="sym">)</span> <span class="kw">end</span><span class="sym">;</span></span></tt></p></td>
@@ -42,6 +42,9 @@
 </tr>
 <tr>
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">destructor </span><a href="../mqttpacketdefs/tmqttunsubscribepacket.destroy.html">Destroy</a><span class="sym">;</span><span class="kw"> override</span><span class="sym">;</span></span></tt></p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttpacketdefs/tmqttunsubscribepacket.asstring.html">AsString</a><span class="sym">;</span><span class="kw"> override</span><span class="sym">;</span></span></tt></p></td>
 </tr>
 <tr>
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttpacketdefs/tmqttunsubscribepacket.writetobuffer.html">WriteToBuffer</a><span class="sym">();</span><span class="kw"> override</span><span class="sym">;</span></span></tt></p></td>

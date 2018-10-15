@@ -17,7 +17,7 @@
 <p>[<a href="../mqttsubscriptions/tmqttsubscriptionlist-1.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-1.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Properties</a> (<a href="../mqttsubscriptions/tmqttsubscriptionlist-2.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-2.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttsubscriptions/tmqttsubscriptionlist-3.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-3.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Methods</a> (<a href="../mqttsubscriptions/tmqttsubscriptionlist-4.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-4.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] [<a href="../mqttsubscriptions/tmqttsubscriptionlist-5.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-5.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">Events</a> (<a href="../mqttsubscriptions/tmqttsubscriptionlist-6.html" onClick="window.open('../mqttsubscriptions/tmqttsubscriptionlist-6.html', 'list', 'dependent=yes,resizable=yes,scrollbars=yes,height=400,width=300'); return false;">by Name</a>)] </p>
 <p>A list of subscriptions</p>
 <h2>Declaration</h2>
-<p>Source position: mqttsubscriptions.pas line 43</p>
+<p>Source position: mqttsubscriptions.pas line 34</p>
 <table cellpadding="0" cellspacing="0">
 <tr>
 <td><p><tt><span class="code"><span class="kw">type</span> TMQTTSubscriptionList <span class="sym">=</span> <span class="kw">class</span><span class="sym">(</span>TObject<span class="sym">)</span> <span class="kw">end</span><span class="sym">;</span></span></tt></p></td>
@@ -34,16 +34,6 @@
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">destructor </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.destroy.html">Destroy</a><span class="sym">;</span><span class="kw"> override</span><span class="sym">;</span></span></tt></p></td>
 <td><p>&nbsp;&nbsp;</p></td>
 <td><p class="cmt">Destroys the subscription list and all subscriptions it contains</p></td>
-</tr>
-<tr>
-<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.loadfromstream.html">LoadFromStream</a><span class="sym">();</span></span></tt></p></td>
-<td><p>&nbsp;&nbsp;</p></td>
-<td><p class="cmt">Loads subscriptions from Stream and adds them to the list.</p></td>
-</tr>
-<tr>
-<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.savetostream.html">SaveToStream</a><span class="sym">();</span></span></tt></p></td>
-<td><p>&nbsp;&nbsp;</p></td>
-<td><p class="cmt">Saves subscriptions marked persistent to the stream</p></td>
 </tr>
 <tr>
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.assign.html">Assign</a><span class="sym">();</span></span></tt></p></td>
@@ -89,6 +79,9 @@
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">procedure </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.deletelist.html">DeleteList</a><span class="sym">();</span></span></tt></p></td>
 <td><p>&nbsp;&nbsp;</p></td>
 <td><p class="cmt">Deletes a list of subscriptions from this list</p></td>
+</tr>
+<tr>
+<td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.removeduplicates.html">RemoveDuplicates</a><span class="sym">;</span></span></tt></p></td>
 </tr>
 <tr>
 <td valign="top"><p><tt><span class="code">&nbsp;&nbsp;<span class="kw">function </span><a href="../mqttsubscriptions/tmqttsubscriptionlist.removeinvalidsubscriptions.html">RemoveInvalidSubscriptions</a><span class="sym">;</span></span></tt></p></td>
