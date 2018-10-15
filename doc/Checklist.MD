@@ -40,13 +40,13 @@ When the client transmits any UTF8 String as part of a packet, it strips off all
 ### Will Messages
 
 - [X] If the Will Flag is set to 1 this indicates that, if the Connect request is accepted, a Will Message MUST be stored on the Server and associated with the Network Connection. The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet [MQTT-3.1.2-8]
-- [ ] If the Will Flag is set to 1, the Will QoS and Will Retain fields in the Connect Flags will be used by the Server, and the Will Topic and Will Message fields MUST be present in the payload [MQTT-3.1.2-9].
+- [X] If the Will Flag is set to 1, the Will QoS and Will Retain fields in the Connect Flags will be used by the Server, and the Will Topic and Will Message fields MUST be present in the payload [MQTT-3.1.2-9].
 - [X] The Will Message MUST be removed from the stored Session state in the Server once it has been published or the Server has received a DISCONNECT packet from the Client [MQTT-3.1.2-10].
-- [ ] If the Will Flag is set to 0 the Will QoS and Will Retain fields in the Connect Flags MUST be set to zero and the Will Topic and Will Message fields MUST NOT be present in the payload [MQTT-3.1.2-11].
+- [X] If the Will Flag is set to 0 the Will QoS and Will Retain fields in the Connect Flags MUST be set to zero and the Will Topic and Will Message fields MUST NOT be present in the payload [MQTT-3.1.2-11].
 - [X] If the Will Flag is set to 0, a Will Message MUST NOT be published when this Network Connection ends [MQTT-3.1.2-12].
-- [ ] If the Will Flag is set to 0, then the Will QoS MUST be set to 0 (0x00) [MQTT-3.1.2-13].
-- [ ] If the Will Flag is set to 1, the value of Will QoS can be 0 (0x00), 1 (0x01), or 2 (0x02). It MUST NOT be 3 (0x03) [MQTT-3.1.2-14].
-- [ ] If the Will Flag is set to 0, then the Will Retain Flag MUST be set to 0 [MQTT-3.1.2-15].
+- [X] If the Will Flag is set to 0, then the Will QoS MUST be set to 0 (0x00) [MQTT-3.1.2-13].
+- [X] If the Will Flag is set to 1, the value of Will QoS can be 0 (0x00), 1 (0x01), or 2 (0x02). It MUST NOT be 3 (0x03) [MQTT-3.1.2-14].
+- [X] If the Will Flag is set to 0, then the Will Retain Flag MUST be set to 0 [MQTT-3.1.2-15].
 
 If the Will Flag is set to 1:
 
@@ -55,15 +55,15 @@ If the Will Flag is set to 1:
 
 ### Username & Password Flags
 
-- [ ] If the User Name Flag is set to 0, a user name MUST NOT be present in the payload [MQTT-3.1.2-18].
-- [ ] If the User Name Flag is set to 1, a user name MUST be present in the payload [MQTT-3.1.2-19].
-- [ ] If the Password Flag is set to 0, a password MUST NOT be present in the payload [MQTT-3.1.2-20].
-- [ ] If the Password Flag is set to 1, a password MUST be present in the payload [MQTT-3.1.2-21].
-- [ ] If the User Name Flag is set to 0, the Password Flag MUST be set to 0 [MQTT-3.1.2-22].
+- [X] If the User Name Flag is set to 0, a user name MUST NOT be present in the payload [MQTT-3.1.2-18].
+- [X] If the User Name Flag is set to 1, a user name MUST be present in the payload [MQTT-3.1.2-19].
+- [X] If the Password Flag is set to 0, a password MUST NOT be present in the payload [MQTT-3.1.2-20].
+- [X] If the Password Flag is set to 1, a password MUST be present in the payload [MQTT-3.1.2-21].
+- [X] If the User Name Flag is set to 0, the Password Flag MUST be set to 0 [MQTT-3.1.2-22].
 
 ### Keepalive
 
-- [ ] It is the responsibility of the Client to ensure that the interval between Control Packets being sent does not exceed the Keep Alive value. In the absence of sending any other Control Packets, the Client MUST send a PINGREQ Packet [MQTT-3.1.2-23].
-- [ ] If the Keep Alive value is non-zero and the Server does not receive a Control Packet from the Client within one and a half times the Keep Alive time period, it MUST disconnect the Network Connection to the Client as if the network had failed [MQTT-3.1.2-24]
+- [X] It is the responsibility of the Client to ensure that the interval between Control Packets being sent does not exceed the Keep Alive value. In the absence of sending any other Control Packets, the Client MUST send a PINGREQ Packet [MQTT-3.1.2-23].
+- [X] If the Keep Alive value is non-zero and the Server does not receive a Control Packet from the Client within one and a half times the Keep Alive time period, it MUST disconnect the Network Connection to the Client as if the network had failed [MQTT-3.1.2-24]
 
 Next...Payload
