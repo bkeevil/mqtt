@@ -101,7 +101,7 @@ Username | published | RW | A UTF8String containing the Username to send as part
 Password | published | RW | An AnsiString containing the Password to send as part of the CONNECT packet
 WillMessage | published | RW | A will message structure containing info about a message that the server will send out when this connection is lost or closed.
 CleanSession | published | RW | Whether or not to establish a new clean session.
-KeepAlive | published | RW | The keepalive value to send to the server. The server will expect to hear at least a PINGREQ message from the client within this KeepAlive interval and will disconnect the connection if it expires.
+KeepAlive | published | RW | The keepalive value to send to the server. The server will expect to hear at least a PINGREQ message from the client within 1.5 times this KeepAlive interval and will disconnect the connection if it expires.
 PingInterval | published | RW | After this number of seconds of inactivity, the client will send a PINGREQ message to the server to keep the connection alive. PingInterval needs to be less then KeepAlive obviously but the component does not enforce this constraint.
 
 ## Methods

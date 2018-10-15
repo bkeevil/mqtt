@@ -24,7 +24,7 @@ RequireAuthentication | Boolean | False | Set to 1 to require clients to authent
 AllowNullClientIDs | Boolean | False | Set to 1 to allow clients to connect with null clientIDs. This will cause them to be assigned a randomly generated clientID.
 StrictClientIDValidation | Boolean | False | Set to 1 to enable strict ClientID validation
 StoreOfflineQoS0Messages | Boolean | False | Set to 1 to store QoS0 messages dispatched to offline clients for when they reconnect
-KeepAlive | Integer | 30 | Disconnect the client if it hasn't been heard from in this many seconds
+KeepAlive | Integer | 30 | Disconnect the client if it hasn't been heard from in 1.5 times this many seconds
 MaxSessionAge | Integer | 1080 | The number of minutes to retain session information for disconnected sessions
 MaxSubscriptionAge | Integer | 1080 | The number of minutes to retain subscriptions for disconnected clients
 MaximumQOS | Integer | 2 | The maximum QoS level provided by the server. Any packets received at a higher QoS level will be downgraded. 
