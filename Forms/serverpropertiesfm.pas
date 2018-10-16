@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ExtCtrls, Spin, EditBtn, ButtonPanel, LNet, LNetComponents, LNetSSL,
-  MQTTConsts, MQTTServer;
+  PasswordMan, MQTTConsts, MQTTServer;
 
 type
 
@@ -59,13 +59,13 @@ type
 var
   ServerPropertiesForm: TServerPropertiesForm;
 
-function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; var PasswordFilename: String; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
+function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; PasswordManager: TPasswordManager; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
 
 implementation
 
 {$R *.lfm}
 
-function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; var PasswordFilename: String; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
+function ServerPropertiesDlg(AServer: TMQTTServer; var StartNormalListener, StartTLSListener: Boolean; PasswordManager: TPasswordManager; ATCP, ASSLTCP: TLTCPComponent; ASSL: TLSSLSessionComponent): Boolean;
 begin
   ServerPropertiesForm.cbEnabled.Checked := AServer.Enabled;
   ServerPropertiesForm.cbAuthentication.Checked := AServer.RequireAuthentication;
@@ -84,7 +84,9 @@ begin
   ServerPropertiesForm.edPrivateKeyPassword.Text := ASSL.Password;
   ServerPropertiesForm.seTLSPort.Value := ASSLTCP.Port;
   ServerPropertiesForm.ActiveControl := ServerPropertiesForm.edAddress;
-  ServerPropertiesForm.edPasswordFile.Filename := PasswordFilename;
+  ServerPropertiesForm.edPasswordFile.Filename := PasswordManager.Filename;
+  if PasswordManager.Modified then
+    PasswordManager.Save;
   Result := ServerPropertiesForm.ShowModal = mrOK;
 
   if Result then
@@ -100,7 +102,9 @@ begin
       ATCP.Host := ServerPropertiesForm.edAddress.Text;
       ATCP.Port := ServerPropertiesForm.sePort.Value;
       StartTLSListener := ServerPropertiesForm.cbListenTLS.Checked;
-      PasswordFilename := ServerPropertiesForm.edPasswordFile.Filename;
+      PasswordManager.Clear;
+      PasswordManager.Filename := ServerPropertiesForm.edPasswordFile.Filename;
+      PasswordManager.Load;
       ASSL.CAFile := ServerPropertiesForm.edCertificateFile.Filename;
       ASSL.KeyFile := ServerPropertiesForm.edPrivateKeyFile.Filename;
       ASSL.Method := ServerPropertiesForm.GetSSLMethod;

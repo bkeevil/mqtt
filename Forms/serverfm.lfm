@@ -9,6 +9,7 @@ object ServerForm: TServerForm
   Menu = MainMenu
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnMouseMove = CollectEntropy
   Position = poScreenCenter
   LCLVersion = '1.8.5.0'
   object ToolBar: TToolBar
@@ -32,14 +33,14 @@ object ServerForm: TServerForm
       Action = SaveConfigurationAction
     end
     object ToolbarDivider1: TToolButton
-      Left = 121
+      Left = 98
       Height = 22
       Top = 2
       Caption = 'ToolbarDivider1'
       Style = tbsDivider
     end
     object ExitBtn: TToolButton
-      Left = 126
+      Left = 103
       Top = 2
       Action = ExitAction
     end
@@ -51,7 +52,7 @@ object ServerForm: TServerForm
       Style = tbsDivider
     end
     object ServerPropertiesBtn: TToolButton
-      Left = 98
+      Left = 75
       Top = 2
       Action = ServerPropertiesAction
     end
@@ -60,21 +61,17 @@ object ServerForm: TServerForm
       Top = 2
       Action = RestartSeverAction
     end
-    object PassswordManagerBtn: TToolButton
-      Left = 75
-      Top = 2
-      Action = PasswordManagerAction
-    end
   end
   object PageControl: TPageControl
     Left = 0
     Height = 320
     Top = 26
     Width = 817
-    ActivePage = SessionsTab
+    ActivePage = TabSheet2
     Align = alClient
-    TabIndex = 2
+    TabIndex = 5
     TabOrder = 1
+    OnMouseMove = CollectEntropy
     object ConnectionsTab: TTabSheet
       Caption = 'Connections'
       ClientHeight = 289
@@ -108,7 +105,7 @@ object ServerForm: TServerForm
             ButtonStyle = cbsEllipsis
             SizePriority = 0
             Title.Caption = 'Will Message'
-            Width = 503
+            Width = 505
           end>
         DefaultRowHeight = 20
         Enabled = False
@@ -118,11 +115,12 @@ object ServerForm: TServerForm
         PopupMenu = ConnectionsGridMenu
         RowCount = 1
         TabOrder = 0
+        OnMouseMove = CollectEntropy
         ColWidths = (
           80
           120
           100
-          503
+          505
         )
       end
     end
@@ -132,7 +130,7 @@ object ServerForm: TServerForm
       ClientWidth = 807
       object SubscriptionsGrid: TStringGrid
         Left = 0
-        Height = 315
+        Height = 289
         Top = 0
         Width = 807
         Align = alClient
@@ -147,7 +145,7 @@ object ServerForm: TServerForm
           end        
           item
             Title.Caption = 'Topic Filter'
-            Width = 499
+            Width = 501
           end        
           item
             SizePriority = 0
@@ -169,9 +167,10 @@ object ServerForm: TServerForm
         PopupMenu = SubscriptionsGridMenu
         RowCount = 1
         TabOrder = 0
+        OnMouseMove = CollectEntropy
         ColWidths = (
           120
-          499
+          501
           120
           64
         )
@@ -231,6 +230,7 @@ object ServerForm: TServerForm
         PopupMenu = SessionsGridMenu
         RowCount = 1
         TabOrder = 0
+        OnMouseMove = CollectEntropy
         ColWidths = (
           120
           375
@@ -280,6 +280,7 @@ object ServerForm: TServerForm
         PopupMenu = RetainedMessagesGridMenu
         RowCount = 1
         TabOrder = 0
+        OnMouseMove = CollectEntropy
         ColWidths = (
           120
           272
@@ -326,6 +327,7 @@ object ServerForm: TServerForm
         Options = [goThumbTracking, goSmoothScroll]
         RowCount = 1
         TabOrder = 0
+        OnMouseMove = CollectEntropy
         ColWidths = (
           80
           120
@@ -391,6 +393,90 @@ object ServerForm: TServerForm
         end
       end
     end
+    object TabSheet2: TTabSheet
+      Caption = 'User Manager'
+      ClientHeight = 289
+      ClientWidth = 807
+      object DBGrid: TDBGrid
+        Left = 0
+        Height = 264
+        Top = 25
+        Width = 807
+        Align = alClient
+        Color = clWindow
+        Columns = <        
+          item
+            ButtonStyle = cbsCheckboxColumn
+            SizePriority = 0
+            Title.Alignment = taCenter
+            Title.Caption = 'Enabled'
+            Width = 60
+            FieldName = 'EnabledField'
+          end        
+          item
+            SizePriority = 0
+            Title.Caption = 'Username'
+            Width = 120
+            FieldName = 'UsernameField'
+          end        
+          item
+            ButtonStyle = cbsButton
+            SizePriority = 0
+            Title.Caption = 'Password'
+            Width = 120
+            FieldName = 'PasswordField'
+          end        
+          item
+            ButtonStyle = cbsCheckboxColumn
+            SizePriority = 0
+            Title.Alignment = taCenter
+            Title.Caption = 'Admin'
+            Width = 60
+            FieldName = 'AdminField'
+          end        
+          item
+            ReadOnly = True
+            SizePriority = 0
+            Title.Caption = 'Last Active'
+            Width = 142
+            FieldName = 'LastActiveField'
+          end        
+          item
+            Title.Caption = 'Description'
+            Width = 190
+            FieldName = 'DescriptionField'
+          end        
+          item
+            ButtonStyle = cbsButton
+            Title.Caption = 'Params'
+            Width = 190
+            FieldName = 'ParamsField'
+          end>
+        DataSource = PassManDataSource
+        TabOrder = 0
+        OnEditButtonClick = DBGridEditButtonClick
+        OnMouseMove = CollectEntropy
+      end
+      object PassManNavigator: TDBNavigator
+        Left = 0
+        Height = 25
+        Top = 0
+        Width = 807
+        Align = alTop
+        BevelOuter = bvNone
+        ChildSizing.EnlargeHorizontal = crsScaleChilds
+        ChildSizing.EnlargeVertical = crsScaleChilds
+        ChildSizing.ShrinkHorizontal = crsScaleChilds
+        ChildSizing.ShrinkVertical = crsScaleChilds
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 100
+        ClientHeight = 25
+        ClientWidth = 807
+        DataSource = PassManDataSource
+        Options = []
+        TabOrder = 1
+      end
+    end
   end
   object MainMenu: TMainMenu
     Images = ToolbarButtons
@@ -405,9 +491,6 @@ object ServerForm: TServerForm
       object SaveConfigurationItm: TMenuItem
         Action = SaveConfigurationAction
         OnClick = SaveConfigurationItmClick
-      end
-      object PasswordManagerItm: TMenuItem
-        Caption = '&Password Manager'
       end
       object RestartServerItm: TMenuItem
         Caption = '&Restart Server'
@@ -461,7 +544,6 @@ object ServerForm: TServerForm
     end
   end
   object Server: TMQTTServer
-    RequireAuthentication = False
     AllowNullClientIDs = True
     RetainedMessagesDatastore = RMDatastore
     OnAccepted = ServerAccepted
@@ -470,6 +552,7 @@ object ServerForm: TServerForm
     OnSendData = ServerSendData
     OnError = ServerError
     OnConnectionsChanged = RefreshConnectionsItmClick
+    OnValidatePassword = ServerValidatePassword
     OnSubscriptionsChanged = RefreshSubscriptionsItmClick
     OnSessionsChanged = RefreshSessionsItmClick
     OnRetainedMessagesChanged = RefreshRetainedMessagesItmClick
@@ -558,13 +641,6 @@ object ServerForm: TServerForm
       Hint = 'Exit'
       ImageIndex = 2
       OnExecute = ExitItmClick
-    end
-    object PasswordManagerAction: TAction
-      Caption = '&Password Manager...'
-      Hint = 'Password Manager'
-      ImageIndex = 3
-      OnExecute = PasswordManagerActionExecute
-      ShortCut = 16464
     end
     object RestartSeverAction: TAction
       Caption = '&Restart Server'
@@ -777,5 +853,58 @@ object ServerForm: TServerForm
       800000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000000FF8000
       8000800080008000800080008000
     }
+  end
+  object PasswordManager: TPasswordManager
+    left = 698
+    top = 208
+  end
+  object PassManDataSource: TDataSource
+    DataSet = PassManDataset
+    left = 698
+    top = 144
+  end
+  object PassManDataset: TMemDataset
+    Active = True
+    FieldDefs = <    
+      item
+        Name = 'EnabledField'
+        Attributes = [faRequired]
+        DataType = ftBoolean
+      end    
+      item
+        Name = 'UsernameField'
+        Attributes = [faRequired]
+        DataType = ftString
+        Size = 20
+      end    
+      item
+        Name = 'PasswordField'
+        Attributes = [faRequired]
+        DataType = ftString
+        Size = 20
+      end    
+      item
+        Name = 'AdminField'
+        Attributes = [faRequired]
+        DataType = ftBoolean
+      end    
+      item
+        Name = 'LastActiveField'
+        Attributes = [faRequired]
+        DataType = ftDateTime
+      end    
+      item
+        Name = 'DescriptionField'
+        DataType = ftString
+        Size = 80
+      end    
+      item
+        Name = 'ParamsField'
+        DataType = ftString
+        Size = 255
+      end>
+    OnNewRecord = PassManDatasetNewRecord
+    left = 696
+    top = 80
   end
 end

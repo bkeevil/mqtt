@@ -7,8 +7,8 @@ uses
   cthreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, ServerFM, ServerPropertiesFM, mqttregister, lnetvisual, helpfm,
-  createpasswordfm, passmanfm, PassManParamsFM;
+  Forms, memdslaz, ServerFM, ServerPropertiesFM, mqttregister, lnetvisual,
+  helpfm, createpasswordfm, PassManParamsFM;
 
 {$R *.res}
 
@@ -17,7 +17,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TServerForm, ServerForm);
   Application.CreateForm(TServerPropertiesForm, ServerPropertiesForm);
-  Application.CreateForm(TPassManForm, PassManForm);
   Application.CreateForm(THelpForm, HelpForm);
   Application.Run;
 end.

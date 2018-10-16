@@ -43,6 +43,8 @@ object ServerPropertiesForm: TServerPropertiesForm
       NumGlyphs = 1
       FocusOnButtonClick = True
       MaxLength = 0
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 2
       Text = 'pkey'
     end
@@ -69,6 +71,8 @@ object ServerPropertiesForm: TServerPropertiesForm
       NumGlyphs = 1
       FocusOnButtonClick = True
       MaxLength = 0
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 3
       Text = 'cert'
     end
@@ -87,7 +91,9 @@ object ServerPropertiesForm: TServerPropertiesForm
       Top = 30
       Width = 137
       EchoMode = emPassword
+      ParentShowHint = False
       PasswordChar = '*'
+      ShowHint = True
       TabOrder = 1
     end
     object TLSVersionCombo: TComboBox
@@ -103,6 +109,8 @@ object ServerPropertiesForm: TServerPropertiesForm
         'SSL v2 or 3'
         'TLS v1'
       )
+      ParentShowHint = False
+      ShowHint = True
       Style = csDropDownList
       TabOrder = 0
       Text = 'TLS v1'
@@ -288,6 +296,8 @@ object ServerPropertiesForm: TServerPropertiesForm
       NumGlyphs = 1
       FocusOnButtonClick = True
       MaxLength = 0
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 8
       Text = 'passwords'
     end
@@ -295,8 +305,8 @@ object ServerPropertiesForm: TServerPropertiesForm
       Left = 17
       Height = 17
       Top = 344
-      Width = 108
-      Caption = '&Password Filename'
+      Width = 111
+      Caption = '&Password Database'
       FocusControl = edPasswordFile
       ParentColor = False
     end
@@ -342,7 +352,7 @@ object ServerPropertiesForm: TServerPropertiesForm
     object sePort: TSpinEdit
       Left = 140
       Height = 29
-      Hint = 'The TCP port number to listen on. (Default is 1883)'
+      Hint = 'The TCP port number to listen for unencrypted connections on. (Default is 1883)'
       Top = 29
       Width = 62
       MaxValue = 65535
@@ -359,6 +369,8 @@ object ServerPropertiesForm: TServerPropertiesForm
       Width = 171
       Caption = 'Listen for TLS connections'
       OnChange = cbListenTLSChange
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 4
     end
     object lbTLSPort: TLabel
@@ -392,6 +404,8 @@ object ServerPropertiesForm: TServerPropertiesForm
       Caption = 'Listen for unencrpted connections'
       Checked = True
       OnChange = cbListenUnencryptedChange
+      ParentShowHint = False
+      ShowHint = True
       State = cbChecked
       TabOrder = 3
     end

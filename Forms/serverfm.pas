@@ -6,8 +6,9 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
-  Grids, Menus, ExtCtrls, StdCtrls, ActnList, Buffers, Logging, LNet,
-  LNetComponents, MQTTConsts, MQTTSubscriptions, MQTTServer, MQTTMessages;
+  Grids, Menus, ExtCtrls, StdCtrls, ActnList, DBGrids, DbCtrls, Buffers,
+  Logging, passwordman, db, memds, LNet, LNetComponents, MQTTConsts,
+  MQTTSubscriptions, MQTTServer, MQTTMessages;
 
 const
   LISTEN_RETRY_DELAY    = 15000;
@@ -31,20 +32,23 @@ type
     ClearBtn: TButton;
     ConnectionsGrid: TStringGrid;
     ConnectionsTab: TTabSheet;
+    PassManDataSource: TDataSource;
+    DBGrid: TDBGrid;
+    PassManNavigator: TDBNavigator;
     FilterText: TEdit;
     LogGrid: TStringGrid;
     LogToolbarPanel: TPanel;
+    PassManDataset: TMemDataset;
     PageControl: TPageControl;
+    PasswordManager: TPasswordManager;
     RetainedMessagesGrid: TStringGrid;
     RetainedMessagesTab: TTabSheet;
     ServerPropertiesAction: TAction;
     RestartSeverAction: TAction;
-    PasswordManagerAction: TAction;
     ExitAction: TAction;
     SaveConfigurationAction: TAction;
     LoadConfigurationAction: TAction;
     ActionList: TActionList;
-    PasswordManagerItm: TMenuItem;
     RMDatastore: TMQTTRetainedMessagesDatastore;
     RestartServerItm: TMenuItem;
     SessionsGrid: TStringGrid;
@@ -52,6 +56,7 @@ type
     SubscriptionsGrid: TStringGrid;
     SubscriptionsTab: TTabSheet;
     TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
     TLS: TLSSLSessionComponent;
     TLSTCP: TLTCPComponent;
     RefreshRetainedMessagesItm: TMenuItem;
@@ -83,7 +88,6 @@ type
     ToolbarDivider2: TToolButton;
     ServerPropertiesBtn: TToolButton;
     RestartServerBtn: TToolButton;
-    PassswordManagerBtn: TToolButton;
     procedure CBEnabledChange(Sender: TObject);
     procedure cbEnableDebugMessagesChange(Sender: TObject);
     procedure CBFilteredChange(Sender: TObject);
@@ -94,8 +98,9 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure ListenTimerTimer(Sender: TObject);
     procedure LoadConfigurationItmClick(Sender: TObject);
-    procedure PasswordManagerActionExecute(Sender: TObject);
     procedure RestartServerItmClick(Sender: TObject);
+    procedure ServerValidatePassword(AServer: TMQTTServer; AUsername,
+      APassword: UTF8String; var Allow: Boolean);
     procedure TLSTLSAccept(aSocket: TLSocket);
     procedure PropertiesItmClick(Sender: TObject);
     procedure RefreshConnectionsItmClick(Sender: TObject);
@@ -113,6 +118,9 @@ type
     procedure TCPDisconnect(aSocket: TLSocket);
     procedure TCPError(const msg: string; aSocket: TLSocket);
     procedure TCPReceive(aSocket: TLSocket);
+    procedure DBGridEditButtonClick(Sender: TObject);
+    procedure CollectEntropy(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure PassManDatasetNewRecord(DataSet: TDataSet);
   private
     FConfigFilename : String;
     FListener       : TLogListener;
@@ -122,6 +130,8 @@ type
     FRecords        : TList;
     procedure ClearRecords;
     procedure DisplayHelp;
+    procedure PassmanToGrid;
+    procedure GridToPassman;
     procedure HandleMessage(Dispatcher: TLogDispatcher; MessageType: TLogMessageType; Message: String);
     procedure LoadCommandLineOptions;
     function PassesFilter(Filter: String; Rec: PDebugMessage): Boolean;
@@ -135,7 +145,6 @@ type
     Log: TLogDispatcher;
     StartNormalListener: Boolean;
     StartTLSListener: Boolean;
-    PasswordFile: String;
   end;
 
 var
@@ -147,7 +156,8 @@ implementation
 {$R *.lfm}
 
 uses
-  MQTTPackets, MQTTPacketDefs, IniFiles, Crypto, Base32, PassManFM, HelpFM, ServerPropertiesFM, LNetSSL, OpenSSL;
+  MQTTPackets, MQTTPacketDefs, IniFiles, Rand, Crypto, Base32, LNetSSL, OpenSSL,
+  HelpFM, ServerPropertiesFM, PassManParamsFM, CreatePasswordFM;
 
 const
   SYSTEM_PASSWORD = 'st5F2wrhXAaFVE9jzgKw';
@@ -211,7 +221,7 @@ begin
   LoadCommandLineOptions;
   if Assigned(FLogFile) then
     Log.Send(mtDebug,'LogFile=%s',[FLogFile.Filename]);
-  Log.Send(mtDebug,'PasswordFile=%s',[PasswordFile]);
+  Log.Send(mtDebug,'PasswordFile=%s',[PasswordManager.Filename]);
   Log.Send(mtDebug,'RequireAuthentication=%s',[BoolToStr(Server.RequireAuthentication,'True','False')]);
   Log.Send(mtDebug,'AllowNullClientIDs=%s',[BoolToStr(Server.AllowNullClientIDs,'True','False')]);
   Log.Send(mtDebug,'StrictClientIDValidation=%s',[BoolToStr(Server.StrictClientIDValidation,'true','false')]);
@@ -229,14 +239,12 @@ begin
   Log.Send(mtDebug,'PKeyFilename=%s',[TLS.KeyFile]);
   Log.Send(mtDebug,'CertFilename=%s',[TLS.CAFile]);
   Log.Send(mtDebug,'PasswordSupplied=%s',[BoolToStr(TLS.Password > '')]);
-  if not Assigned(PassManForm) then
-    PassManForm := TPassManForm.Create(Application);
-  if FileExists(PasswordFile) then
+  if FileExists(PasswordManager.Filename) then
     begin
-      PassManForm.Filename := PasswordFile; // Sets the filename property of the Open/Save dialogs
-      PassManForm.PassMan.LoadFromFile(PasswordFile);
+      PasswordManager.Load;
+      PassmanToGrid;
     end;
-  Log.Send(mtDebug,'Number of user accounts in database: %d',[PassManForm.PassMan.Count]);
+  Log.Send(mtDebug,'Number of user accounts in database: %d',[PasswordManager.Count]);
   if not Server.Enabled then
     Log.Send(mtWarning,'The server is being started in a disabled state');
   SaveConfigurationItm.Enabled := CheckConfigWriteAccess(FConfigFilename);
@@ -334,7 +342,7 @@ begin
     end;
   // passfile
   if Application.HasOption('passfile') then
-    PasswordFile := Application.GetOptionValue('passfile');
+    PasswordManager.Filename := Application.GetOptionValue('passfile');
   // debug
   if Application.HasOption('debug') then
     begin
@@ -531,7 +539,7 @@ end;
 
 procedure TServerForm.PropertiesItmClick(Sender: TObject);
 begin
-  if ServerPropertiesDlg(Server,StartNormalListener,StartTLSListener,PasswordFile,TCP,TLSTCP,TLS) then
+  if ServerPropertiesDlg(Server,StartNormalListener,StartTLSListener,PasswordManager,TCP,TLSTCP,TLS) then
     begin
       SaveConfiguration(SaveDialog.Filename);
       RefreshAll;
@@ -547,16 +555,16 @@ begin
     end;
 end;
 
-procedure TServerForm.PasswordManagerActionExecute(Sender: TObject);
-begin
-  PassManForm.Show;
-end;
-
 procedure TServerForm.RestartServerItmClick(Sender: TObject);
 begin
   TCP.Disconnect;
   TLSTCP.Disconnect;
   ListenTimer.Enabled := True;
+end;
+
+procedure TServerForm.ServerValidatePassword(AServer: TMQTTServer; AUsername, APassword: UTF8String; var Allow: Boolean);
+begin
+
 end;
 
 procedure TServerForm.TLSTLSAccept(aSocket: TLSocket);
@@ -599,8 +607,9 @@ begin
   if SaveDialog.Execute then
     begin
       SaveConfiguration(SaveDialog.Filename);
-      if PassmanForm.PassMan.Modified then
-        PassmanForm.PassMan.SaveToFile(PasswordFile);
+      GridToPassman;
+      if PasswordManager.Modified then
+        PasswordManager.Save;
     end;
 end;
 
@@ -637,7 +646,13 @@ begin
         Caption := S;
         Application.Title := S;
       end;
-    PasswordFile := Ini.ReadString('General','PasswordFile','');
+    PasswordManager.Filename := Ini.ReadString('General','PasswordFile','');
+    if FileExists(PasswordManager.Filename) then
+      begin
+        PasswordManager.Clear;
+        PasswordManager.Load;
+        PassManToGrid;
+      end;
     Server.Enabled := Ini.ReadBool('MQTT','Enabled',True);
     Server.RequireAuthentication := Ini.ReadBool('MQTT','RequireAuthentication',False);
     Server.AllowNullClientIDs := Ini.ReadBool('MQTT','AllowNullClientIDs',False);
@@ -698,7 +713,7 @@ begin
       Ini.DeleteKey('General','LogFilename');
     Ini.WriteBool('General','Debug',cbEnableDebugMessages.Checked);
     Ini.WriteString('General','Title',Caption);
-    Ini.WriteString('General','PasswordFilename',PasswordFile);
+    Ini.WriteString('General','PasswordFilename',PasswordManager.Filename);
     Ini.WriteBool('MQTT','Enabled',Server.Enabled);
     Ini.WriteBool('MQTT','RequireAuthentication',Server.RequireAuthentication);
     Ini.WriteBool('MQTT','AllowNullClientIDs',Server.AllowNullClientIDs);
@@ -1055,6 +1070,90 @@ begin
       P := FRecords[I];
       if PassesFilter(Filter, P) then
         LogGrid.InsertRowWithValues(LogGrid.RowCount,[MESSAGE_TYPE_STRINGS[P^.MessageType],P^.Module,P^.Message]);
+    end;
+end;
+
+procedure TServerForm.DBGridEditButtonClick(Sender: TObject);
+var
+  P: String;
+begin
+  if DBGrid.SelectedField = PassManDataset.FieldByName('ParamsField') then
+    begin
+      ParamsForm.ValueListEditor.Clear;
+      ParamsForm.ValueListEditor.Strings.Text := PassManDataset.FieldByName('ParamsField').AsString;
+      if ParamsForm.ShowModal = mrOK then
+        begin
+          if PassManDataset.State = dsBrowse then
+            PassManDataset.Edit;
+          PassManDataset.FieldByName('ParamsField').AsString := ParamsForm.ValueListEditor.Strings.Text;
+        end;
+    end
+  else
+  if DBGrid.SelectedField = PassManDataset.FieldByName('PasswordField') then
+    begin
+      if CreatePasswordDlg(P) then
+        begin
+          if PassManDataset.State = dsBrowse then
+            PassManDataset.Edit;
+          PassManDataset.FieldByName('PasswordField').AsString := P;
+        end;
+    end;
+end;
+
+procedure TServerForm.CollectEntropy(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+begin
+  Entropy.MouseMove(X,Y);
+end;
+
+procedure TServerForm.PassManDatasetNewRecord(DataSet: TDataSet);
+begin
+  PassManDataset.FieldByName('LastActiveField').AsDateTime := Now;
+  PassManDataset.FieldByName('EnabledField').AsBoolean := True;
+  PassManDataset.FieldByName('AdminField').AsBoolean := False;
+end;
+
+procedure TServerForm.GridToPassman;
+var
+  O: TPasswordManagerAccount;
+  BM: TBookmark;
+begin
+  PasswordManager.Clear;
+  PassManDataset.GetBookmark;
+  PassManDataset.First;
+  while not PassManDataset.EOF do
+    begin
+      O := TPasswordManagerAccount.Create(PasswordManager);
+      O.Enabled     := PassManDataset.FieldByName('EnabledField').AsBoolean;
+      O.Username    := PassManDataset.FieldByName('UsernameField').AsString;
+      O.Password    := PassManDataset.FieldByName('PasswordField').AsString;
+      O.Admin       := PassManDataset.FieldByName('AdminField').AsBoolean;
+      O.LastActive  := PassManDataset.FieldByName('LastActiveField').AsDateTime;
+      O.Description := PassManDataset.FieldByName('DescriptionField').AsString;
+      O.Params.Text := PassManDataset.FieldByName('ParamsField').AsString;
+      PassManDataset.Next;
+    end;
+  PassManDataset.GotoBookmark(BM);
+end;
+
+procedure TServerForm.PassmanToGrid;
+var
+  I: Integer;
+  O: TPasswordManagerAccount;
+begin
+  PassManDataset.Clear(False);
+  PassManDataset.Active := True;
+  for I := 0 to PasswordManager.Count - 1 do
+    begin
+      O := PasswordManager[I];
+      PassManDataset.Insert;
+      PassManDataset.FieldByName('EnabledField').AsBoolean     := O.Enabled;
+      PassManDataset.FieldByName('UsernameField').AsString     := O.Username;
+      PassManDataset.FieldByName('PasswordField').AsString     := O.Password;
+      PassManDataset.FieldByName('AdminField').AsBoolean       := O.Admin;
+      PassManDataset.FieldByName('LastActiveField').AsDateTime := O.LastActive;
+      PassManDataset.FieldByName('DescriptionField').AsString  := O.Description;
+      PassManDataset.FieldByName('ParamsField').AsString       := O.Params.Text;
+      PassManDataset.Post;
     end;
 end;
 
