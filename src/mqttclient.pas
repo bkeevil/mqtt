@@ -1414,8 +1414,9 @@ end;
 
 procedure TMQTTClientPublisher.SetTopic(AValue: String);
 begin
-  if AValue = FTokens.AsString then Exit;
-  FreeAndNil(FTokens);
+  if AValue = GetTopic then Exit;
+  if Assigned(FTokens) then
+    FreeAndNil(FTokens);
   if AValue > '' then
     FTokens := TMQTTTokenizer.Create(AValue,False);
   Changed;
