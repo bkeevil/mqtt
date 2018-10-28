@@ -1,12 +1,12 @@
-unit mqttclient;
+unit MQTTClient;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, {Contnrs, }Buffers, Logging, MQTTTokenizer,
-  MQTTConsts, MQTTPackets, MQTTPacketDefs, MQTTSubscriptions;
+  Classes, SysUtils, Buffers, Logging, MQTTTokenizer, MQTTConsts, MQTTPackets,
+  MQTTPacketDefs, MQTTSubscriptions;
 
 const
   MQTT_DEFAULT_PING_INTERVAL         = 15; // Number of seconds between PINGREQ packets being sent to the server
