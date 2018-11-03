@@ -1078,7 +1078,7 @@ begin
   if WillMessage.Enabled then
     begin
       Log.Send(mtDebug,'Sending Will Message (%s)',[WillMessage.AsString]);
-      Publish(WillMessage.Topic,WillMessage.Message,WillMessage.QOS,WillMessage.Retain,False);
+      Publish(WillMessage.Topic,WillMessage.Data,WillMessage.QOS,WillMessage.Retain,False);
       if WillMessage.QOS = qtAT_MOST_ONCE then
         FState := csDisconnected;
     end

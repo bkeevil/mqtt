@@ -447,7 +447,7 @@ begin
             OnError(Self,MQTT_ERROR_NO_CLIENTID,GetMQTTErrorMessage(MQTT_ERROR_NO_CLIENTID));
           Exit;
         end;
-      if (FWillMessage.Enabled) and ((FWillMessage.Topic = '') or (FWillMessage.Message = '')) then
+      if (FWillMessage.Enabled) and ((FWillMessage.Topic = '') or (FWillMessage.Data = '')) then
         begin
           Result := False;
           if Assigned(OnError) then

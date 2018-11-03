@@ -17,7 +17,7 @@ type
       FQOS: TMQTTQOSType;
       FEnabled: Boolean;
       FTopic: UTF8String;
-      FMessage: UTF8String;
+      FData: AnsiString;
     public
       procedure Clear;
       procedure Assign(ASource: TPersistent); override;
@@ -27,7 +27,7 @@ type
       property QOS: TMQTTQOSType read FQOS write FQOS;
       property Enabled: Boolean read FEnabled write FEnabled;
       property Topic: UTF8String read FTopic write FTopic;
-      property Message: UTF8String read FMessage write FMessage;
+      property Data: AnsiString read FData write FData;
   end;
 
   { TMQTTCONNECTPacket }
@@ -93,7 +93,7 @@ type
       FDuplicate: Boolean;
       FRetain: Boolean;
       FTopic: UTF8String;
-      FData: String;
+      FData: AnsiString;
     protected
       function ReadFromBuffer(ABuffer: TBuffer): Word; override;
       function Validate: Boolean; override;
@@ -105,7 +105,7 @@ type
       property Duplicate: Boolean read FDuplicate write FDuplicate;
       property Retain: Boolean read FRetain write FRetain;
       property Topic: UTF8String read FTopic write FTopic;
-      property Data: String read FData write FData;
+      property Data: AnsiString read FData write FData;
       property QOS: TMQTTQOSType read FQOS write FQOS;
   end;
 
@@ -264,7 +264,7 @@ begin
   FRetain  := False;
   FEnabled := False;
   FTopic   := '';
-  FMessage := '';
+  FData    := '';
 end;
 
 procedure TMQTTWillMessage.Assign(ASource: TPersistent);
@@ -274,11 +274,11 @@ begin
   if ASource is TMQTTWillMessage then
     begin
       WM := ASource as TMQTTWillMessage;
-      FEnabled := WM.FEnabled;
-      FTopic   := WM.FTopic;
-      FMessage := WM.FMessage;
-      FQOS     := WM.FQOS;
-      FRetain  := WM.FRetain;
+      FEnabled := WM.Enabled;
+      FTopic   := WM.Topic;
+      FData    := WM.Data;
+      FQOS     := WM.QOS;
+      FRetain  := WM.Retain;
     end
   else
     inherited Assign(ASource);
@@ -287,7 +287,7 @@ end;
 function TMQTTWillMessage.DisplayText: String;
 begin
   if FEnabled then
-    Result := FTopic + '=' + FMessage
+    Result := Topic + '=' + Data
   else
     Result := '(Disabled)';
 end;
@@ -295,7 +295,7 @@ end;
 function TMQTTWillMessage.AsString: String;
 begin
   Result := 'Enabled: ' + BoolToStr(Enabled,true) + ', QOS: ' + GetQOSTypeName(QOS) +
-    ', Retain: ' + BoolToStr(Retain,true) + ', Topic: ' + Topic + ', Message: ' + Message;
+    ', Retain: ' + BoolToStr(Retain,true) + ', Topic: ' + Topic + ', Data: ' + Data;
 end;
 
 { TMQTTDISCONNECTPacket }
@@ -997,7 +997,7 @@ begin
   if WillMessage.Enabled then
     begin
       if not ReadUTF8StringFromBuffer(ABuffer,WillMessage.FTopic) then Exit;
-      if not ReadUTF8StringFromBuffer(ABuffer,WillMessage.FMessage) then Exit;
+      if not ReadBinaryDataFromBuffer(ABuffer,WillMessage.FData) then Exit;
     end;
   // If the username and password are malformed then a CONNACK needs to be sent
   // with the appropriate error code.  Therefore continue parsing the packet.
@@ -1071,7 +1071,7 @@ begin
     if WillMessage.Enabled then
       begin { Should only be present if WillMessage flag is set }
         WriteUTF8StringToBuffer(LBuffer,WillMessage.Topic);
-        WriteUTF8StringToBuffer(LBuffer,WillMessage.Message);
+        WriteBinaryDataToBuffer(LBuffer,WillMessage.Data);
       end;
     if UsernameFlag then
       WriteUTF8StringToBuffer(LBuffer,Username);
