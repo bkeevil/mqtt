@@ -8,7 +8,8 @@ Represents a client's MQTT subscription. Subscriptions are automatically sent to
 
 Name | Visibility | Access | Description
 :--- | :---: | :---: | :---
-Enabled | published | RW | Is this subscription enabled. Defaults to *true*. If set to *false* then the subscription will not be sent to the server and the _OnMessage_ event handler won't fire.
+AutoSubscribe | published | RW | If true, the subscription will automatically be sent to the server when the client connects. If false then you must call Subscribe/Unsubscribe manually.
+Enabled | published | RW | Is this subscription enabled. Defaults to *true*. If set to *false* then the _OnMessage_ event handler won't fire.
 Filter | published | RW | The topic filter as a UTF-8 encoded string. Internally this is parsed and stored as a TMQTTTokenizer object which preforms some basic validation of the text.
 QOS | published | RW | In most cases the server will send messages matching this topic filter using this requested QoS level. Default QoS is QOS1 (qtAT_LEAST_ONCE).
 Client | published | RW  | The MQTTClient object that this subscription is sent over and through which matching messages are received.  This property is required or the component will not be able to communicate with the server. When the _Client_ property is changed, it adds/removes the object from the corresponding _TMQTTClient.Subscriptions_ lists.
