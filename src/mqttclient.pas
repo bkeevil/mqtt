@@ -162,6 +162,7 @@ type
       FTokens             : TMQTTTokenizer;
       FQOS                : TMQTTQOSType;
       FModified           : Boolean;
+      FAutoSubscribe      : Boolean;
       FEnabled            : Boolean;
       FOnMessage          : TMQTTClientSubscriptionReceiveMessageEvent;
       FOnChanged          : TNotifyEvent;
@@ -186,6 +187,7 @@ type
       procedure Unsubscribe;
       property Modified: Boolean read FModified write FModified;
     published
+      property AutoSubscribe: Boolean read FAutoSubscribe write FAutoSubscribe default true;
       property Enabled: Boolean read FEnabled write FEnabled default true;
       property Filter: UTF8String read GetFilter write SetFilter;
       property QOS: TMQTTQOSType read FQOS write SetQOS default qtAT_MOST_ONCE;
@@ -539,7 +541,7 @@ begin
         for X := 0 to Subscriptions.Count - 1 do
           begin
             S := Subscriptions[X];
-            if Assigned(S) and S.Enabled then
+            if Assigned(S) and S.AutoSubscribe then
               L.New(S.Filter,S.QOS);
           end;
         // Invalid subscriptions must be removed before duplicate subscriptions
@@ -1108,6 +1110,7 @@ constructor TMQTTClientSubscription.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FEnabled := True;
+  FAutoSubscribe := True;
   FQOS := qtAT_LEAST_ONCE;
 end;
 
