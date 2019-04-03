@@ -165,7 +165,7 @@ type
       FAutoSubscribe      : Boolean;
       FEnabled            : Boolean;
       FOnMessage          : TMQTTClientSubscriptionReceiveMessageEvent;
-      FOnChanged          : TNotifyEvent;
+      //FOnChanged          : TNotifyEvent;
       FOnSendSubscription : TNotifyEvent;
       function GetClient: TMQTTClient;
       procedure SetClient(AValue: TMQTTClient);
@@ -173,9 +173,9 @@ type
       procedure SetFilter(AValue: UTF8String);
       procedure SetQOS(AValue: TMQTTQOSType);
     protected
-      procedure HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean); virtual;
+      procedure ReceiveMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean); virtual;
       procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-      procedure Changed; virtual;
+      //procedure Changed; virtual;
       procedure SendSubscription; virtual;
       property Tokens: TMQTTTokenizer read FTokens;
     public
@@ -195,7 +195,7 @@ type
       //
       property OnMessage: TMQTTClientSubscriptionReceiveMessageEvent read FOnMessage write FOnMessage;
       property OnSendSubscription: TNotifyEvent read FOnSendSubscription write FOnSendSubscription;
-      property OnChanged: TNotifyEvent read FOnChanged write FOnChanged;
+      //property OnChanged: TNotifyEvent read FOnChanged write FOnChanged;
   end;
 
   { TMQTTClientSubscriptionList }
@@ -904,8 +904,7 @@ begin
           begin
             Subscription := TMQTTClientSubscription(FSubscriptions[I]);
             if CheckTopicMatchesFilter(Tokens,Subscription.Tokens) then
-              if Assigned(Subscription.OnMessage) then
-                Subscription.OnMessage(Subscription,Topic,Data,QOS,Retained);
+              Subscription.ReceiveMessage(Topic,Data,QOS,Retained);
           end;
       finally
         Tokens.Free;
@@ -1131,9 +1130,9 @@ begin
       Filter             := (Source as TMQTTClientSubscription).Filter;
       QOS                := (Source as TMQTTClientSubscription).QOS;
       OnMessage          := (Source as TMQTTClientSubscription).OnMessage;
-      OnChanged          := (Source as TMQTTClientSubscription).OnChanged;
+      //OnChanged          := (Source as TMQTTClientSubscription).OnChanged;
       OnSendSubscription := (Source as TMQTTClientSubscription).OnSendSubscription;
-      Changed;
+      //Changed;
     end
   else
     inherited Assign(Source);
@@ -1185,17 +1184,17 @@ begin
   if (Operation = opRemove) and (AComponent = FClient) then
     begin
       Client := nil;
-      Changed;
+      //Changed;
     end;
   inherited Notification(AComponent, Operation);
 end;
 
-procedure TMQTTClientSubscription.Changed;
+{procedure TMQTTClientSubscription.Changed;
 begin
   FModified := True;
   if Assigned(FOnChanged) then
     FOnChanged(Self);
-end;
+end;}
 
 procedure TMQTTClientSubscription.SendSubscription;
 begin
@@ -1203,10 +1202,14 @@ begin
     FOnSendSubscription(Self);
 end;
 
-procedure TMQTTClientSubscription.HandleMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean);
+procedure TMQTTClientSubscription.ReceiveMessage(Topic: UTF8String; Data: String; QOS: TMQTTQOSType; Retained: Boolean);
 begin
-  if Enabled and Assigned(FOnMessage) then
-    FOnMessage(Self,Topic,Data,QOS,Retained);
+  if Enabled then
+    begin
+      if Assigned(FOnMessage) then
+        FOnMessage(Self,Topic,Data,QOS,Retained);
+
+    end;
 end;
 
 function TMQTTClientSubscription.GetFilter: UTF8String;
@@ -1224,14 +1227,14 @@ begin
     FreeAndNil(FTokens);
   if AValue > '' then
     FTokens := TMQTTTokenizer.Create(AValue,True);
-  Changed;
+  //Changed;
 end;
 
 procedure TMQTTClientSubscription.SetQOS(AValue: TMQTTQOSType);
 begin
   if FQOS=AValue then Exit;
   FQOS:=AValue;
-  Changed;
+  //Changed;
 end;
 
 function TMQTTClientSubscription.GetClient: TMQTTClient;
@@ -1253,7 +1256,7 @@ begin
       FClient.FSubscriptions.Add(Self);
       FClient.FreeNotification(Self);
     end;
-  Changed;
+  //Changed;
 end;
 
 { TMQTTClientPublisherList }
